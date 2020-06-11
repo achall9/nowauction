@@ -1,0 +1,52 @@
+<?php
+/**
+  * CedCommerce
+  *
+  * NOTICE OF LICENSE
+  *
+  * This source file is subject to the End User License Agreement (EULA)
+  * that is bundled with this package in the file LICENSE.txt.
+  * It is also available through the world-wide-web at this URL:
+  * http://cedcommerce.com/license-agreement.txt
+  *
+  * @category    Ced
+  * @package     VendorsocialLogin
+  * @author      CedCommerce Core Team <connect@cedcommerce.com>
+  * @copyright   Copyright CEDCOMMERCE (http://cedcommerce.com/)
+  * @license     http://cedcommerce.com/license-agreement.txt
+  */
+
+/**
+ * @category    Ced
+ * @package     Ced_SocialLogin
+ * @author    CedCommerce Magento Core Team <connect@cedcommerce.com>
+ */
+?>
+ 
+<div class="block ced-sociallogin-login">
+    <div class="account-login">
+    <h2>SocialLogin</h2>
+        <div class="<?php echo $this->_getColSet(); ?> ced-sociallogin-login-lower">
+            <?php if($this->googleEnabled()): ?>
+            <div class="<?php echo $this->_getButtCol(); ?> ced-sociallogin-login-lower-google">
+                <?php echo $this->getChildHtml('ced_google_login_button'); ?>
+            </div>
+            <?php endif; ?>
+            <?php if($this->facebookEnabled()): ?>
+            <div class="<?php echo $this->_getButtCol(); ?> ced-sociallogin-login-lower-facebook">
+                <?php echo $this->getChildHtml('ced_facebook_login_button'); ?>
+            </div>
+            <?php endif; ?>
+            <?php if($this->twitterEnabled()): ?>
+            <div class="<?php echo $this->_getButtCol(); ?> ced-sociallogin-login-lower-twitter">
+                <?php echo $this->getChildHtml('ced_twitter_login_button'); ?>
+            </div>
+            <?php endif; ?>
+             <?php if($this->linkedinEnabled()): ?>
+            <div class="<?php echo $this->_getButtCol(); ?> ced-sociallogin-login-lower-linkedin">
+                <?php echo $this->getChildHtml('ced_linkedin_login_button'); ?>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>

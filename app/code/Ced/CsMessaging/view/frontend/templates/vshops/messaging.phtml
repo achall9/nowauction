@@ -1,0 +1,45 @@
+<?php
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_CsMessaging
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (http://cedcommerce.com/)
+ * @license      http://cedcommerce.com/license-agreement.txt
+ */
+?>
+<?php $loggedInVendorId = $block->getLoggedInVendorId(); ?>
+<?php $vendorId = $this->getVendorId(); ?>
+
+<div class="block block-layered-nav block-layered-nav-1">
+    <div class="block-title">
+        <strong><span><?php echo __('Message To Vendor'); ?></span></strong>
+    </div>
+    <?php if ($loggedInVendorId == $vendorId) : ?>
+        <div class="message message-warning warning">
+            <?php echo __('You can\'t send message to yourself.'); ?>
+        </div>
+    <?php else : ?>
+        <div class="block-content">
+            <dl id="narrow-by-list2">
+                <dd class="last odd">
+                    <dl>
+                        <dt>
+
+                            <a href="<?php echo $this->getUrl('csmessaging/customer/vcompose', ['vendor_id' => $vendorId]); ?>"
+                               class="customer_vendor_contact"><?php echo __('Submit your query'); ?></a>
+                        </dt>
+                    </dl>
+                </dd>
+            </dl>
+        </div>
+    <?php endif; ?>
+</div>

@@ -1,0 +1,418 @@
+<!--
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_Auction
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license      https://cedcommerce.com/license-agreement.txt
+ */
+-->
+<?php
+$enableAuctionDetails = $block->getAuctionEnable();
+
+if ($enableAuctionDetails) {
+    $auctionDetails = $block->getAuctionDetails();
+
+    if ($auctionDetails) {
+        $productId = $this->getRequest()->getParam('id');
+        $auctionId = $block->getAuctionDetails()->getId();
+        $status = $block->getAuctionDetails()->getStatus();
+        $startTime = $block->getAuctionDetails()->getStartDatetime();
+       $endTime = $block->getAuctionDetails()->getEndDatetime();
+        $currTime = $block->getDateTimeCurrent();
+        $timezone = $block->getTimeZone()->getConfigTimezone();
+	
+	 $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); 
+    $storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface'); 
+    $currencyCode = $storeManager->getStore()->getCurrentCurrencyCode(); 
+    $currency = $objectManager->create('Magento\Directory\Model\CurrencyFactory')->create()->load($currencyCode); 
+ $currencySymbol = $currency->getCurrencySymbol(); 
+	
+
+		$reservedAmount = $block->getAuctionDetails()->getStartingPrice();
+			$productMaximumPrice = $block->getAuctionDetails()->getMaxPrice();
+			 $prdouctTime = $productMaximumPrice - $reservedAmount;
+			 $finalTime =  $prdouctTime * 100;
+			$finalDate =  date("Y-m-d H:i:s", strtotime($startTime) + $finalTime);
+				$bidPrices = array();
+				
+			$startprice = $block->getAuctionDetails()->getMaxPrice();
+			$productstartprice = $block->getAuctionDetails()->getMaxPrice();
+        if ($status == 'processing') {
+             //$countDownTime = $endTime;
+             $countDownTime = $finalDate;
+			
+			
+			
+            $timeremain = strtotime($endTime) - strtotime($currTime);
+            ?>
+			<style>
+		span.price-container.price-final_price {
+    display: none;
+}
+			</style>
+			
+            <div id="auctionPrice">
+			<span id="aPrice" style="color: #F26C4F;font-size: 21px;font-weight: bold;padding: 20px 0;line-height: 50px;"></span>
+			</div>
+            <div class="title"><?= $block->getTitle(); ?></div>
+            <div class="starting-bid">
+                <label><?php // __('Time left:') ?></label>
+            </div>
+
+            <div id="countdown_timer" class="auction_timer" style="display:none;">
+                <div id="auction_days" class="auction_timer_days"></div>
+                <div id="auction_hours" class="auction_timer_hours"></div>
+                <div id="auction_minutes" class="auction_timer_minutes"></div>
+                <div id="auction_seconds" class="auction_timer_seconds"></div>
+            </div>
+
+            <?php
+            $startingAmount = $block->getAuctionDetails()->getStartingPrice();
+			
+			
+            $reStartingAmount = $startingAmount;
+            ?>
+          <!--  <div class="starting-bid">
+                <label><?PHP //('Reserved Price') ?></label>
+                <span>
+                    <?php
+                   // $startingAmount = $this->helper('Magento\Framework\Pricing\Helper\Data')
+                     //   ->currency($startingAmount, true, false);
+                    //echo $startingAmount;
+                    ?>
+                </span>
+            </div>-->
+<div class="starting-bid">
+                <label><?= __('Starting Price') ?></label>
+                <span>
+                    <?php
+                    $startprice = $this->helper('Magento\Framework\Pricing\Helper\Data')
+                        ->currency($startprice, true, false);
+                    echo $startprice;
+                    ?>
+                </span>
+            </div>
+			
+            <?php
+			$customerSession = $objectManager->get('Magento\Customer\Model\Session');
+    if($customerSession->isLoggedIn())
+	{
+        $customerId =   $customerSession->getCustomer()->getId();  // get Customer Group Id
+		foreach($block->getBidDetails()->getData() as $key=>$val)
+			{
+			$cusId =  $val['customer_id'];
+			$curCusBidPrice =  $val['bid_price'];
+			
+			if ($customerId == $cusId)
+			  {
+			  ?>
+			   <div class="current-bid">
+                    <label><?= __('Your bid price') ?></label>
+                    <span>
+                        <?php
+                        $currentBidPrice = $this->helper('Magento\Framework\Pricing\Helper\Data')
+                            ->currency($curCusBidPrice, true, false);
+                        echo $currentBidPrice ?>
+                    </span>
+                </div>
+                <div id="error" class="current-bid"></div>
+				
+			 <?php
+			 }
+		}
+		}
+            $nextbid = $block->getNextBid();
+          //  $currentBidPrice = $block->getBidDetails()->getLastItem()->getBidPrice();
+
+            ?>
+              <?php
+	  
+
+            $maxprice = $block->getAuctionDetails()->getMaxPrice();
+            $reMaxprice = $maxprice;
+            $purchasable = $block->getAuctionDetails()->getSellproduct(); ?>
+
+            <?php if ($block->getCustomer()->getId() != null) { ?>
+                <div class="bid-input-wrapper">
+                    <input id="auction-bid" maxlength="12" type="text">
+                    <button class="action primary" id="bidding" title="Bidding" type="button">
+                        <span><?= __('Place bid') ?></span>
+                    </button>
+                </div>
+                <?php
+            } else { ?>
+                <div class="bid-input-wrapper">
+                    <button onclick="window.location.href = '<?= $block->getLoginUrl(); ?>'">Login</button>
+                </div>
+                <?php
+            }
+		
+foreach($block->getBidDetails()->getData() as $key=>$val)
+{
+$bidPrices[] =  $val['bid_price'];
+}
+	
+            $productPrice = $block->getProductData()->getPrice();
+            $enableIncrementAuction = $block->getIncremntAuction();
+
+            $defaultNextBid = $block->getDefaultNextBid();
+            $nextbid = $block->getNextBid();
+            $nextBidAmount = [];
+
+            $nextAmount = 0;
+            $renextAmount= 0;
+            if ($enableIncrementAuction) {
+                if ($nextbid != 0 || $defaultNextBid != 0) {
+                    foreach ($nextbid as $bid) {
+                        $currentBid = $block->getBidDetails()->getLastItem()->getBidPrice();
+                        if ($currentBid >= $bid['pricefrom'] && $currentBid <= $bid['priceto']) {
+                            array_push(
+                                $nextBidAmount,
+                                [
+                                    'pricefrom' => $bid['pricefrom'],
+                                    'priceto' => $bid['priceto'],
+                                    'incrementedprice' => $bid['incrementedprice']
+                                ]
+                            );
+                        }
+                    }
+                    ?>
+                    <div class="increment-bid">
+                        <?php
+                        if ($block->getBidDetails()->getLastItem()->getBidPrice() != 0 && count($nextBidAmount) != 0) {
+                            $nextAmount = $block->getBidDetails()->getLastItem()->getBidPrice() +
+                                $nextBidAmount[0]['incrementedprice'];
+                            $renextAmount = $nextAmount;
+                            ?>
+                            <label><?= __('Enter next bid or more') ?></label>
+                            <span>
+                                <?php
+                                $nextAmount = $this->helper('Magento\Framework\Pricing\Helper\Data')
+                                    ->currency($nextAmount, true, false);
+                                echo $nextAmount
+                                ?>
+                            </span>
+                            <?php
+                        }
+                        if ($block->getBidDetails()->getLastItem()->getBidPrice() != 0 && count($nextBidAmount) == 0) {
+                            if ($defaultNextBid) {
+                                $nextAmount = $block->getBidDetails()->getLastItem()->getBidPrice() + $defaultNextBid;
+                                $renextAmount = $nextAmount; ?>
+                                <label><?= __('Enter next bid or more') ?></label>
+                                <span>
+                                    <?php
+                                    $nextAmount = $this->helper('Magento\Framework\Pricing\Helper\Data')
+                                        ->currency($nextAmount, true, false);
+                                    echo $nextAmount
+                                    ?>
+                                </span>
+                                <?php
+                            }
+                        } ?>
+                    </div>
+                    <?php
+                }
+            } ?>
+
+            <script>
+                require([
+                    'jquery'
+                ], function ($) {
+                    $('#bidding').click(function () {
+					
+					
+                        var params = {
+                            bidprice: $(this).prev().val(),
+                            productId: '<?= $productId?>',
+                            nextAmount: '<?= $renextAmount?>',
+                            startAmount: '<?= $reStartingAmount ?>',
+                            purchasable: '<?= $purchasable?>',
+                            maxprice: '<?= $reMaxprice ?>',
+							bidPrices: '<?= json_encode($bidPrices) ?>'
+                        };
+
+                        var str = $.param(params);
+                        var newParams = str.replace(/[&=]/g, '/');
+                        window.location.href = '<?php echo $this->getUrl('auction/startBid/start')?>' + newParams;
+
+                    });
+                });
+            </script>
+            <?php
+        } ?>
+        <?php
+        if ($status == 'not started') {
+            $countDownTime = $startTime;
+            $timeremain = strtotime($startTime) - strtotime($currTime);
+            ?>
+
+            <div class="title"><?= $block->getTitle();?></div>
+            <div class="starting-bid">
+                <label><?= __('Starts at:') ?></label>
+            </div>
+            <div id="countdown_timer" class="auction_timer">
+                <div id="auction_days" class="auction_timer_days"></div>
+                <div id="auction_hours" class="auction_timer_hours"></div>
+                <div id="auction_minutes" class="auction_timer_minutes"></div>
+                <div id="auction_seconds" class="auction_timer_seconds"></div>
+            </div>
+
+            <?php $startingAmount = $block->getAuctionDetails()->getStartingPrice(); ?>
+            <?php $startAmount = $block->getAuctionDetails()->getMaxPrice(); ?>
+            <div class="starting-bid">
+                <label><?= __('Starting bid:') ?></label>
+                <span>
+                    <?php
+                    $startAmount = $this->helper('Magento\Framework\Pricing\Helper\Data')
+                        ->currency($startAmount, true, false);
+                    echo $startAmount; ?>
+                </span>
+            </div>
+        <?php } ?>
+
+        <?php if (!empty($countDownTime)) { ?>
+            <script>
+                require([
+                    'jquery',
+                    'moment',
+                    'jquery/ui',
+                ], function ($, moment) {
+                    $(function () {
+                        let timezone = '<?= $timezone ?>';
+                        console.log('time');
+                        console.log(timezone);
+                        console.log(moment());
+
+                        let countDownDate = new Date("<?php echo $countDownTime; ?>").getTime();
+						
+
+															
+                        let x = setInterval(function () {
+                            let currLocalTime = new Date().toLocaleString("en-US", {timeZone: timezone});
+                            currentLocalTime = new Date(currLocalTime);
+                            console.log('Current '+timezone+' time: '+currentLocalTime.toLocaleString());
+
+
+                            let now = currentLocalTime.getTime();
+                            let distance = countDownDate - now;					
+	
+							let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                            let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                            let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                            document.getElementById("auction_days").innerHTML = days + "d: ";
+                            document.getElementById("auction_hours").innerHTML = hours + "h: ";
+                            document.getElementById("auction_minutes").innerHTML = minutes + "m: ";
+                            document.getElementById("auction_seconds").innerHTML = seconds + "s ";
+							
+							var timestamp = now;
+						
+							var date = new Date(timestamp);
+
+							var year1 = date.getFullYear();
+							var month1 = date.getMonth() + 1;
+							var day1 = date.getDate();
+							var hours1 = date.getHours();
+							var minutes1 = date.getMinutes();
+							var seconds1 = date.getSeconds();
+
+							var curDate = year1 + "-" + month1 + "-" + day1 + " " + hours1 + ":" + minutes1 + ":" + seconds1;
+							
+							var stattus ='<?php echo $status;?>';
+							var pid ='<?php echo $productId;?>';
+							
+							if(stattus == "processing")
+							{
+								$("#product-price"+pid).hide();
+								
+								
+								var mainDif = <?php echo $finalTime;?>;
+								var remainDif =distance / 1000;
+								var diff1 = mainDif - remainDif;
+								var diff2 = diff1 / 100;
+								var productPrice = <?php echo $productstartprice;?>;
+								var finalProductPrice = productPrice - diff2;												
+								var finalProductPrice =finalProductPrice.toFixed(2);
+								var finalProductPrice =parseFloat(finalProductPrice);
+								var currency = '<?php echo $currencySymbol;?>';
+								var auc_price = currency+""+finalProductPrice;
+								console.log('<?php echo $countDownTime;?>');
+								console.log("Starting price "+productPrice);
+								//console.log(auc_price);
+								var biddingPrices = <?php echo json_encode($bidPrices) ;?>;
+								document.getElementById("aPrice").innerHTML = auc_price ;
+								
+								
+								if(biddingPrices.includes(finalProductPrice))
+								{				
+								console.log('Highest Bid Matched');
+								distance = -1;							
+								}	
+								
+								biddingPrices.forEach(function(entry) {
+											console.log("current bid "+entry);
+											entry = parseFloat(entry);
+											if(entry >= finalProductPrice)
+											{
+											console.log('high bid');
+											distance = -1;
+											}
+								});	
+								var resPrice = '<?php echo $reservedAmount;?>';
+								resPrice = parseFloat(resPrice);
+								console.log("reserve price "+resPrice);
+								console.log("final price reducing "+finalProductPrice);
+								if(finalProductPrice <= resPrice)
+								{
+								console.log('highest bid');
+								distance = -1;
+								}
+							}
+                            if (distance < 0) {
+							     clearInterval(x);
+                                document.getElementById("auction_days").innerHTML = 0 + "d: ";
+                                document.getElementById("auction_hours").innerHTML = 0 + "h: ";
+                                document.getElementById("auction_minutes").innerHTML = 0 + "m: ";
+                                document.getElementById("auction_seconds").innerHTML = 0 + "s ";
+
+                                $.ajax({
+                                    type: 'POST',
+                                    url: "<?php echo $this->getUrl('auction/startbid/start');?>",
+                                    data: {remove: true, product: '<?= $productId;?>', auction: '<?= $auctionId;?>', status: '<?= $status;?>', finalDate: curDate},
+                                    dataType: "json",
+                                    success: function (res) {
+                                        window.location.reload();
+                                    }
+                                });
+                            }
+                        }, 1000);
+                    });
+                });
+            </script>
+            <?php
+        } ?>
+        
+        <script>
+
+            require([
+                'jquery',
+            ], function ($) {
+                $(function () {
+                    $(".category_timer").remove();
+                });
+            });
+        </script>
+        <?php
+    }
+} ?>

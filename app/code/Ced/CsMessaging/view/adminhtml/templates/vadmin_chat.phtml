@@ -1,0 +1,131 @@
+<?php $threadId = $this->getRequest()->getParam('id'); ?>
+<?php $backUrl = $this->getUrl('*/*/vadmin'); ?>
+<?php $chatCollection = $block->getChatCollection($threadId); ?>
+<?php $threadData = $block->getThreadData($threadId); ?>
+<?php $sendMessageUrl = $this->getUrl('*/*/save'); ?>
+<?php $imagePath = $this->helper('Ced\CsMessaging\Helper\Data')->getMessageImagePath(); ?>
+
+<form method="post" name="customer-vendor-chat-form" id="customer-vendor-chat-form"
+      action="<?php echo $sendMessageUrl; ?>">
+    <div class="chat-wrapper">
+        <?php echo $block->getBlockHtml('formkey'); ?>
+        <input type="hidden" name="thread_id" value="<?php echo $threadData->getId(); ?>"/>
+        <input type="hidden" name="receiver_id"
+               value="<?php echo $threadData->getReceiverId() ==\Ced\CsMessaging\Helper\Data::ADMIN_ID ? $threadData->getSenderId() : $threadData->getReceiverId(); ?>"/>
+        <?php if (!empty($chatCollection)) : ?>
+            <div class="custom-scroll">
+                <ul class="chat-area">
+                    <?php foreach ($chatCollection as $chat) : ?>
+                        <?php if ($chat->getSenderId() == \Ced\CsMessaging\Helper\Data::ADMIN_ID) : ?>
+                            <li class="chat-row msg-sender">
+                                <div class="chat-row msg-sender-li">
+                                    <div class="msg-content"><?php echo $chat->getMessage(); ?></div>
+                                    <?php if ($chat->getImages() != '') :
+                                        $imagesArray = $this->helper('Ced\CsMessaging\Helper\Data')->getMessageImages($chat->getImages());
+                                        if (!empty($imagesArray)) :
+                                            foreach ($imagesArray as $image) :
+                                                foreach ($image as $key => $img):
+                                                $image = $img;
+                                                ?>
+                                                <div>
+                                                    <?php if (strpos($image,'.png')!== false || strpos($image,'.jpg')!== false
+                                                        || strpos($image,'.jpeg')!== false) :  ?>
+                                                        <a href="<?php echo $imagePath . $image ?>" target="_blank"><img
+                                                                    src="<?php echo $imagePath . $image ?>" width="200px"
+                                                                    height="200px"/></a>
+                                                    <?php else : ?>
+                                                        <a href="<?php echo $imagePath . $image ?>"><?php echo $image; ?></a>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endforeach; endforeach; endif; endif; ?>
+                                    <div class="msg-from">
+                                        <span class="reply-date"><?php echo date('l, F jS Y \a\t g:ia', substr(strtotime($chat->getCreatedAt()), 0, 10)); ?></span>
+                                    </div>
+                                </div>
+                            </li>
+                        <?php else: ?>
+                            <li class="chat-row msg-receiver">
+                                <div class="chat-row msg-receiver-li">
+                                    <div class="msg-content"><p><?php echo $chat->getMessage(); ?></p></div>
+                                    <?php if ($chat->getImages() != '') :
+                                        $imagesArray = $this->helper('Ced\CsMessaging\Helper\Data')->getMessageImages($chat->getImages());
+                                        if (!empty($imagesArray)) :
+                                            foreach ($imagesArray as $image) :
+                                                foreach ($image as $key => $img):
+                                                $image = $img;
+                                                ?>
+                                                <div>
+                                                    <?php if (strpos($image,'.png')!== false || strpos($image,'.jpg')!== false
+                                                        || strpos($image,'.jpeg')!== false) :  ?>
+                                                        <a href="<?php echo $imagePath . $image ?>" target="_blank"><img
+                                                                    src="<?php echo $imagePath . $image ?>" width="200px"
+                                                                    height="200px"/></a>
+                                                    <?php else : ?>
+                                                        <a href="<?php echo $imagePath . $image ?>"><?php echo $image; ?></a>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endforeach; endforeach; endif; endif; ?>
+                                    <div class="msg-from">
+                                <span class="reply-from">
+                                    <span class="from-title"><?php echo __('From :'); ?></span>
+                                    <span class="receiver-name"><?php echo $block->getVendorById($chat->getSenderId())->getName(); ?></span>
+
+                                </span>
+                                        <span class="reply-date"><?php echo date('l, F jS Y \a\t g:ia', substr(strtotime($chat->getCreatedAt()), 0, 10)); ?></span>
+                                    </div>
+                                </div>
+                            </li>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+        <div class="reply-box-wrapper">
+
+            <textarea id="cv-textarea" name="message" class="ced-message-box" row="4" cols="50"
+                      placeholder="<?php echo __('Reply'); ?>" required></textarea>
+            <?php $adminSendMail = $this->helper('Ced\CsMarketplace\Helper\Data')->getStoreConfig('ced_csmarketplace/csmessaging/admin_send_mail'); ?>
+            <?php if ($adminSendMail) : ?>
+                <div class="send_mail_wrapper">
+                    <label><?php echo __('Notify Receiver by Email'); ?></label>
+                    <input type="checkbox" name="send_mail" value="1"/>
+                </div>
+            <?php endif; ?>
+            <div class="back-link">
+                <a href="<?php echo $backUrl; ?>"><?php echo __('Back'); ?></a>
+                <input class="btn-send" id="btn-chat" value="<?php echo __('Send'); ?>"
+                       type="submit"/>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<?php $configArr = $this->helper('Ced\CsMessaging\Helper\Data')->getWysiwygConfigArrayAdmin(); ?>
+<script>
+    require(['jquery',
+        'mage/adminhtml/wysiwyg/tiny_mce/setup'
+    ], function ($) {
+        composeTextArea = new wysiwygSetup('cv-textarea', <?php echo json_encode($configArr);?>);
+        composeTextArea.setup("exact");
+    });
+</script>
+
+
+<script>
+    require(['jquery'
+    ], function ($) {
+        var threadId = '<?php echo $threadData->getId(); ?>';
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            data: {thread_id: threadId},
+            url: "<?php echo $this->getUrl('*/*/changestatus') ?>",
+            success: function () {
+
+            },
+            error: function () {
+            }
+        });
+    });
+    </script>

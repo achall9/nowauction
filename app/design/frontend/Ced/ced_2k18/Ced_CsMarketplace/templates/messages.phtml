@@ -1,0 +1,40 @@
+<div data-bind="scope: 'messages'" id="msg-popup-wrapper">
+<!-- ko if: cookieMessages && cookieMessages.length > 0 -->
+     <div class="modal fade" id="error-msg-modal" role="dialog">
+        <div class="modal-dialog modal-wrap" data-bind="foreach: { data: cookieMessages, as: 'message' }">
+
+            <div class="modal-content model-container" data-bind="attr: {
+            class: 'message-' + message.type + ' ' + message.type + ' message',
+            'data-ui-id': 'message-' + message.type
+        }">
+                <div class="modal-header modal-head-content">
+                    <h4 class="modal-title"><i class="fa fa-exclamation-triangle icon-error" aria-hidden="true"></i>
+                    </h4>
+                </div>
+                <div class="modal-body modal-body-content">
+                    <p><strong><?php echo __('OOPS'); ?>!</strong></p>
+                    <p data-bind="html: message.text"></p>
+                </div>
+                <div class="modal-footer modal-footer-content">
+                    <a href="#" id="close-msg-pop" data-dismiss="modal" data-target="#error-msg-modal"><?php echo __('Cancel'); ?></a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- /ko -->
+</div>
+
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Magento_Ui/js/core/app": {
+                "components": {
+                        "messages": {
+                            "component": "Ced_CsMarketplace/js/view/messages"
+                        }
+                    }
+                }
+            }
+    }
+</script>

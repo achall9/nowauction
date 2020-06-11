@@ -1,0 +1,76 @@
+<?php
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+?>
+<?php
+/** @var $block \Magento\Framework\View\Element\Template */
+/** @var $helper \Magento\Search\Helper\Data */
+$helper = $this->helper('Magento\Search\Helper\Data');
+?>
+<h2 class="show-only-title">Show Only:</h2>
+<div class="showRadios owl-carousel  owl-theme owl-loaded owl-drag">
+  <div class="owl-controls">
+    <div class="owl-nav disabled">
+      <div class="owl-prev">
+        <em class="porto-icon-left-open-huge"></em>
+      </div>
+      <div class="owl-next">
+        <em class="porto-icon-right-open-huge"></em>
+      </div>
+    </div>
+    <div class="owl-dots" style="display: flex;flex-direction: column;">
+      <div class="owl-dot" style="display: flex; margin-bottom: 3%;">
+        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Live NOWauctions</div>
+      </div>
+      <div class="owl-dot" style="display: flex; margin-bottom: 3%;">
+        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Upcoming Auctions</div>
+      </div>
+      <div class="owl-dot" style="display: flex; margin-bottom: 3%;">
+        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Watchlist</div>
+      </div>
+      <div class="owl-dot active" style="display: flex; margin-bottom: 3%;">
+        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Featured</div>
+      </div>
+      <div class="owl-dot" style="display: flex; margin-bottom: 3%;">
+        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Trending</div>
+      </div>
+      <div class="owl-dot" style="display: flex; margin-bottom: 3%;">
+        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>All items</div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<hr style="border-top-width: 5px; margin-top: 10%;">
+
+<style type="text/css">
+
+
+
+  .showRadios {
+
+    margin-bottom: 3%;
+
+  }
+
+  .showRadios span:after {
+
+    background-color: #f26c4f!important;
+
+  }
+
+  .show-only-title {
+
+    color: black;
+    font-weight: 550;
+    font-size: large;
+
+
+  }
+
+</style>

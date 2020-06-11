@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * CedCommerce
+  *
+  * NOTICE OF LICENSE
+  *
+  * This source file is subject to the End User License Agreement (EULA)
+  * that is bundled with this package in the file LICENSE.txt.
+  * It is also available through the world-wide-web at this URL:
+  * http://cedcommerce.com/license-agreement.txt
+  *
+  * @category    Ced
+  * @package     Ced_CsMessaging
+  * @author      CedCommerce Core Team <connect@cedcommerce.com >
+  * @copyright   Copyright CEDCOMMERCE (http://cedcommerce.com/)
+  * @license      http://cedcommerce.com/license-agreement.txt
+  */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <ced_csmarketplace>
+            <general>
+                <messaging_active>1</messaging_active>
+            </general>
+            <csmessaging>
+                <customer_email_template>ced_csmarketplace_csmessaging_customer_email_template</customer_email_template>
+                <vendor_email_template>ced_csmarketplace_csmessaging_vendor_email_template</vendor_email_template>
+                <admin_email_template>ced_csmarketplace_csmessaging_admin_email_template</admin_email_template>
+                <enable_messaging_forallproduct>1</enable_messaging_forallproduct>
+                <enable_editor>1</enable_editor>
+            </csmessaging>
+        </ced_csmarketplace>
+        <ced>
+            <rewrites>
+                <csmessaging>
+                    <vendor>
+                        <all>Adminhtml,Widget,Backend,RequireJs</all>
+                    </vendor>
+                </csmessaging>
+            </rewrites>
+        </ced>
+    </default>
+</config>

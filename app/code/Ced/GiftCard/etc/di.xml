@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<!-- /**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_GiftCard
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license     https://cedcommerce.com/license-agreement.txt
+ */ -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <type name="Magento\Catalog\Block\Product\ListProduct">
+        <plugin name="list_product_before_plugin"
+                type="\Ced\GiftCard\Block\Product\ListProduct"/>
+    </type>
+
+    <type name="Magento\Quote\Model\Quote\Item\ToOrderItem">
+        <plugin name="add_cedgiftcard_data_into_order_item"
+                type="Ced\GiftCard\Plugin\Checkout\QuoteToOrderItem"/>
+    </type>
+
+    <!--plugin to remove all sales rules from gift card products -->
+    <type name="Magento\SalesRule\Model\Validator">
+        <plugin name="ced_giftCard_plugin_salesrule_aroundvalidator"
+                type="Ced\GiftCard\Plugin\SalesRule\AroundValidator"/>
+    </type>
+
+    <!--plugin to remove all sales rules from gift card products -->
+    <type name="Magento\Quote\Model\CouponManagement">
+        <plugin name="ced_giftCard_plugin_quote_coupon_management"
+                type="Ced\GiftCard\Plugin\Quote\CouponManagement"/>
+    </type>
+
+    <!--plugin to stop add to cart from Wishlist -->
+    <type name="Magento\Wishlist\Model\Item">
+        <plugin name="ced_giftcard_magento_wishlist_model_item_plugin"
+                type="Ced\GiftCard\Plugin\Wishlist\Model\Item"/>
+    </type>
+
+    <!--plugin to stop add to cart from Wishlist -->
+    <type name="Magento\Wishlist\Controller\Index\Cart">
+        <plugin name="ced_giftcard_magento_wishlist_controllerindex_cart"
+                type="Ced\GiftCard\Plugin\Wishlist\Cart"/>
+    </type>
+
+    <!--plugin to stop add to cart from Wishlist -->
+    <type name="Magento\Sales\Model\ResourceModel\Order\Handler\State">
+        <plugin name="ced_giftcard_magento_wisi78hlist_controllerindex_cart_2222"
+                type="Ced\GiftCard\Plugin\Sales\Model\ResourceModel\Order\Handler\State"/>
+    </type>
+
+    <!--plugin to stop configure cart from Wishlist -->
+    <type name="Magento\Wishlist\Controller\Index\Configure">
+        <plugin name="ced_giftcard_magento_wishlist_controller_index_configure"
+                type="Ced\GiftCard\Plugin\Wishlist\Configure" />
+    </type>
+
+    <!--plugin to remove all sales rules from gift card products -->
+    <type name="Magento\Sales\Controller\Order\Reorder">
+        <plugin name="ced_giftcard_plugin_sales_order_reorder"
+                type="Ced\GiftCard\Plugin\Sales\Order\Reorder"/>
+    </type>
+
+    <!--plugin to remove all sales rules from gift card products -->
+    <type name="Magento\Sales\Controller\Order\Reorder">
+        <plugin name="ced_giftcard_plugin_sales_order_reorder"
+                type="Ced\GiftCard\Plugin\Sales\Order\Reorder"/>
+    </type>
+
+    <!--@Note: To make giftcard product not refundable-->
+    <preference for="Magento\Sales\Model\Order\CreditmemoFactory"
+                type="Ced\GiftCard\Plugin\Order\Creditmemo" />
+       
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="giftcard_coupons_listing_data_source"
+                      xsi:type="string">Ced\GiftCard\Model\ResourceModel\Grid\GiftCoupon</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Ced\GiftCard\Model\ResourceModel\Grid\GiftCoupon">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">ced_giftcoupon</argument>
+            <argument name="resourceModel" xsi:type="string">Ced\GiftCard\Model\ResourceModel\GiftCoupon</argument>
+        </arguments>
+    </type>
+
+    <preference for="Magento\Catalog\Pricing\Render\FinalPriceBox"
+                type="Ced\GiftCard\Pricing\RenderPrice" />
+
+    <!-- to add gift coupon on totals of customer order view section -->
+    <preference for="Magento\Sales\Block\Order\Totals"
+                type="Ced\GiftCard\Block\Customer\Order\Totals" />
+
+    <!-- to add gift coupon on totals of customer invoice view section -->
+    <preference for="Magento\Sales\Block\Order\Invoice\Totals"
+                type="Ced\GiftCard\Block\Customer\Invoice\Totals" />
+
+    <type name="Magento\Quote\Model\Quote\TotalsReader">
+        <plugin name="splitcart_quote_total_readers"
+                type="Ced\GiftCard\Plugin\Quote\TotalsReader"
+                sortOrder="10"
+                disabled="false"/>
+    </type>
+    <type name="Magento\Checkout\Model\Cart">
+        <plugin name="splitcart_checkout_cart_count"
+                type="Ced\GiftCard\Plugin\Quote\Qty"
+                sortOrder="10"
+                disabled="false"/>
+    </type>
+</config>

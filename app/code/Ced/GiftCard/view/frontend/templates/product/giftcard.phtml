@@ -1,0 +1,501 @@
+<?php
+
+/** CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_GiftCard
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license     https://cedcommerce.com/license-agreement.txt
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php if ($block->isGiftCardProduct()): ?>
+<?php
+
+    $mediaUrl = $block->geturl('pub/media/giftcard');
+    $imagedata = $block->getGiftTemplateImages();
+    $product = $block->getProduct();
+    $priceslabs = $block->getGiftPriceSlabs();
+
+    $gift_expiry_days = $product->getGiftExpiryDays();
+
+    if (count($imagedata) > 1) {
+        usort($imagedata, function($a, $b) {
+            return $a['position'] - $b['position'];
+        });
+    }
+    $selectedData = $block->getSelecteddata();
+
+?>
+
+<div class="product-options-wrapper" id="product-options-wrapper" data-hasrequired="* Required Fields">
+    <div class="fieldset" tabindex="0">
+    <fieldset class="fieldset product-options-wrapper"  data-hasrequired="* Required Fields">
+        <input type="hidden" value="giftcard" name="giftcard">
+
+        <div class="field images">
+            <label class="label" for="images">
+                <span class='required'><?php echo __("Choose A Card : ") ?></span>
+                <b><span id="gift-alt-label"></span></b>
+            </label>
+            
+            <div class="control">
+                <input name="image" id="image" title="images" class="input-text required-entry"
+                       value="<?php echo ($selectedData)?$selectedData['image']:'' ?>"
+                       type="hidden" data-validate="{'required':true}" aria-required="true" />
+                <input name="image_label" id="image_label" title="image_label"
+                       class="input-text required-entry " type="hidden"
+                        value="<?php echo ($selectedData)?$selectedData['image_label']:'' ?>"
+                       data-validate="{'required':true}" aria-required="true" />
+
+                <div class="gift-slider owl-carousel owl-theme" id="gift-slider">
+
+                    <?php if(true || !$selectedData): ?>
+                        <?php foreach($imagedata as $image): ?>
+                            <div class="item">
+                                <div class="gift-image-section">
+                                    <img src="<?php echo $image['resizedfileurl'] ?>"
+                                        high-src="<?php echo $mediaUrl.$image['file'] ?>"
+                                            alt="<?php echo $image['label']?>"
+                                            onclick="selectImage(this)" />
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="item">
+                            <div class="gift-image-section">
+                                <img src="<?php echo ($selectedData)?$selectedData['image']:'' ?>"
+                                     high-src="<?php echo ($selectedData)?$selectedData['image']:'' ?>"
+                                     alt="<?php echo ($selectedData)?$selectedData['image_label']:'' ?>"
+                                     onclick="selectImage(this)" />
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="label" for="amount">
+
+            <input type="hidden"
+                   id="amount"
+                   name="gift_price"
+                   value="<?php echo ($selectedData)?$selectedData['gift_price']:'' ?>"
+                   class="input-text form-control product-custom-option required-entry"
+                   readonly
+            />
+        </div>
+
+        <div class="gift-details-form">
+
+
+        <div class="price-conroll-input clearfix field">
+            <label class="label" for="name"><span><?php echo __("Price (".$block->getStoreCurrency().")") ?></span></label>
+            <div class="control">
+
+            <?php foreach ($priceslabs as $key => $price) {
+                ?>
+                <input type="button" id="input-amount-<?php echo $price; ?>"
+                       class="sliderButton" name="price[]"
+                       <?php echo ($selectedData)?' disabled':'' ?>
+                       data-index="0" value ="<?php echo($price); ?>" />
+            <?php
+            }
+            ?>
+            <input type="number" id="input-amount"  class="sliderValue left" name="price[]"
+                   value="<?php echo ($selectedData)?$selectedData['gift_price']:'' ?>"
+                   <?php echo ($selectedData)?' readonly=true':'' ?>
+                   data-index="0" placeholder="<?php echo __("Other Amount") ?>"/>
+            </div>
+        </div>
+         <div class="price-slider" style="display: none">
+           <div id="cedgiftprice-range"></div>
+        </div>
+        <?php if($product->isSalable() || true): ?>
+        <div class="field name required">
+            <label class="label" for="name">
+                <span><?php echo __("From") ?></span>
+            </label>
+            <div class="control">
+                <input name="gift_from_name"
+                       id="gift_from_name" title="From"
+                       placeholder="<?php echo __("From Name") ?>"
+                       onload="document.getElementById('gallery_gift_from_name').innerHTML='<?php echo $block->getCustomerName() ?>'"
+                       onkeypress="document.getElementById('gallery_gift_from_name').innerHTML = this.value"
+                       class="input-text form-control required-entry "
+                       <?php echo ($selectedData)?' readonly=true':'' ?>
+                       value="<?php echo ($block->getCustomerName())?$block->getCustomerName():(($selectedData)?$selectedData['gift_from_name']:'') ?>"
+                       type="text" data-validate="{'required':true}" aria-required="true" />
+            </div>
+        </div>
+        <div>
+            <div class="value">
+                <input type="hidden" name="template_id" value="<?php echo $this->getGiftTemplate() ?>" required='required'/>
+            </div>
+        </div>
+        <div class="field name required">
+            <label class="label" for="name">
+                <span><?php echo __("Recipient Name") ?></span>
+            </label>
+            <div class="control">
+                <input name="gift_to_name" id="gift_to_name" title="To"
+                    placeholder="<?php echo __("Recipient Name") ?>" class="input-text form-control required-entry " type="text"
+                    onkeypress="document.getElementById('gallery_gift_to_name').innerHTML = this.value"
+                    value="<?php echo ($selectedData)?$selectedData['gift_to_name']:'' ?>"
+                    <?php echo ($selectedData)?' readonly=true':'' ?>
+                    data-validate="{'required':true}" aria-required="true" />
+            </div>
+        </div>
+        <div class="field email required">
+            <label class="label" for="email"><span><?php echo __("Recipient Email") ?></span></label>
+            <div class="control">
+                <input name="gift_to_email"
+                        id="gift_to_email"
+                        title="Email"
+                       value="<?php echo ($selectedData)?$selectedData['gift_to_email']:'' ?>"
+                        onkeypress="document.getElementById('gallery_gift_to_email').innerHTML = this.value"
+                        placeholder="<?php echo __("Recipient Email") ?>"  value=""  type="email"
+                        <?php echo ($selectedData)?' readonly=true':'' ?>
+                       class="input-text form-control product-custom-option  required-entry "
+                       data-validate="{'required':true, 'validate-email':true}" aria-required="true" />
+            </div>
+        </div>
+        <div class="field deliverydate">
+            <label class="label" for="email"><span><?php echo __("Delivery Date") ?></span></label>
+            <div class="control">
+                <input name="deliverydate" id="gift_to_deliverydate"
+                       title="Deliverydate" value="" placeholder="<?php echo __("Delivery Date") ?>"
+                       class="input-text " type="text"
+                       value="<?php echo ($selectedData)?$selectedData['deliverydate']:'' ?>"
+                        <?php echo ($selectedData)?' readonly=true':'' ?>
+                       data-validate="{'validate-date':true}" />
+                <span class="note"><?php echo __('Leave Empty to send instantly.') ?></span>
+            </div>
+        </div>
+        <div class="field comment required">
+            <label class="label" for="comment">
+                    <span>
+                        <?php echo __("Have Something To Say.") ?>
+                    </span>
+            </label>
+            <div class="control">
+                <textarea name="gift_message"
+                        id="gift_message" placeholder="<?php echo __("Have Something To Say.") ?>"
+                        title="<?php echo __("Have Something To Say.") ?>"
+                        class="input-text required-entry "
+                        <?php echo ($selectedData)?' readonly=true':'' ?>
+                        onkeyup="document.getElementById('gallery_gift_message').innerHTML = this.value.replace(/\n/g, '<br />');"
+                        cols="5" rows="3" maxlength="500"
+                        data-validate="{'required':true}" aria-required="true"><?php echo ($selectedData)?$selectedData['gift_message']:'' ?></textarea>
+                <p id="gift_message_note">
+                    <?php echo __("Text Limit is 500. ") ?>
+                    <!-- <span id="gift_message_note_limit">500</span> -->
+                </p>
+            </div>
+        </div>
+        </div>
+        <?php endif; ?>
+    </fieldset>
+    </div>
+</div>
+    <script type="text/javascript">
+
+        function maxLength(el) {
+            if (!('maxLength' in el)) {
+
+                var max = el.attributes.maxLength.value;
+                el.onkeypress = function () {
+                    var gift_message_note_limit = document.getElementById('gift_message_note_limit');
+                    gift_message_note_limit.innerHTML = max-this.value.length;
+                    if (this.value.length >= max) return false;
+                };
+            }
+        }
+
+        require([
+            'jquery',
+            'mage/mage'
+        ], function(jQuery){
+
+            var dataForm = jQuery('#product_addtocart_form');
+            dataForm.attr( "enctype", "multipart/form-data" );
+            dataForm.mage('validation', {});
+
+        });
+
+        /*Browse Preview*/
+        function readURL(input) {
+          if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                window.alt = e.target;
+                window.alt1 = e;
+                window.input = input;
+                var browse_preview = jQuery('#browse_preview');
+                browse_preview.attr('src', e.target.result);
+                // browse_preview.attr('alt', e.target.result);
+                browse_preview.attr('high-src', e.target.result);
+                window.ankit = browse_preview;
+            };
+
+            reader.readAsDataURL(input.files[0]);
+            jQuery('#browse_preview').trigger( "click" );
+          }
+        }
+
+
+
+    </script>
+    <script type="text/javascript">
+    var CURRENCY_SYMBOL = '<?php echo $block->getStoreCurrency() ?>';
+    var LOGO_SRC = '<?php echo $block->getLogoSrc() ?>';
+    var LOGO_ALT = '<?php echo $block->getLogoAlt() ?>';
+    function selectImage(elm){
+
+        require([
+            'jquery',
+            'mage/mage'
+        ], function(jQuery){
+            window.aks = elm;
+            jQuery('.gift-image-section').removeClass('_active');
+            jQuery(elm).parent().addClass("_active");
+
+            var ClickAgain = false;
+            if(jQuery(elm).attr('high-src') == jQuery('#gallery-image')){
+                ClickAgain = true;
+            }
+            jQuery('#gallery-image').attr('src', jQuery(elm).attr('high-src'));
+
+            jQuery('#gift-alt-label').html(jQuery(elm).attr('alt'));
+            jQuery('#image').val(jQuery(elm).attr('high-src'));
+            jQuery('#image_label').val(elm.alt);
+
+            if(ClickAgain){
+                jQuery(elm).click();
+            }
+        });
+    }
+        /*gift-slider end*/
+
+        require([
+            'jquery',
+            'mage/mage'
+        ], function(jQuery){
+
+
+            jQuery(document).ready(function() {
+                var productForm = jQuery("form#product_addtocart_form");
+                productForm.attr( "enctype", "multipart/form-data" );
+                productForm.submit(function(e){
+                    if (event.keyCode === 10 || event.keyCode === 13)
+                    {
+                        event.preventDefault();
+                        return false;
+                    }
+                });
+            });
+
+
+
+            /*for the preview link of gift_card*/
+
+            var child_gift_preview_html = jQuery('#child_gift_preview_html');
+            var gift_preview_html = jQuery('#gift_preview_html');
+
+            jQuery('.gift_preview_link').on('click', function(){
+
+                var url = '<?php echo $this->getUrl('giftcard/gift/preview')?>';
+                jQuery.ajax({
+                    url:url,
+                    method: 'post',
+                    data: jQuery('#product_addtocart_form').serialize(),
+                    showLoader: true
+                }).done(function(data){
+                    child_gift_preview_html.html(data);
+                    gift_preview_html.addClass('active');
+
+                    jQuery('.modal-close').on('click', function(){
+                        gift_preview_html.removeClass('active');
+                    });
+                }).complete(function (data) {
+
+                });
+            });
+            jQuery('.modal-close').on('click', function(){
+                gift_preview_html.removeClass('active');
+            });
+            jQuery(window).load(function(){
+
+                var customer_gift_image = jQuery('#custom_image');
+                customer_gift_image.attr('accept', 'image/*');
+                window.a = customer_gift_image;
+                customer_gift_image.change(function(e) {
+                    var customerImageUplaod = this;
+                    window.ankit = customerImageUplaod;
+                    if (typeof (customerImageUplaod.files) !== 'undefined'
+                        && typeof(customerImageUplaod.files[0] !== 'undefined')) {
+
+                        var reader = new FileReader();
+                        reader.readAsDataURL(customerImageUplaod.files[0]);
+                        window.reader = reader;
+                        reader.onload = function (e) {
+                            var image = new Image();
+                            image.src = e.target.result;
+                            window.image = image;
+
+                            var canvas=document.createElement("canvas");
+                            var context=canvas.getContext("2d");
+                            canvas.width= 600;
+                            canvas.height= 400;
+                            context.drawImage(image,
+                                0,
+                                0,
+                                image.width,
+                                image.height,
+                                0,
+                                0,
+                                canvas.width,
+                                canvas.height
+                            );
+                            /*START: work of selectImage(this);*/
+                            // jQuery('#gallery-image').attr('src', image.src);
+                            jQuery('#gallery-image').attr('src', canvas.toDataURL());
+                            jQuery('#image').val(canvas.toDataURL());
+                            jQuery('#image_label').val('');
+                            jQuery('#gift-alt-label').html('');
+                            //jQuery('#image_label').val(customerImageUplaod.files[0].name);
+                            /*END: work of selectImage(this); */
+
+                            window.attr = this;
+                        }
+                    }
+                });
+
+
+                var CURRENCY_SYMBOL = '<?php echo $block->getStoreCurrency(); ?>';
+                var LOGO_SRC = '<?php echo $block->getLogoSrc() ?>';
+                var LOGO_ALT = '<?php echo $block->getLogoAlt() ?>';
+
+                /*get product values*/
+                var MIN_AMOUNT = parseFloat('<?php echo($block->getMinimumGiftAmount()); ?>');
+                var MAX_AMOUNT = parseFloat('<?php echo($block->getMaximumGiftAmount()); ?>');
+
+                /*start implementation*/
+                var sliderElement = jQuery("#cedgiftprice-range");
+                var sliderInputField = jQuery('#amount');
+                var inputAmount = jQuery('#input-amount');
+                var galleryGiftAmount = jQuery('#gallery-gift-amount');
+                var galleryGiftCurrencysymbol = jQuery('#gallery-gift-currencysymbol');
+                /*change store logo and and SRC */
+                var gallery_gift_storelogo = jQuery('#gallery_gift_storelogo');
+                gallery_gift_storelogo.attr('src', LOGO_SRC);
+                gallery_gift_storelogo.attr('alt', LOGO_ALT);
+
+                /*gift_to_deliverydate*/
+                jQuery('#gift_to_deliverydate').datepicker({
+                    minDate: 1
+                });
+
+                var product_addtocart_form = jQuery('#product_addtocart_form');
+                product_addtocart_form.ready(function() {
+                    product_addtocart_form.attr( "enctype", "multipart/form-data" );
+                });
+
+                jQuery(sliderElement).slider({
+                    range: 'min',
+                    min: MIN_AMOUNT,
+                    max: MAX_AMOUNT,
+                    values: [0.01],
+                    step: 0.01,
+                    slide: function( event, ui ) {
+                        var value = ui.value;
+                        jQuery(sliderInputField).val( value );
+                        jQuery(inputAmount).val( value );
+                        jQuery(galleryGiftAmount).html( value );
+                    },
+                    /*codes for add price manual and slider*/
+                    change : function( event, ui){
+                        var value = ui.value
+                        jQuery(sliderInputField).val( value );
+                        jQuery(inputAmount).val( value );
+                        jQuery(galleryGiftAmount).html( value );
+                    }
+                });
+                /*codes for change of slider price on change of text box price*/
+                jQuery("input.sliderValue").change(function() {
+                    var $this = jQuery(this);
+                    jQuery(sliderElement).slider("values", $this.data("index"), $this.val());
+                    jQuery(sliderInputField).val(jQuery( sliderElement ).slider( "values", 0 ) );
+                    jQuery(sliderInputField).val(jQuery( sliderElement ).slider( "values", 0 ) );
+
+                });
+                jQuery("input.sliderButton").on('click', function() {
+                    var $this = jQuery(this);
+
+                    jQuery(sliderElement).slider("values", $this.data("index"), parseFloat($this.val()));
+                    jQuery('#input-amount').val($this.val());
+                    jQuery(galleryGiftAmount).html($this.val());
+
+                });
+                /*codes for change of slider price on change of text box price*/
+                jQuery(inputAmount).change(function() {
+                    var $this = jQuery(this);
+                    jQuery(sliderElement).slider("values", $this.data("index"), $this.val());
+                    // jQuery(sliderInputField).val(jQuery( sliderElement ).slider( "values", 0 ) );
+                    jQuery(sliderInputField).val($this.val());
+                    jQuery('#input-amount').val($this.val());
+                    // jQuery(galleryGiftAmount).html(jQuery( sliderElement ).slider( "values", 0 ) );
+                    jQuery(galleryGiftAmount).html($this.val() );
+
+
+                });
+                /*end of code*/
+                jQuery(sliderInputField).val( jQuery(sliderElement).slider( "values", 0 ));
+                jQuery(galleryGiftAmount).html( jQuery(sliderElement).slider( "values", 0 ));
+                jQuery(galleryGiftCurrencysymbol).html(CURRENCY_SYMBOL);
+
+                /*to trigger first eelement*/
+                jQuery('#gift-slider .item').first().find('img').trigger('click');
+
+
+            });
+
+
+
+            /*for template slider*/
+            jQuery("#gift-slider").owlCarousel({
+                loop: false,
+                dots: true,
+                nav: true,
+                margin: 0,
+                autoplay: false,
+                responsiveClass: true,
+                responsive: {
+                    0: {
+                        items: 1,
+                        margin: 0,
+                        stagePadding: 0
+                    },
+                    480: {
+                        items: 1,
+                    },
+                    992: {
+                        items: 3,
+                    }
+                }
+            });
+
+        });
+    </script>
+<?php endif; ?>

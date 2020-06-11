@@ -1,0 +1,425 @@
+<?php
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_CsTransaction
+ * @author        CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license      https://cedcommerce.com/license-agreement.txt
+ */
+
+?>
+<style>
+    .btn-large-circle {
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        font-size: 12px;
+        height: 34px;
+        line-height: 1.42857;
+        padding-bottom: 6px;
+        padding-left: 3px;
+        padding-right: 3px;
+        padding-top: 6px;
+        text-align: left;
+        width: 108px;
+    }
+</style>
+<?php $currencyCode = $this->_storeManager->getStore(null)->getBaseCurrencyCode(); ?>
+<?php $collection = $this->getPendingVpayments();
+
+$params = $this->marketplaceSession->getData('payment_filter');
+$url = $block->getViewFileUrl('images/calendar.gif');
+$loaderurl = $block->getViewFileUrl('images/loader-2.gif');
+
+$cancelled = $block->cancelledTransaction();
+
+
+?>
+<div id="activity-loading" style="display:none ;">
+    <div class="spinner">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+</div>
+<!-- <div data-role="loader" class="loading-mask" style="display: none;" id ="activity-loading"><div class="loader"><img src="<?php //echo $loaderurl;?>" alt="Loading..."><p>Please wait...</p></div></div> -->
+<div class="row">
+    <div class="col-md-12" style="margin-top:10px;">
+        <div class="panel panel-default">
+            <div class="panel-heading col-md-12" style="text-transform: uppercase;font-weight:bold;padding:4px 15px;">
+                <div style="line-height:31px;font-size:17px;display:inline;text-transform: uppercase;">
+                    <?php echo __('Pending Amount(s)'); ?>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12" style="margin-top:10px;">
+                    <form id="payment_form"
+                          action=""
+                          enctype="multipart/form-data" method="post">
+                        <div class="vendor-button-set buttons-set filter_button">
+                            <?php if (count($collection) > 0){ ?>
+                            <div class="col-md-4 export-button" style="padding-left:0;">
+                            </div>
+                            <div class="col-md-8 filter-buttons"
+                                 style="margin-left:0;padding-right:0;text-align:right;">
+                                <?php }
+                                else{
+                                ?>
+                                <div class="col-md-12"
+                                     style="margin-left:0;padding-right:0;margin-bottom:5px;text-align:right;">
+                                    <?php } ?>
+                                    <button style="margin:2px" onClick="filterPayment(0);"
+                                            class="button btn btn-info uptransform btn-primary"
+                                            title="<?php echo __('Filter') ?>" type="submit" id="Filter">
+                                        <span><span><?php echo __('Filter') ?></span></span>
+                                    </button>
+                                    <button style="margin:2px" onClick="filterPayment(1);"
+                                            class="button btn btn-info uptransform btn-primary"
+                                            title="<?php echo __('Reset Filter') ?>" type="button" id="Filter">
+                                        <span><span><?php echo __('Reset Filter') ?></span></span>
+                                    </button>
+                                </div>
+
+                            </div>
+
+
+                            <div style="clear:both;"></div>
+                            <br/>
+                            <?php echo $this->getPagerHtml(); ?>
+                            <div style="clear:both"></div>
+                            <div class="order-items order-details table-responsive">
+                                <table id="my-products-table" class="table table-bordered table-hover table-striped">
+                                    <col width="1"/>
+                                    <col width="1"/>
+                                    <col width="1"/>
+                                    <col width="1"/>
+                                    <col width="1"/>
+                                    <thead>
+                                    <tr style="background-color: #2c3b41;">
+                                        <td colspan="3"
+                                            style="text-align: left; vertical-align: middle; border-right-style: none; color: #fff;">
+                                            <a style="cursor: pointer; color: #fff;"
+                                               onclick="jQuery('.payment_request_checkbox').prop('checked', true);"><?php echo __('Select All'); ?></a>
+                                            / <a style="cursor: pointer; color: #fff;"
+                                                 onclick="jQuery('.payment_request_checkbox').prop('checked',false);"><?php echo __('Unselect All'); ?></a>
+                                        </td>
+                                        <td colspan="2"
+                                            style="text-align: right; vertical-align: middle; border-left-style: none;">
+                                            <button style="margin:2px" onClick="massPayRequest(0);"
+                                                    class="button btn btn-info uptransform btn-primary"
+                                                    title="<?php echo __('Filter') ?>" type="button"
+                                                    id="request_selected">
+                                                <span><span><?php echo __('Mass Request Payment') ?></span></span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr style="background-color: #f5f5f5;">
+                                        <th class="head"></th>
+                                        <th class="head"><?php echo __('Order Date') ?></th>
+                                        <th class="head"><?php echo __('Order Id') ?></th>
+                                        <th class="head"><?php echo __('Pending Amount') ?></th>
+                                        <th class="head a-left"><?php echo __('Action') ?></th>
+                                    </tr>
+                                    <tr class="filter">
+                                        <th class="filter"></th>
+                                        <th class="filter">
+                                            <div class="list_filter">
+                                                <img src="<?php echo $url ?>" class="v-middle" id="date_from_trig"/>
+                                                <input type="text" id="created_at_from" name="created_at[from]"
+                                                       class="form-control"
+                                                       value="<?php echo (isset($params['created_at']['from']) && urldecode($params['created_at']['from']) != "") ? urldecode($params['created_at']['from']) : ""; ?>"/>
+                                            </div>
+                                            <div class="list_filter">
+                                                <img src="<?php echo $url ?>" class="v-middle" id="date_to_trig"/>
+                                                <input type="text" id="created_at_to" name="created_at[to]"
+                                                       class="form-control"
+                                                       value="<?php echo (isset($params['created_at']['to']) && urldecode($params['created_at']['to']) != "") ? urldecode($params['created_at']['to']) : ""; ?>"/>
+                                            </div>
+                                        </th>
+                                        <th class="filter">
+                                            <div class="list_filter"><input type="text" onUnfocus="filterPayment(0);"
+                                                                            class="form-control filter" name="order_id"
+                                                                            value="<?php echo (isset($params['order_id']) && urldecode($params['order_id']) != "") ? urldecode($params['order_id']) : ""; ?>"/>
+                                            </div>
+                                        </th>
+                                        <th class="filter">
+                                            <div class="list_filter"><input type="text" name="net_amount[from]"
+                                                                            class="form-control filter"
+                                                                            value="<?php echo (isset($params['net_amount']['from']) && urldecode($params['net_amount']['from']) != "") ? urldecode($params['net_amount']['from']) : ""; ?>"/>
+                                            </div>
+                                            <div class="list_filter"><input type="text" name="net_amount[to]"
+                                                                            class="form-control filter"
+                                                                            value="<?php echo (isset($params['net_amount']['to']) && urldecode($params['net_amount']['to']) != "") ? urldecode($params['net_amount']['to']) : ""; ?>"/>
+                                            </div>
+                                        </th>
+                                        <th class="filter"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php if (count($collection) > 0): ?>
+                                        <?php $_odd = ''; ?>
+                                        <?php foreach ($collection as $_payment): ?>
+                                            <?php if ($_payment->getCurrency() == '0.0000') { ?>
+                                                <tr>
+                                                    <td><input type="checkbox" name="payment_request[]"
+                                                               class="payment_request_checkbox"
+                                                               value="<?php echo $_payment->getId(); ?>"/></td>
+                                                    <td class="status">
+                                                        <?php echo $block->formatDate($_payment->getCreatedAt(), \IntlDateFormatter::MEDIUM) ?>
+                                                    </td>
+                                                    <td class="number"><?php echo $_payment->getOrderIncrementId() ?></td>
+                                                    <td class="number"><?php echo $this->priceCurrency->format($_payment->getNetVendorEarn(), false, 2, null, $currencyCode); ?></td>
+                                                    <td class="a-left view number status">
+                                                        <button type="button"
+                                                                class="button btn btn-info uptransform btn-warning"
+                                                                onClick="massPayRequest(<?php echo $_payment->getId(); ?>);">
+                                                            <span><span><?php echo $this->__('Request Payment') ?></span></span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            <?php } else { ?>
+                                                <tr>
+
+
+                                                    <?php $collection = $this->requested->getCollection()->addFieldToFilter('vendor_id', $this->getVendorId())->addFieldToFilter('order_id', $_payment->getOrderIncrementId());
+
+                                                    foreach ($collection as $key => $model) {
+
+                                                    }
+                                                    ?>
+                                                    <?php if (sizeof($model) > 0): ?>
+                                                        <td></td>
+                                                    <?php else: ?>
+                                                        <td><input type="checkbox" name="payment_request[]"
+                                                                   class="payment_request_checkbox"
+                                                                   value="<?php echo $_payment->getId(); ?>"/></td>
+                                                    <?php endif ?>
+                                                    <td class="status">
+                                                        <?php echo $block->formatDate($_payment->getCreatedAt(), \IntlDateFormatter::MEDIUM) ?>
+                                                    <td class="number"><?php echo $_payment->getOrderIncrementId() ?></td>
+                                                    <td class="number"><?php echo $this->priceCurrency->format($_payment->getNetVendorEarn(), false, 2, null, $currencyCode); ?></td>
+                                                    <td class="a-left view number status">
+                                                        <?php if (sizeof($model) > 0) { ?>
+                                                            <?php $statuses = Ced\CsMarketplace\Model\Vpayment\Requested::getStatuses(); ?>
+                                                            <?php if (isset($statuses[$model->getStatus()])) { ?>
+                                                                <span><span><?php echo $statuses[$model->getStatus()]; ?></span></span>
+                                                            <?php } else { ?>
+                                                                <span><span><?php echo __('In Processing') ?></span></span>
+                                                            <?php } ?>
+                                                        <?php } else { ?>
+                                                            <button type="button"
+                                                                    class="button btn btn-info uptransform "
+                                                                    onClick="massPayRequest(<?php echo $_payment->getId(); ?>);">
+                                                                <span><span><?php echo __('Request Payment') ?></span></span>
+                                                            </button>
+                                                        <?php } ?>
+                                                    </td>
+                                                </tr>
+                                            <?php } ?>
+                                        <?php endforeach; ?>
+                                    <?php endif ?>
+                                    <?php if (sizeof($cancelled) > 0): ?>
+                                        <?php foreach ($cancelled as $key => $transactions): ?>
+                                            <tr>
+                                            <td></td>
+                                            <td class="status">
+                                                <?php echo $block->formatDate($transactions["created_at"], \IntlDateFormatter::MEDIUM) ?>
+                                            <td class="number"><?php echo $transactions["order_id"] ?></td>
+                                            <td class="number"><?php echo $this->priceCurrency->format($transactions["amount"], false, 2, null, $currencyCode); ?></td>
+                                            <?php if ($transactions['status'] == \Ced\CsMarketplace\Model\Vpayment\Requested::PAYMENT_STATUS_CANCELED): ?>
+                                                <td>
+                                                    <button type="button"
+                                                            class="button btn btn-info uptransform btn-danger">Cancelled
+                                                    </button>
+                                                </td>
+                                            <?php elseif ($transactions['status'] == \Ced\CsMarketplace\Model\Vpayment\Requested::PAYMENT_STATUS_PROCESSED): ?>
+                                                <td>
+                                                    <button type="button"
+                                                            class="button btn btn-info uptransform btn-primary">
+                                                        Processed
+                                                    </button>
+                                                </td>
+                                            <?php endif ?>
+
+                                        <?php endforeach ?>
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="7">
+                                                <div>
+                                                    <p><?php echo __('No Transactions Available'); ?></p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endif ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <?php echo $this->getPagerHtml(); ?>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .list_filter input {
+        width: 100%;
+        padding: 2px;
+    }
+
+    #date_from_trig, #date_to_trig {
+        float: left;
+    }
+
+    #created_at_from, #created_at_to {
+        width: 78%;
+    }
+</style>
+
+<script>
+    require([
+        "jquery",
+        "mage/calendar"
+    ], function ($) {
+        $("#created_at_from").calendar({
+            buttonText: "<?php echo __('Select Date') ?>"
+        });
+    });
+    require([
+        "jquery",
+        "mage/calendar"
+    ], function ($) {
+        $("#created_at_to").calendar({
+            buttonText: "<?php echo __('Select Date') ?>"
+        });
+    });
+</script>
+<script type="text/javascript">
+    function massPayRequest(paymentids) {
+
+        var params = '';
+        if (paymentids == 0) {
+            var checkBoxes;
+            checkBoxes = document.getElementsByClassName('payment_request_checkbox');
+            for (var i = 0; i < checkBoxes.length; i++) {
+                if (checkBoxes[i].checked) {
+                    if (params.length == 0) {
+                        params += 'payment_request=' + checkBoxes[i].value;
+                    } else {
+                        params += ',' + checkBoxes[i].value;
+                    }
+                }
+            }
+        } else {
+            params += 'payment_request=' + paymentids;
+        }
+        if (params.length == 0) {
+            alert('Please Select Amount(s)');
+            return false;
+        }
+
+        jQuery('#activity-loading').show();
+
+        <?php
+        $urlParams['_nosid'] = true;
+        if ($this->_storeManager->getStore(null)->isCurrentlySecure()) {
+            $urlParams['_secure'] = true;
+        }
+        ?>
+        jQuery.ajax({
+            url: '<?php echo $this->getUrl('csmarketplace/vpayments/requestPost', $urlParams); ?>',
+            data: params,
+            type: "POST",
+            success: function (transport) {
+                jQuery('.vendor-dashboard').html(transport.responseText);
+                jQuery('#activity-loading').hide();
+
+            }
+        });
+    }
+
+    function filterPayment(reset) {
+
+        var params;
+        if (reset == 2)
+            reset = 0;
+        jQuery('#activity-loading').show();
+        if (reset == 1)
+            params = 'reset_filter=1';
+        else
+            params = jQuery("#payment_form").serialize().replace('+', '%20');
+
+
+        <?php
+        $urlParams['_nosid'] = true;
+        if ($this->_storeManager->getStore(null)->isCurrentlySecure()) {
+            $urlParams['_secure'] = true;
+        }
+        ?>
+
+        jQuery.ajax({
+
+            url: '<?php echo $this->getUrl('csmarketplace/vpayments/requestFilter', $urlParams); ?>',
+            data: params,
+            type: "POST",
+            success: function (transport) {
+                jQuery('.vendor-dashboard').html(transport.responseText);
+                jQuery('#activity-loading').hide();
+
+            }
+        });
+    }
+
+    function setLocation(url) {
+        jQuery('#activity-loading').show();
+        new Ajax.Request(url, {
+            method: 'Get',
+            onComplete: function (transport) {
+                jQuery('.vendor-dashboard').html(transport.responseText);
+                jQuery('#activity-loading').hide();
+            }
+        });
+    }
+
+</script>
+<script>
+    require([
+        'jquery'
+    ], function ($) {
+        jQuery(document).ready(function () {
+
+            jQuery("#payment_form").submit(function () {
+                return false;
+            });
+        });
+
+
+        <?php if($this->getRequest()->getActionName() == 'index'){ ?>
+        filterPayment(2);
+        <?php } ?>
+        jQuery('.pages a').click(function (e) {
+            var url = jQuery(this).attr('href');
+            if (url != "#") {
+                jQuery('#activity-loading').show();
+                e.preventDefault();
+                new Ajax.Request(url, {
+                    method: 'Get',
+                    onComplete: function (transport) {
+                        jQuery('.vendor-dashboard').html(transport.responseText);
+                        jQuery('#activity-loading').hide();
+                    }
+                });
+            }
+        });
+    });
+</script>

@@ -1,0 +1,69 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+<!--
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_CsTableRateShipping
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (http://cedcommerce.com/)
+ * @license      http://cedcommerce.com/license-agreement.txt
+ */
+--> 
+<default>
+        <ced_csmultishipping>
+            <shipping>
+                <methods>
+                    <tablerate>
+                        <model>Ced\CsTableRateShipping\Model\Vsettings\Shipping\Methods\Tablerate</model>
+                        <config_path>ced_cstablerateshipping/general/active</config_path>
+                    </tablerate>
+                </methods>
+            </shipping>
+        </ced_csmultishipping>
+        <carriers>
+            <tablerate>
+                 <model>Ced\CsTableRateShipping\Model\Carrier\Tablerate</model>
+            </tablerate>
+        </carriers>
+        <ced_cstablerateshipping>
+            <general>
+                <active>1</active>
+            </general>
+        </ced_cstablerateshipping>
+        <vendor_acl>
+            <resources>
+                <all>
+                    <title>Allow Everything</title>
+                </all> 
+                <vendor>
+                    <title>Vendor Panel</title>
+                    <path>#</path>
+                    <sort_order>1</sort_order>
+                    <children>
+                        <vendor_settings>
+                            <title>Settings</title>
+                            <sort_order>60</sort_order>
+                            <path>#</path>
+                                <children>
+                                    <vendor_table_shipping_settings>
+                                        <ifconfig>ced_cstablerateshipping/general/active</ifconfig>
+                                        <title>Tablerate Settings</title>
+                                        <sort_order>50</sort_order>
+                                        <path>cstablerateshipping/rates/index</path> 
+                                    </vendor_table_shipping_settings>
+                                </children>
+                        </vendor_settings>
+                    </children>
+                </vendor>
+            </resources>
+        </vendor_acl>
+    </default>
+</config>

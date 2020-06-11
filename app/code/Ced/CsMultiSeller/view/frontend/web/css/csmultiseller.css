@@ -1,0 +1,12 @@
+.selling-sell.order-details .head:nth-child(3) {
+	width: 150px;
+	text-align: center;
+}
+.selling-sell.order-details .head:nth-child(2) {
+	width: 100px;
+	text-align: center;
+}
+.selling-sell.order-details td:nth-child(2),
+.selling-sell.order-details td:nth-child(3) {
+	text-align: center;
+}

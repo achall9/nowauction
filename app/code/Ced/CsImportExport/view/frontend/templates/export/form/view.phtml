@@ -1,0 +1,266 @@
+<?php
+
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_CsImportExport
+ * @author     CedCommerce Core Team <connect@cedcommerce.com >
+ * @copyright   Copyright CEDCOMMERCE (http://cedcommerce.com/)
+ * @license      http://cedcommerce.com/license-agreement.txt
+ */
+?>
+<style>
+
+    #container {
+        /* Optional - You can set a  min-height : whatever px; for reserving some space*/
+        height: 400px; /* Fix a height here */
+        overflow: auto; /* Optionally you can also use overflow: scroll; */
+    }
+</style>
+<?php
+$vandor_id = $this->VendorId();
+$path = $this->read();
+$loaderurl = $block->getViewFileUrl('Ced_CsImportExport/image/loader-2.gif');
+?>
+<div id="update-section-content">
+    <div class="row">
+        <div class="col-md-12" style="margin-top: 10px;">
+            <div class="panel panel-default">
+                <div class="panel-heading" style="font-size: 22px;">
+                    <?php echo __('Image Management'); ?>
+                </div>
+                <div class="panel-body">
+                    <div id="accordion" class="panel-group">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"
+                                 style="font-size: 17px; line-height: 31px;">
+                                <h4 class="panel-title">
+                                    <a class="collapsed1" href="#collapseOne"
+                                       data-parent="#accordion" data-toggle="collapse"
+                                       aria-expanded="false">
+                                        <?php echo __('Upload Images/Files'); ?>
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse in"
+                                 aria-expanded="true" style="">
+                                <div class="panel-body">
+                                    <div class="col-md-6 uptransform" style="margin-top: 6px;">
+                                        <form method="post"
+                                              action="<?php echo $this->getUrl('csimportexport/import/uploadimage', array('vendor_id' => $vandor_id)) ?>"
+                                              enctype="multipart/form-data" id="multiple_upload_form">
+                                            <div id="queue"></div>
+                                            <input id="file_upload" name="file_upload[]" type="file"
+                                                   multiple="true">
+                                            <div data-role="loader" class="loading-mask" style="display: none;"
+                                                 id="loader">
+                                                <div class="loader"><img src="<?php echo $loaderurl; ?>"
+                                                                         alt="Loading...">
+                                                    <p><?php echo __('Please wait...') ?></p></div>
+                                            </div>
+                                            <div class="form-group">
+                                                <button class="btn btn-default" type="submit" id="mass-upload">
+                                                    <?php echo __('Upload'); ?>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body" id="panel-body">
+                    <form method="post" action="<?php echo $this->getUrl('csimportexport/import/unlink') ?>"
+                          enctype="multipart/form-data" id="multiple_image_delete">
+                        <div id="accordion" class="panel-group">
+                            <div class="panel panel-default">
+                                <div class="panel-heading" style="font-size: 17px; line-height: 31px;">
+                                    <h4 class="panel-title">
+                                        <button id="submit_button_id" class="btn btn-success uptransform" type="button"
+                                                style="float:right; margin-bottom:10px;" onclick="validate()">
+                                            <span>Mass Delete</span>
+                                        </button>
+                                        <a class="collapsed" href="#collapsetwo"
+                                           data-parent="#accordion" data-toggle="collapse"
+                                           aria-expanded="false">
+                                            <?php echo __('Uploaded Images/Files'); ?>
+                                        </a>
+                                    </h4>
+                                    <div style="clear:both"></div>
+                                </div>
+                                <?php
+                                if (!empty ($path))
+                                {
+                                ?>
+                                <table class="data-table" id="my-custom-table">
+                                    <col width="1"/>
+                                    <col width="1"/>
+                                    <col width="2"/>
+                                    <col width="1"/>
+                                    <col width="1"/>
+                                    <col width="1"/>
+                                </table>
+                                <div id="collapseOnecutom" class="panel-collapse collapse in" aria-expanded="true"
+                                     style="">
+                                    <div class="panel-body" id="container">
+                                        <div class="ced-image-display" style="margin-top: 6px;">
+                                            <table id="tblCustomers">
+                                                <thead>
+                                                <tr>
+                                                    <th><?php echo __('Select') ?></th>
+                                                    <th><?php echo __('File Name') ?></th>
+                                                    <th><?php echo __('Image/File') ?></th>
+                                                    <th><?php echo __('Action') ?></th>
+                                                </tr>
+                                                </thead>
+                                                <?php
+                                                foreach ($path as $key => $url) {
+                                                    $path = $this->filesystem->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::MEDIA);
+                                                    $path = $path->getAbsolutePath('import/' . $vandor_id . '/');
+                                                    $imagename = explode("/", $url);
+                                                    $imagename = end($imagename);
+                                                    $str = substr($imagename, 0, 2); //Returns va
+                                                    $imagestring = substr($str, 0, 1) . '/' . substr($str, 1, 2);
+                                                    $imagestring = $imagestring . '/' . $imagename;
+                                                    ?>
+                                                    <tr id="row<?php echo $key; ?>">
+                                                        <?php //echo "$path$imagestring" ;die;
+                                                        ?>
+                                                        <td><input type="checkbox"
+                                                                   value="<?php echo $path . $imagestring ?>"
+
+                                                                   name="delete[]"></td>
+                                                        <td><?php echo $imagestring; ?></td>
+                                                        <td><img src="<?php echo $url; ?>" height="50px" width="50px"
+                                                                 alt="<?php echo $imagename ?>"></td>
+                                                        <td>
+                                                            <form method="post"
+                                                                  action="<?php echo $this->getUrl('csimportexport/import/unlink') ?>"
+                                                                  enctype="multipart/form-data"
+                                                                  id="single_image_delete">
+                                                                <input type="hidden"
+                                                                       value="<?php echo $path . $imagestring ?>"
+                                                                       name="unlink" id="path<?php echo $key; ?>">
+                                                                <input type=button value="Delete"
+                                                                       name="button" value="Delete"
+                                                                       onclick="DeleteImage('<?php echo $key; ?>');"
+                                                                       class="btn btn-success uptransform">
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                    <?php
+                                                }
+                                                }
+
+                                                else {
+                                                    ?>
+                                                    <tr id="row-empty-message">
+                                                        <p class="note-msg"><?php echo __('There are no images') ?></p>
+                                                    </tr>
+                                                    <?php
+                                                }
+                                                ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </table>
+                        </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <script type="text/javascript">
+        require([
+            'jquery',
+            'jqueryform'
+        ], function ($) {
+            'use_strict';
+
+            $('#mass-upload').on('click', function (e) {
+
+                var length = document.getElementById('file_upload').files.length;
+
+                if (!length) {
+                    e.preventDefault();
+                    return false;
+                }
+                var loadUrl = '<?php echo $this->getUrl('csimportexport/export/image')?>';
+
+                $('#multiple_upload_form').ajaxForm({
+
+
+                    beforeSubmit: function (e) {
+                        $('.loading-mask').show();
+
+                    },
+                    success: function (e) {
+                        $("#multiple_upload_form").load(location.href + " #multiple_upload_form>*", "");
+                        $("#multiple_image_delete").load(location.href + " #multiple_image_delete>*", "");
+                        document.getElementById("loader").style.display = 'none';
+
+                    },
+                    error: function (e) {
+                    }
+                }).submit();
+                e.stopImmediatePropagation();
+                return false;
+            });
+        });
+
+        function DeleteImage(val) {
+            var path = document.getElementById('path' + val).value;
+            var parametros = {
+                "singlepath": path,
+            };
+            jQuery('.loading-mask').show();
+            jQuery.ajax({
+                url: '<?php echo $this->getUrl('csimportexport/import/unlink');?>',
+                type: "POST",
+                data: parametros,
+                success: function (datos) {
+                    var totalRowCount = 0;
+                    var rowCount = 0;
+                    var table = document.getElementById("tblCustomers");
+                    var rows = table.getElementsByTagName("tr")
+                    for (var i = 0; i < rows.length; i++) {
+                        totalRowCount++;
+                        if (rows[i].getElementsByTagName("td").length > 0) {
+                            rowCount++;
+                        }
+                    }
+                    jQuery('#row' + val).remove();
+                    if (rowCount == 1) {
+                        var loadUrl = '<?php echo $this->getUrl('csimportexport/export/image')?>';
+                        jQuery("#collapseOnecutom").load(location.href + " #collapseOnecutom>*", "");
+                    }
+                    document.getElementById("loader").style.display = 'none';
+                }
+            });
+        }
+
+        function validate() {
+            var checkbox = document.getElementsByName('delete[]');
+            var ln = 0;
+            for (var i = 0; i < checkbox.length; i++) {
+                if (checkbox[i].checked)
+                    ln++;
+            }
+            if (ln == 0) {
+                alert('Please select atleast one.');
+            } else {
+                var btn = document.getElementById('submit_button_id');
+                btn.setAttribute('type', 'submit');
+            }
+        }
+    </script>

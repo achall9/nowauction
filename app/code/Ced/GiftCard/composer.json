@@ -1,0 +1,20 @@
+{
+    "name": "ced/module-gift-card",
+    "description": "Extension add functionality for admin to create a giftcard type of product.",
+    "require": {
+        "php": ">=5.6"
+    },
+    "type": "magento2-module",
+    "version": "0.0.1",
+    "license": [
+        "EULA"
+    ],
+    "autoload": {
+        "files": [ "registration.php" ],
+        "psr-4": {
+            "Ced\\GiftCard\\": ""
+        }
+    }
+}
+
+

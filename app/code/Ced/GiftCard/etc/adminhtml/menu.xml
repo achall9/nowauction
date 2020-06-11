@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!--
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_GiftCard
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license     https://cedcommerce.com/license-agreement.txt
+ * -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../Backend/etc/menu.xsd">
+    <menu>
+        <add id="Ced_GiftCard::manage_giftcard"
+            title="Manage Giftcard"
+            module="Ced_GiftCard"
+            sortOrder="30"
+            parent="Magento_Catalog::catalog"
+            resource="Ced_GiftCard::manage_giftcard"
+        />
+
+        <add id="Ced_GiftCard::manage_gifttemplates"
+             title="Manage Gift Card Templates"
+             module="Ced_GiftCard"
+             sortOrder="50"
+             parent="Ced_GiftCard::manage_giftcard"
+             action="giftcard/templates/"
+             resource="Ced_GiftCard::manage_giftcard_templates"
+        />
+        <add id="Ced_GiftCard::manage_giftcoupons"
+             title="Manage Gift Coupons"
+             module="Ced_GiftCard"
+             sortOrder="55"
+             parent="Ced_GiftCard::manage_giftcard"
+             action="giftcard/coupons/"
+             resource="Ced_GiftCard::manage_giftcard_coupons"
+        />
+
+    </menu>
+</config>
+

@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_CsMarketplace
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (http://cedcommerce.com/)
+ * @license     http://cedcommerce.com/license-agreement.txt
+ */
+?>
+<?php
+/** @var Ced\CsMarketplace\Block\Vshops\View  $block*/
+
+$helper = $this->helper('Ced\CsMarketplace\Helper\Tool\Image');
+$width = (int)$helper->getStoreConfig('ced_vshops/general/logo_image_width', $this->getCurrentStoreId());
+$height = (int)$helper->getStoreConfig('ced_vshops/general/logo_image_height', $this->getCurrentStoreId());
+$width = $width ? $width : 175;
+$height = $height ? $height : 150;
+$mediaUrl = $block->getMediaUrl();
+
+?>
+<?php if ($this->helper('Ced\CsMarketplace\Helper\Acl')->isEnabled()) { ?>
+    <div class="block block-poll">
+        <div class="block-content">
+            <img src="<?php echo $helper->getResizeImage($this->getVendorLogo(), 'logo', $width, $height); ?>"/>
+            <ul>
+                <?php foreach ($this->getLeftProfileAttributes() as $attribute) {?>
+                    <?php $attribute->setStoreId($block->getStoreId());?>
+                    <li>
+                        <?php if ($attribute->getFrontendInput() == 'file' || $attribute->getFrontendInput() == 'image') : ?>
+                            <label>
+                                <i class="<?php echo $attribute->getData('fontawesome_class_for_left_profile'); ?>"></i>
+                                <?php if (strlen($attribute->getStoreLabel()) > 0) {
+                                    echo __($attribute->getStoreLabel());
+                                } else {
+                                    echo __($attribute->getFrontendLabel());
+                                } ?> :</label> <a  target="_blank"
+                                    href="<?php echo $mediaUrl.$this->escapeHtml($block->Method($attribute->getAttributeCode())) ?>"><?php echo basename(__($this->escapeHtml($block->Method($attribute->getAttributeCode())))); ?></a>
+                        <?php else: ?>
+                            <label>
+                                <i class="<?php echo $attribute->getData('fontawesome_class_for_left_profile'); ?>"></i>
+                                <?php if (strlen($attribute->getStoreLabel()) > 0) {
+                                    echo __($attribute->getStoreLabel());
+                                } else {
+                                    echo __($attribute->getFrontendLabel());
+                                } ?> :</label><span> <?php if($attribute->usesSource()){
+                                                        $data = $attribute->getSource()->getOptionText($block->Method($attribute->getAttributeCode()));
+                                                        if(is_array($data)){
+                                                            $data = implode(', ',$data);
+                                                        } 
+                                                        echo $data;
+                                                    }else if($attribute->getFrontendInput() == 'date'){
+                                                        echo $block->getTimezone($block->Method($attribute->getAttributeCode()));
+                                                    }else{
+                                                        echo __($this->escapeHtml($block->Method($attribute->getAttributeCode())));
+                                                    } ?></span>
+                        <?php endif; ?>
+                    </li>
+                <?php }
+                 ?>
+            </ul>
+        </div>
+    </div>
+    
+<?php } ?>

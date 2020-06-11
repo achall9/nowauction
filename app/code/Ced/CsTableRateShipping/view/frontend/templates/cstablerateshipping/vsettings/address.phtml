@@ -1,0 +1,135 @@
+<?php 
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_CsTableRateShipping
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (http://cedcommerce.com/)
+ * @license      http://cedcommerce.com/license-agreement.txt
+ */
+?>
+
+<div class="row">
+	<div class="col-md-12" style="margin-top:10px;">
+		<div class="panel panel-default">
+			<div class="panel-heading col-md-12 uptransform" style="font-weight:bold;padding:4px 15px;">
+				<div class="col-md-6 panel_product_heading" style="line-height:31px;font-size:17px;padding-left:0;">
+				<?php echo __('Table Rate Shipping')." ".__('Settings') ?>			
+				</div>
+				<div class="buttons-set col-md-6 buttons_scb" style="text-align:right;padding-right:0;">				
+					<button class="button btn btn-success uptransform product-button" title="Save" type="button"  id="save_butn" style="float: none;">
+						<span><span><?php echo __('Save') ?></span></span>
+					</button>
+					<button class="button btn btn-delete uptransform product-button" title="Delete"  onClick="document.location.href='<?php echo $this->getUrl('cstablerateshipping/rates/delete',array('id'=>$this->getRequest()->getParam('id')))?>'" id="dlt_butn" style="float: none;">
+						<span><span><?php echo __('Delete') ?></span></span>
+					</button>
+				</div>
+			</div>
+			<br/>
+			<br/>
+			<div class="panel-body">
+				<?php  echo $this->getFormHtml(); ?>
+				<div class="buttons-set">
+					<p class="required"><?php echo __('* Required Fields') ?></p>
+					<p class="back-link"><a href="<?php  echo $this->getBackUrl() ?>"><small>&laquo; </small><?php echo __('Back') ?></a></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	 require([
+    'jquery',
+    'jquery/ui',
+	'regionUpdater'
+   ], function($){
+		
+   });
+</script>
+<script type="text/x-magento-init">
+    {
+        "#form-validate": {
+            "validation": {}
+        },
+        "#address-country_id": {
+            "regionUpdater": {
+                "optionalRegionAllowed": "true",
+                "regionListId": "#address-region_id",
+                "regionInputId": "#address-region",
+                "postcodeId": "#address-postcode",
+                "form": "#form-validate",
+                "regionJson": <?php  echo $this->helper('Magento\Directory\Helper\Data')->getRegionJson() ?>,
+                "defaultRegion": "<?php  echo $block->getRegionId() ?>",
+                "countriesWithOptionalZip": <?php echo $this->helper('Magento\Directory\Helper\Data')->getCountriesWithOptionalZip(true) ?>
+            }
+        }
+    }
+</script>
+<script type="text/javascript">
+require([
+         "jquery",
+         "jquery/ui"
+     ], function($){
+			jQuery( "h2" ).addClass( "ced_shipping" );
+});
+</script>
+<style>
+h2.legend.ced_shipping{
+  margin-left: 0;
+}
+.admin__control-select, .ui-datepicker .ui-datepicker-title select{
+	 -moz-appearance: meterchunk !important;
+}
+input.mage-error, select.mage-error, textarea.mage-error{
+	border-color: #ed8380 !important;
+}
+div.mage-error[generated]{
+	color: #e02b27 !important;
+	font-size: 1.2rem;
+}
+</style>
+<script>
+require([
+         "jquery",
+         'mage/mage'
+    ], function(gGift){
+    	var dataForm = jQuery('#form-validate');
+        gGift("#save_butn").click(function () {
+			if(jQuery('#form-validate').validation('isValid') && jQuery('#form-validate').validation()) {
+				
+				document.getElementById('form-validate').submit();
+			} else {
+				return false;
+			}
+			
+		 });
+      });
+
+	
+	function removeDiv(id) {
+		jQuery("#user" + id).remove();
+	} 
+</script>
+<script>
+require([
+    'jquery',
+    'mage/mage'
+], function($){
+
+    var dataForm = $('#form-validate');
+    var ignore = null;
+
+    dataForm.mage('validation', {
+            ignore: ignore ? ':hidden:not(' + ignore + ')' : ':hidden'
+        }).find('input:text').attr('autocomplete', 'off');
+
+});
+</script>

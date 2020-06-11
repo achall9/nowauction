@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!--
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_GiftCard
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license     https://cedcommerce.com/license-agreement.txt
+ * -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Catalog:etc/product_types.xsd">
+
+    <type name="giftcard" label="Gift Card"
+            modelInstance="Ced\GiftCard\Model\Product\Type\GiftCard"
+          indexPriority="50" isQty="true" sortOrder="90">
+        <customAttributes>
+            <attribute name="is_real_product" value="false"/>
+            <attribute name="refundable" value="false"/>
+        </customAttributes>
+    </type>
+
+    <composableTypes> 
+        <type name="giftcard" />
+    </composableTypes>
+
+</config>

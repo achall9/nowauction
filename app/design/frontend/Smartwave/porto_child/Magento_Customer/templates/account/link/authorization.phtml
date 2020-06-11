@@ -1,0 +1,25 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+/** @var \Magento\Customer\Block\Account\AuthorizationLink $block */
+
+$dataPostParam = '';
+if (!$block->isLoggedIn()) {
+echo '<style>a[title="My Nowauctions"], a[title="Sign Out"]{display:none!important;}</style>';
+}
+else
+{
+echo '<style>a[title="Create Account"], a[title="Sign In"]{display:none!important;}</style>';
+}
+if ($block->isLoggedIn()) {
+   $dataPostParam = sprintf(" data-post='%s'", $block->getPostParams());
+}
+?>
+<li class="authorization-link" data-label="<?= $block->escapeHtmlAttr(__('or')) ?>">
+    <a <?= /* @noEscape */ $block->getLinkAttributes() ?><?= /* @noEscape */ $dataPostParam ?>>
+        <?= $block->escapeHtml($block->getLabel()) ?>
+    </a>
+</li>

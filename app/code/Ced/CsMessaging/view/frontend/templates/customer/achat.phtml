@@ -1,0 +1,182 @@
+<?php $threadId = $this->getRequest()->getParam('id'); ?>
+<?php $backUrl = $this->getUrl('*/*/ainbox'); ?>
+<?php $chatCollection = $block->getChatCollection($threadId); ?>
+<?php $threadData = $block->getThreadData($threadId); ?>
+<?php $sendMessageUrl = $this->getUrl('*/*/save'); ?>
+<?php $currentCustomerId = $block->getCurrentCustomerId(); ?>
+<?php $isEditorEnabled = $this->helper('Ced\CsMarketplace\Helper\Data')->getStoreConfig('ced_csmarketplace/csmessaging/enable_editor'); ?>
+<?php $imagePath = $this->helper('Ced\CsMessaging\Helper\Data')->getMessageImagePath(); ?>
+
+<form enctype="multipart/form-data" method="post" name="customer-vendor-chat-form" id="customer-vendor-chat-form"
+      action="<?php echo $sendMessageUrl; ?>">
+    <div class="chat-wrapper">
+        <?php echo $block->getBlockHtml('formkey'); ?>
+        <input type="hidden" name="send_to_admin" value="true"/>
+        <input type="hidden" name="thread_id" value="<?php echo $threadData->getId(); ?>"/>
+        <?php if (!empty($chatCollection)) : ?>
+            <div class="custom-scroll">
+                <ul class="chat-area">
+                    <?php foreach ($chatCollection as $chat) : ?>
+                        <?php if ($chat->getSenderId() == $currentCustomerId)  : ?>
+                            <li class="chat-row msg-sender">
+                                <div class="chat-row msg-sender-li">
+                                    <div class="msg-content"><p><?php echo $chat->getMessage(); ?></p></div>
+                                    <?php if ($chat->getImages() != '') :
+                                        $imagesArray = $this->helper('Ced\CsMessaging\Helper\Data')->getMessageImages($chat->getImages());
+                                        if (!empty($imagesArray)) :
+                                            foreach ($imagesArray as $image) :
+                                                foreach ($image as $key => $img):
+                                                $image = $img;
+                                                ?>
+                                                <div>
+                                                    <?php if (strpos($image,'.png')!== false || strpos($image,'.jpg')!== false
+                                                        || strpos($image,'.jpeg')!== false) :  ?>
+                                                        <a href="<?php echo $imagePath . $image ?>" target="_blank"><img
+                                                                    src="<?php echo $imagePath . $image ?>" width="200px"
+                                                                    height="200px"/></a>
+                                                    <?php else : ?>
+                                                        <a href="<?php echo $imagePath . $image ?>"><?php echo $image; ?></a>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endforeach; endforeach; endif; endif; ?>
+                                    <div class="msg-from">
+                                        <span class="reply-date"><?php echo date('l, F jS Y \a\t g:ia', substr(strtotime($chat->getCreatedAt()), 0, 10)); ?></span>
+                                    </div>
+                                </div>
+                            </li>
+                        <?php else: ?>
+                            <li class="chat-row msg-receiver">
+                                <div class="chat-row msg-receiver-li">
+                                    <div class="msg-content"><p><?php echo $chat->getMessage(); ?></p></div>
+                                    <?php if ($chat->getImages() != '') :
+                                        $imagesArray = $this->helper('Ced\CsMessaging\Helper\Data')->getMessageImages($chat->getImages());
+                                        if (!empty($imagesArray)) :
+                                            foreach ($imagesArray as $image) :
+                                                foreach ($image as $key => $img):
+                                                $image = $img;
+                                                ?>
+                                                <div>
+                                                    <?php if (strpos($image,'.png')!== false || strpos($image,'.jpg')!== false
+                                                        || strpos($image,'.jpeg')!== false) :  ?>
+                                                        <a href="<?php echo $imagePath . $image ?>" target="_blank"><img
+                                                                    src="<?php echo $imagePath . $image ?>" width="200px"
+                                                                    height="200px"/></a>
+                                                    <?php else : ?>
+                                                        <a href="<?php echo $imagePath . $image ?>"><?php echo $image; ?></a>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endforeach; endforeach; endif; endif; ?>
+                                    <div class="msg-from">
+                                        <span class="reply-from">
+                                            <span class="from-title"><?php echo __('From :'); ?></span>
+                                            <span class="receiver-name"><?php echo $this->helper('Ced\CsMarketplace\Helper\Data')->getStoreConfig('trans_email/ident_general/name'); ?></span>
+                                        </span>
+                                        <span class="reply-date"><?php echo date('l, F jS Y \a\t g:ia', substr(strtotime($chat->getCreatedAt()), 0, 10)); ?></span>
+                                    </div>
+                                </div>
+                            </li>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+        <div class="reply-box-wrapper">
+            <textarea id="cv-textarea" name="message" class="ced-message-box" row="4" cols="50"
+                      placeholder="<?php echo __('Reply'); ?>" required></textarea>
+            <div class="form-group ced-messaging-files" style="display:none"></div>
+            <div class="form-group">
+                <button type="button" id="browse_button"><i class="fa fa-plus"></i><?php echo __('Add Files'); ?></button>
+            </div>
+            <div id="chat_images_div" style="display:none"></div>
+
+
+            <?php $customerSendMail = $this->helper('Ced\CsMarketplace\Helper\Data')->getStoreConfig('ced_csmarketplace/csmessaging/customer_send_mail'); ?>
+            <?php if ($customerSendMail) : ?>
+                <div class="send_mail_wrapper">
+                    <label><?php echo __('Notify Receiver by Email'); ?></label>
+                    <input type="checkbox" name="send_mail" value="1"/>
+                </div>
+            <?php endif; ?>
+
+            <div class="back-link">
+                <a href="<?php echo $backUrl; ?>"><?php echo __('Back'); ?></a>
+                <button class="btn-send action save primary" id="btn-chat"><?php echo __('Send'); ?></button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<?php if ($isEditorEnabled) : ?>
+    <?php $configArr = $this->helper('Ced\CsMessaging\Helper\Data')->getWysiwygConfigArrayFrontend(); ?>
+    <script>
+        require(['jquery',
+            'mage/adminhtml/wysiwyg/tiny_mce/setup'
+        ], function ($) {
+            composeTextArea = new wysiwygSetup('cv-textarea',<?php echo json_encode($configArr);?>);
+            composeTextArea.setup("exact");
+        });
+    </script>
+<?php endif; ?>
+
+<script>
+    require(['jquery',
+        'Magento_Ui/js/modal/confirm',
+    ], function ($,confirmation) {
+        var threadId = '<?php echo $threadData->getId(); ?>';
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            data: {thread_id: threadId},
+            url: "<?php echo $this->getUrl('*/*/adminchangestatus') ?>",
+            success: function () {
+
+            },
+            error: function () {
+            }
+        });
+
+        var file_html_count = 0;
+
+        //add file browser button
+        $("#browse_button").on("click", function(e){
+            var file_html = '<input class="chat_images" type="file" name="chat_images[]" id="chat_images_'+ file_html_count +'"/>';
+            $(file_html).appendTo("#chat_images_div").each(function () {
+                bindClickToLink();
+            });
+            $("#chat_images_" + file_html_count ).click();
+            file_html_count++;
+        });
+
+        //add file name
+        function bindClickToLink() {
+            $(".chat_images").on("change", function (e) {
+                var element_id = this.id;
+                var filename = $(this).val().replace("C:\\fakepath\\", '');
+
+                var show_file_html = '<div class="row" id="div_' + element_id + '"><div class="col-md-6"><span>' + filename + '</span></div><div class="col-md-6"><button type="button" class="btn btn-danger delete_images" id="delete_' + element_id + '"><i class="fa fa-trash"></i></input></div></div>';
+
+                $(show_file_html).appendTo('.ced-messaging-files').each(function () {
+                    deleteFileBrowse(element_id);
+                });
+            });
+            $(".ced-messaging-files").show();
+        }
+
+        function deleteFileBrowse(element_id){
+            let elm_id = 'delete_'+element_id;
+            $("#"+elm_id).on("click", function (e) {
+                var element_id = this.id;
+                var file_id = element_id.replace("delete_", '');
+                confirmation({
+                    content: 'Are you sure you want to delete the image?',
+                    actions: {
+                        confirm: function(){
+                            $("#div_"+ file_id ).remove();
+                            $("#"+ file_id ).remove();
+                        }
+                    }
+                });
+            });
+        }
+    });
+</script>

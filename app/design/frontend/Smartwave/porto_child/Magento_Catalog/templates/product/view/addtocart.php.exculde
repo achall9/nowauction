@@ -1,0 +1,150 @@
+
+
+<?php else: ?>
+<?php
+    $product_id      = $_product->getId();
+    $bid_status      = $backwardbid_helper->getBidStatus($product_id);
+    $bidStartAmount  = $_helper->productAttribute($_product, $_product->getBidStartingPrice(), 'bid_starting_price ');
+    $bid_start_date  = $_product->getBidStartDate();
+    $backwardbid_status     = $backwardbid_helper->getConfig('backwardbid/general/enable');
+    $max_bid         = $backwardbid_helper->getMaxbidAmount($product_id);
+    $currency_symbol = $backwardbid_helper->getCurrency();
+    $date            = date('m/d/Y H:i:s');
+    $current_date    = $backwardbid_helper->getCurrentDate();
+    $customer_id     = $this->helper('Nowauction\Backwardbid\Helper\Data')->getCustomerId();
+    $purchase_date   = $backwardbid_helper->getPurchaseDate($product_id, $customer_id);
+    if ($_product->isSaleable() && $_product->getAvailableForAuction() == 1 && ($bid_status == 1 || $bid_status == 2) && $backwardbid_status == 1): ?>
+    <?php if ($bid_status == 1 || ($bid_status == 2 && $purchase_date <= $current_date)): ?>
+        <script>
+            document.getElementById("product_addtocart_form").action = "backwardbid/index/savebid";
+        </script>
+<div class="box-to-timer">
+    <?php
+        $bid_end_date             = $_product->getBidEndDate();
+        $timer_background_color   = $backwardbid_helper->getConfig('backwardbid/general/timer_background_color_text');
+        $timer_foreground_color   = $backwardbid_helper->getConfig('backwardbid/general/timer_foreground_color_text');
+        $highest_bid_amount_color = $backwardbid_helper->getConfig('backwardbid/general/highest_bid_amount_text_color');
+        $increment_value          = $backwardbid_helper->getBidIncrementalPrice($product_id);
+    ?>
+    <div id="bid_update">
+    <?php if($customer_id=='0'){
+            echo "<div id=cuslog style='float:left; width:350px; color:red;'><a style='text-decoration:none; color:red;' href=".$this->getUrl('customer/account/login').">Login to place your bid</a></div></br>";
+        }else {
+            $position = $backwardbid_helper->getCustomerBidPosition($product_id, $customer_id);
+            if($position!=0){
+                echo "<div id=curbidpos style='float:left; width:350px; color:red;'>Your bid ranking is ".$position."</div></br>";}
+        }?>
+    <?php if ($backwardbid_helper->getMaxbidAmount($product_id)): ?>
+        <?php $bidamount = $max_bid + $increment_value;?>
+        <?php if ($bid_status == 1): ?>
+            <?php
+                echo "<b>Current highest bid :</b> <div id=highest style='float:right; width:350px; color:" . $highest_bid_amount_color . "'>" . $currency_symbol . $max_bid . "</div>";
+                echo "<br><b>Bid an amount greater than :</b> <div id=amount style='float:right; width:289px; color:" . $highest_bid_amount_color . "'>" . $currency_symbol . $bidamount . "</div>"; ?>
+        <?php endif?>
+    <?php else: ?>
+        <?php echo "<b>Bid starting price is </b>" . $currency_symbol . $bidStartAmount; ?>
+    <?php endif?>
+</div>
+
+<script type="text/javascript">
+require(['jquery'],function($){
+   $("#bidAmount").keyup(function() {
+        var charlgth = $("#bidAmount").val().length;
+        var product_id = '<?php echo $product_id; ?>';
+        if(charlgth>0){
+            $.ajax({
+                type: 'POST',
+                url: 'backwardbid/index/maxbid',
+                dataType:'json',
+                data: {productId:product_id},
+                success: function (result) {
+                    $('#amount').html('<?php echo $currency_symbol; ?>'+result["max_bid_amount"]);
+                    $('#highest').html('<?php echo $currency_symbol; ?>' + result["highest_bid"]);        }
+            });
+        }
+    });
+});
+</script>
+<script type="text/javascript">
+//<![CDATA[
+require(['jquery'], function($) {
+    $('#submit').on('click', function(event){
+        var maxbidamount = '<?php echo $max_bid; ?>';
+        var customerId = '<?php echo $customer_id; ?>'; 
+        var curBidamount = $("#bidAmount").val();
+        if(customerId=='0'){
+            alert('Please login for placing a bid');return flase;
+        }
+        if(curBidamount < maxbidamount){
+            alert("Please enter an amount greater than "+ maxbidamount);
+            return false;
+        }
+        
+        })
+    }
+);
+//]]>
+</script>
+
+
+<script type="text/javascript">
+    require(['jquery'],function($){
+        
+       var productId = '<?php echo $_product->getId(); ?>';
+       var bidStatus = '<?php echo $backwardbid_helper->getBidStatus('productId'); ?>';
+       var customerId = '<?php echo $customer_id; ?>';
+       var availableForAuction = '<?php echo $_product->getAvailableForAuction(); ?>';
+       var purchaseDate='<?php echo $backwardbid_helper->getPurchaseDate('productId', 'customerId'); ?>';
+       var currentDate='<?php echo $backwardbid_helper->getCurrentDate(); ?>';
+       var maxAmount= '<?php echo $backwardbid_helper->getMaxbidAmount($product_id); ?>';
+       if (availableForAuction=='1') {
+        if (bidStatus=='1' || bidStatus=='0') {
+            $('#product-price-<?php echo $_product->getId(); ?>').hide();
+        }
+        if (bidStatus=='2' && (purchaseDate<=currentDate || maxAmount==NULL)) {
+            
+            $('#product-price-<?php echo $_product->getId(); ?>').hide();
+        }
+       }
+    });
+</script>
+
+
+        <!-- <div id="timer-display" style="background-color: <?php // echo $timer_background_color; ?>; color: <?php // echo $timer_foreground_color; ?>; border-radius: 5px; padding: 5px 5px 5px 10px; margin: 5px 90px 5px 0;"></div> -->
+        <script>
+            // var countDownDate  = new Date("<?php // echo $bid_end_date; ?>").getTime();
+            // displayTimer("timer-display",countDownDate);
+        </script>
+        <!-- </div> -->
+
+<div id = "bidForm">
+    <form  id='placebid' action=backwardbid/index/savebid method='post'
+        accept-charset='UTF-8'
+        data-mage-init='{"validation":{}}'>
+        <input   type="hidden" readonly="readonly" name="productId" id="product_id" value="<?php echo $product_id; ?>">
+        <input   type="hidden" readonly="readonly" name="customerId" value="<?php echo $customer_id; ?>">
+        <input   type='number' name='bidAmount' id='bidAmount' style="width:200px;height:32px;" maxlength="50" data-validate="{required:true}" />
+        <button  type="submit" id="submit" name="Place Bid" value="Place Bid" style="width:200px; height:34px; background-color:#ff6550; box-shadow: none;">
+            <span> PLACE BID </span>
+        </button>
+    </form>
+</div>
+<?php else: ?>
+    <?php if ($bid_status == 1 || ($bid_status == 2 && $purchase_date >= $current_date)): ?>
+        <?php if ($bid_status == 2 && $backwardbid_helper->getMaxbidAmount($product_id)): ?>
+            <?php $postDataHelper = $this->helper('Magento\Framework\Data\Helper\PostHelper');
+                $postData                     = $postDataHelper->getPostData($block->getAddToCartUrl($_product), ['product' => $_product->getEntityId()]);
+            ?>
+        <button class="action tocart primary"
+            data-post='<?php /* @escapeNotVerified */echo $postData; ?>'
+            type="button" title="<?php /* @escapeNotVerified */echo __('Add to Cart1') ?>">
+            <span><?php /* @escapeNotVerified */echo __('Add to Cart') ?></span>
+        </button>
+        <?php endif;?>
+    <?php endif;?>
+<?php endif;?>
+<?php else: ?>
+        <?php if ($_product->isSaleable() && $_product->getAvailableForAuction() == 1 && $bid_status == 0 && $backwardbid_status == 1): ?>
+            <?php echo "AUCTION STARTS ON :  " . $bid_start_date; ?>
+        <?php endif?>
+<?php endif;?>

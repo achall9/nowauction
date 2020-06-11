@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="small_list">
+            <block class="Smartwave\Filterproducts\Block\Home\LatestList" name="latest_small_list" template="small_list.phtml">
+                <arguments>
+                    <argument name="aspect_ratio" xsi:type="number">0</argument>
+                    <argument name="image_width" xsi:type="number">212</argument>
+                    <argument name="image_height" xsi:type="number">212</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="featuredList">
+            <block class="Smartwave\Filterproducts\Block\Home\FeaturedList" name="featured_product" template="featured_product_grid.phtml">
+                <arguments>
+                    <argument name="aspect_ratio" xsi:type="number">0</argument>
+                    <argument name="image_width" xsi:type="number">212</argument>
+                    <argument name="image_height" xsi:type="number">212</argument>
+                    <argument name="product_count" xsi:type="number">4</argument>
+                    <argument name="column_count" xsi:type="number">4</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="bidedList">
+            <block class="Smartwave\Filterproducts\Block\Home\BidedList" name="bidList_product" template="bidedList_product_grid.phtml">
+                <arguments>
+                    <argument name="aspect_ratio" xsi:type="number">0</argument>
+                    <argument name="image_width" xsi:type="number">212</argument>
+                    <argument name="image_height" xsi:type="number">212</argument>
+                    <argument name="product_count" xsi:type="number">4</argument>
+                    <argument name="column_count" xsi:type="number">4</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="watchlist">
+            <block class="Smartwave\Filterproducts\Block\Home\WishlistProducts" name="wishlist_product" template="wishlist_product_grid.phtml">
+                <arguments>
+                    <argument name="aspect_ratio" xsi:type="number">0</argument>
+                    <argument name="image_width" xsi:type="number">212</argument>
+                    <argument name="image_height" xsi:type="number">212</argument>
+                    <argument name="product_count" xsi:type="number">4</argument>
+                    <argument name="column_count" xsi:type="number">4</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="saved_search">
+            <block class="Smartwave\Filterproducts\Block\Home\WishlistProducts" name="saved_search_product" template="saved_search_product_grid.phtml">
+                <arguments>
+                    <argument name="aspect_ratio" xsi:type="number">0</argument>
+                    <argument name="image_width" xsi:type="number">212</argument>
+                    <argument name="image_height" xsi:type="number">212</argument>
+                    <argument name="product_count" xsi:type="number">4</argument>
+                    <argument name="column_count" xsi:type="number">4</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="recently_viewed">
+            <block class="Smartwave\Filterproducts\Block\Home\RecentlyViewedProducts" name="recently_viewed_product" template="recently_viewed_product_grid.phtml">
+                <arguments>
+                    <argument name="aspect_ratio" xsi:type="number">0</argument>
+                    <argument name="image_width" xsi:type="number">212</argument>
+                    <argument name="image_height" xsi:type="number">212</argument>
+                    <argument name="product_count" xsi:type="number">4</argument>
+                    <argument name="column_count" xsi:type="number">4</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="LatestList">
+            <block class="Smartwave\Filterproducts\Block\Home\LatestList" name="latest_product" template="latest_product_grid.phtml">
+                <arguments>
+                    <argument name="aspect_ratio" xsi:type="number">0</argument>
+                    <argument name="image_width" xsi:type="number">212</argument>
+                    <argument name="image_height" xsi:type="number">212</argument>
+                    <argument name="product_count" xsi:type="number">4</argument>
+                    <argument name="column_count" xsi:type="number">4</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

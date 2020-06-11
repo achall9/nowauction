@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_CsMultiSeller
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (http://cedcommerce.com/)
+ * @license     http://cedcommerce.com/license-agreement.txt
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Store/etc/config.xsd">
+    <default>
+        <ced_csmarketplace>
+			<general>
+				<activation_csmultiseller>1</activation_csmultiseller>
+			</general>
+			<ced_csmultiseller>
+				<minprice>1</minprice>
+				<approval>1</approval>
+			</ced_csmultiseller>
+		</ced_csmarketplace>
+		<ced>
+		   	<rewrites>
+		     	<csmultiseller>
+		     		<product>
+		      			<all>Adminhtml,Widget,Backend,RequireJs</all>
+	      			</product>
+		    	</csmultiseller>
+		   	</rewrites>
+		</ced>
+<<<<<<< HEAD
+   
+    <vendor_acl>
+          <resources>
+        <all>
+          <title>Allow Everything</title>
+        </all> 
+        <vendor>
+          <title>Vendor Panel</title>
+          <path>#</path>
+          <sort_order>1</sort_order>
+          <children>
+            <vendor_select_and_sell_addon>
+                <title>Vendor Select and Sell</title>
+                <sort_order>40</sort_order>
+                <path>#</path>
+                <children>
+                  <new_product>
+                    <title>Add Product</title>
+                    <sort_order>10</sort_order>
+                    <path>csmultiseller/product/new/</path>
+                  </new_product>
+					<product_list>
+                    <title>Product List</title>
+                    <sort_order>20</sort_order>
+                    <path>csmultiseller/product/new/</path>
+                  </product_list>
+                 </children>
+              </vendor_select_and_sell_addon>
+          </children>
+        </vendor>
+      </resources>
+      </vendor_acl> 
+       </default>
+=======
+    </default>
+    
+>>>>>>> 252bbea1925c08e2165ba2e814c35b5e660fbd72
+</config>

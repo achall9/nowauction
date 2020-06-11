@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!--
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_GiftCard
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license     https://cedcommerce.com/license-agreement.txt
+ * -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- for image uploader-->
+    <virtualType name="Ced\GiftCard\GiftCardImageUpload" type="Ced\GiftCard\Model\ImageUploader">
+        <arguments>
+            <argument name="baseTmpPath" xsi:type="string">giftcard/tmp/image</argument>
+            <argument name="basePath" xsi:type="string">giftcard/images</argument>
+            <argument name="allowedExtensions" xsi:type="array">
+                <item name="jpg" xsi:type="string">jpg</item>
+                <item name="jpeg" xsi:type="string">jpeg</item>
+                <item name="gif" xsi:type="string">gif</item>
+                <item name="png" xsi:type="string">png</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Ced\GiftCard\Controller\Adminhtml\Card\Gallery\Upload">
+        <arguments>
+            <argument name="imageUploader" xsi:type="object">Ced\GiftCard\GiftCardImageUpload</argument>
+        </arguments>
+    </type>
+
+    <!-- /for image uploader-->
+
+    <virtualType name="Magento\Catalog\Ui\DataProvider\Product\Form\Modifier\Pool">
+        <arguments>
+            <argument name="modifiers" xsi:type="array">
+                <item name="course_start" xsi:type="array">
+                    <item name="class" xsi:type="string">Ced\GiftCard\Ui\DataProvider\ProductFormModifier\Attribute</item>
+                    <item name="sortOrder" xsi:type="number">100</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- /for qty update management-->
+    <type name="Magento\Sales\Controller\Adminhtml\Order\Invoice\UpdateQty">
+        <plugin name="ced_giftcard_invoice_prepare_invoiceservice"
+                type="Ced\GiftCard\Plugin\Sales\Model\Service\InvoiceService"/>
+    </type>
+
+    <type name="Magento\Sales\Model\Order">
+        <plugin name="ced_giftcard_sales_model_order"
+                type="Ced\GiftCard\Plugin\Sales\Model\Order"/>
+    </type>
+
+</config>

@@ -1,0 +1,125 @@
+<?php
+/**
+ * CedCommerce
+  *
+  * NOTICE OF LICENSE
+  *
+  * This source file is subject to the End User License Agreement (EULA)
+  * that is bundled with this package in the file LICENSE.txt.
+  * It is also available through the world-wide-web at this URL:
+  * https://cedcommerce.com/license-agreement.txt
+  *
+  * @category    Ced
+  * @package     Ced_CsVendorAttribute
+  * @author       CedCommerce Core Team <connect@cedcommerce.com >
+  * @copyright   Copyright CEDCOMMERCE (https://cedcommerce.com/)
+  * @license      https://cedcommerce.com/license-agreement.txt
+  */
+
+?>
+<?php $_invoice = $block->getInvoice() ?>
+<?php $_order   = $block->getOrder() ?>
+<?php 
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$store_manager = $objectManager->create('\Magento\Store\Model\StoreManagerInterface');
+$vendorId = $objectManager->get('Magento\Customer\Model\Session')->getVendorId();
+$timezone = $objectManager->create('\Magento\Framework\Stdlib\DateTime\TimezoneInterface');
+if ($vendorId) {
+    $this->_vendor = $objectManager->create('Ced\CsMarketplace\Model\Vendor');
+    $vendor_info = $this->_vendor->load($vendorId);
+    $seller = $objectManager->create('Ced\CsMarketplace\Model\Vendor\Attribute')->getCollection();
+    $eav_config = $objectManager->create('\Magento\Eav\Model\Config');
+}
+?>
+<?php if ($_invoice && $_order): ?>
+    <?php if ($vendorId) { ?>
+        <table class="email-items" style="border: 1px solid #bebebe;">
+            <th class="item-info">
+                <h3><?php echo __('Seller information:') ?></h3>
+            </th>
+            <?php  if($vendor_info->getPublicName()){ ?>
+                <tr>
+                    <th class="item-info" style="padding-bottom: 5px">
+                        <?php echo __('Public Name') ?>
+                    </th>
+                    <td  style="padding-bottom: 5px">
+                        <?php echo __($vendor_info->getPublicName()) ?>
+                    </td>
+                </tr>
+            <?php } ?>
+            <?php  if($vendor_info->getName()){ ?>
+                <tr>
+                    <th class="item-info"  style="padding-bottom: 5px">
+                        <?php echo __('Seller Name') ?>
+                    </th>
+                    <td  style="padding-bottom: 5px">
+                        <?php echo __($vendor_info->getName()) ?>
+                    </td>
+                </tr>
+            <?php } ?>
+            <?php foreach ($seller as $value){ 
+                if(
+                    $value['attribute_code']=='public_name'|| 
+                    $value['attribute_code']=='name' || 
+                    $value['frontend_input']=='file' ||
+                    $value['frontend_input']=='image'
+                    ){
+                    continue;
+                }
+                    if ($value['use_in_invoice']=='1') {
+                        $attribute = $eav_config->getAttribute('csmarketplace_vendor', $value['attribute_code']);
+                        $attribute->setStoreId($store_manager->getStore()->getId());
+                ?>
+                    <tr>
+                        <th class="item-info"  style="padding-bottom: 5px">
+                            <?php echo __($value['frontend_label']) ?>
+                        </th>
+                        <td  style="padding-bottom: 5px">
+                            <?php if($attribute->usesSource()){
+                                    $data = $attribute->getSource()->getOptionText($vendor_info->getData($value['attribute_code']));
+                                    if(is_array($data)){
+                                        $data = implode(', ',$data);
+                                    } 
+                                    echo $data;
+                                }else if($value['frontend_input'] == 'date'){
+                                    echo $timezone->date(new \DateTime($vendor_info->getData($value['attribute_code'])))->format('m/d/y');
+                                }else{
+                                    echo __($vendor_info->getData($value['attribute_code']));
+                                } 
+                            ?>
+                        </td>
+                    </tr>
+                    <?php } ?>
+            <?php } ?>
+        </table>
+    <?php } ?>
+    
+    <table class="email-items">
+        <thead>
+            <tr>
+                <th class="item-info">
+                    <?php echo __('Items') ?>
+                </th>
+                <th class="item-qty">
+                    <?php echo __('Qty') ?>
+                </th>
+                <th class="item-subtotal">
+                    <?php echo __('Subtotal') ?>
+                </th>
+            </tr>
+        </thead>
+        <?php foreach ($_invoice->getAllItems() as $_item): ?>
+            <?php
+                if ($_item->getOrderItem()->getParentItem()) {
+                    continue;
+                }
+            ?>
+            <tbody>
+                <?= $block->getItemHtml($_item) ?>
+            </tbody>
+        <?php endforeach; ?>
+        <tfoot class="order-totals">
+            <?= $block->getChildHtml('invoice_totals') ?>
+        </tfoot>
+    </table>
+<?php endif; ?>

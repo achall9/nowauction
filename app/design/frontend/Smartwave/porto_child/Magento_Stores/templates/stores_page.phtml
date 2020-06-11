@@ -1,0 +1,22 @@
+<?php
+    $stores_config = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_settings/stores');
+    $_infoblock = $stores_config['infoblock'];
+    $_customblock = $stores_config['customblock'];
+    
+    if($_customblock) {
+        $block = $this->getLayout()->createBlock('Magento\Cms\Block\Block');
+        if($block) {
+            $block->setBlockId($_customblock);
+        }
+        if($block){
+            echo '<div class="row"><div class="col-md-12">'.$block->toHtml().'</div></div>';
+        }
+    }
+?>
+<div class="row">
+    <div class="col-md-8"><?php echo $this->getChildHtml('storesForm')?></div>
+    <div class="col-md-4 contact-info">
+        <div class="stores-title"><?php echo __('Stores') ?> <b><?php echo __('Details') ?></b></div>
+        <?php echo $_infoblock; ?>
+    </div>
+</div>

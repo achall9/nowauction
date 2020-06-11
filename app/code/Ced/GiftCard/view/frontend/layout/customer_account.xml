@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!--
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_GiftCard
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license     https://cedcommerce.com/license-agreement.txt
+ *-->
+<page layout="2columns-left" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="customer_account"/>
+    <body>
+    <attribute name="class" value="account"/> 
+    
+    <referenceContainer name="sidebar.main">
+    	<referenceBlock name="customer_account_navigation">
+    		<block class="Magento\Framework\View\Element\Html\Link\Current" 
+          name="giftcard.credit.cards" after="customer-account-navigation-address-link">
+            <arguments>
+                <argument name="label" xsi:type="string" translate="true">Check Gift Card Value</argument>
+                <argument name="path" xsi:type="string">giftcard/cards/view</argument>
+            </arguments>
+        </block> 
+      </referenceBlock>
+    </referenceContainer>
+   </body>
+</page>
+                    

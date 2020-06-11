@@ -1,0 +1,113 @@
+<?php 
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_CsMultiSeller
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license     https://cedcommerce.com/license-agreement.txt
+ */
+?>
+<?php 
+$_products = $this->getProductCollection();
+if($_products){
+    ?>
+	
+	<h2><?php echo __('More Sellers Selling this Product');?></h2>
+	<?php if($this->getMinPrice()){
+		$cur = $this->_storeManager->getStore(null)->getBaseCurrencyCode();
+		?>
+	<label style="font-weight:bold;"><?php echo __('Minimum starting price is');?>&nbsp;<?php 	echo  $this->priceCurrency->format($this->getMinPrice(),false,2,null,$cur);
+	?></td></label>
+	<?php }?>
+	<?php echo $this->getPagerHtml(); ?>
+	<div style="clear:both"></div>
+	<div class="order-items selling-sell order-details table-responsive">
+			<table id="my-orders-table" class="data-table table-bordered table-hover table-striped">
+		    <col />
+		    <col width="1"/>
+		    <col width="1"/>
+			<thead>	
+				<tr>
+					<th class="head"><?php echo __('Sellers Information') ?></th>
+					<th class="head"><?php echo __('Price') ?></th>
+					<th class="head"><?php echo __('Buy') ?></th>
+				</tr>	
+		    </thead>
+		    <tbody>
+			        <?php $_odd = ''; ?>
+			        <?php foreach ($_products as $_product): ?>
+			        <?php $vendor = $this->vendorFactory->create()->load($_product->getVendorId());?>
+			        <tr>
+			        	<td class="status">
+			        	<strong>
+						<a href="<?php echo $vendor->getVendorShopUrl(); ?>" target="_blank"><?php echo $vendor->getPublicName(); ?></a>
+						</strong>
+						
+						<?php 
+                         $option_1 = $this->_moduleManager->isEnabled('Ced_CsVendorReview');
+                         $option_2 = $this->scopeConfig->getValue('ced_csmarketplace/vendorreview/activation', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 0);
+						if(($option_2)&&($option_1)){?>
+
+						<?php }?>
+			        	</td>
+			            <td class="status"> 
+			            	<?php 		            	
+			            	$cur = $this->_storeManager->getStore(null)->getBaseCurrencyCode();
+			            	echo  $this->priceCurrency->format($_product->getPrice(),false,2,null,$cur);
+			            	?>
+			            </td>
+			            
+			     		<td class="a-center view number">
+			     		
+				     			
+				     			<div class="actions">
+									<button id="product-addtocart-button" class="action primary tocart" title="<?php echo __('Add to Cart') ?>" onclick='addToCart(<?php echo $_product->getEntityId() ?>)'>
+										<span><?php echo __('Add to Cart') ?></span>
+									</button>
+								</div>
+			            </td>
+			        </tr>
+			  
+			        <?php endforeach; ?>
+			    </tbody>
+		</table>
+	</div>
+	<?php echo $this->getPagerHtml(); ?>
+	
+	<script>
+	function addToCart(id){
+		<?php
+			$pro=array();
+			if($_products != null){ 
+				foreach($_products as $val){?>
+				if(id==<?php echo $val->getEntityId()?>){
+					<?php $pro = $this->productFactory->create()->load($val->getEntityId());?>
+					var url = "<?php echo $this->getAddToCartUrl($pro)?>";
+				}
+		<?php }}?>
+		jQuery.ajax({
+			url: url,
+			type: "POST",
+			data: {'form_key':'<?php echo  $this->formKey->getFormKey()?>',
+				   'product':id,
+				   'qty':'1'},
+			dataType: 'html',
+			success:function($data){
+
+			}
+		});
+	
+	}
+	</script>
+<?php }else{?>
+<h2><?php echo __('No Other Seller Selling this Product');?></h2>
+<?php }?>

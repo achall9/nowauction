@@ -1,0 +1,9 @@
+<div>
+    <button style="float: right" onclick="compose()"><?php echo __('Compose'); ?></button>
+</div>
+<?php echo $block->getGridHtml(); ?>
+<script>
+    function compose() {
+        window.location.href = '<?php echo $block->getCreateUrl() ?>';
+    }
+</script>

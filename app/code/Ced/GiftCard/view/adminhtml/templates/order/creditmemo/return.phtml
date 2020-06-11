@@ -1,0 +1,58 @@
+<?php if($block->hasGiftCard()): ?>
+    <?php $returnAmount = $block->giftReturnAmount(); ?>
+    <?php if(!empty($returnAmount)): ?>
+        <div class="field choice admin__field admin__field-option field-giftcard-amount">
+            <input id="giftcard_amount"
+                   class="admin__control-checkbox"
+                   name="creditmemo[giftcard_amount]"
+                   value="1"
+                   checked
+                   type="checkbox" />
+            <label for="giftcard_amount" class="admin__field-label">
+                <span><?php /* @escapeNotVerified */ echo __('Reduce Amount From Gift Coupons') ?></span>
+            </label>
+        </div>
+        <div id="giftcard_amount_inputs">
+            <?php foreach($returnAmount as $code => $amount): ?>
+                <div class="field choice admin__field admin__field-option field-giftcard-amount">
+                    <label for="giftcard_amount" class="admin__field-label">
+                        <span><?php /* @escapeNotVerified */ echo $code;?></span>
+                    </label>
+                    <input class="admin__control-textbox giftcard_input_amount"
+                           name='creditmemo[giftcard_amount][<?php echo /* @escapeNotVerified */ $code;?>]'
+                           value="<?php /* @escapeNotVerified */ echo $amount; ?>"
+                           data-validate="{required:true, 'validate-number':true}"
+                           type="number" />
+
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <script>
+            require(['jquery', 'prototype'], function(jQuery){
+
+                //<![CDATA[
+                jQuery(document).ready(function(){
+                    jQuery('#giftcard_amount').on('click', function(){
+                        var inputFields = jQuery('#giftcard_amount_inputs');
+                        console.log(jQuery(this).prop("checked"));
+                        if(jQuery(this).prop("checked") == true){
+                            inputFields.find('.giftcard_input_amount')
+                                .each(function(i,e){
+                                    jQuery(e).attr('disabled', false);
+                            });
+                        }
+                        else if(jQuery(this).prop("checked") == false){
+                            inputFields.find('.giftcard_input_amount')
+                                .each(function(i,e){
+                                    jQuery(e).attr('disabled', true);
+                                });
+                        }
+                    });
+                });
+                //]]>
+
+            });
+        </script>
+
+    <?php endif; ?>
+<?php endif; ?>

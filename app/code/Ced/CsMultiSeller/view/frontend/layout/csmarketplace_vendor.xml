@@ -1,0 +1,74 @@
+<!--
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_CsMultiSeller
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (http://cedcommerce.com/)
+ * @license     http://cedcommerce.com/license-agreement.txt
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="vendorpanel" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <head>
+    	<meta name="x_ua_compatible" content="IE=edge,chrome=1"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+        
+		<css src="mage/calendar.css"/>
+        <css src="Ced_CsMarketplace::bower_components/bootstrap/dist/css/bootstrap.min.css" />
+        <css src="Ced_CsMarketplace::bower_components/metisMenu/dist/metisMenu.min.css"/>
+        <css src="Ced_CsMarketplace::dist/css/timeline.css"/>
+        <css src="Ced_CsMarketplace::dist/css/sb-admin-2.css"/>
+        <css src="Ced_CsMarketplace::bower_components/morrisjs/morris.css"/>
+        <css src="Ced_CsMarketplace::bower_components/font-awesome/css/font-awesome.min.css"/>
+        <css src="Ced_CsMarketplace::css/ced/csmarketplace/vpanel.css"/> 
+	    <css src="Ced_CsMarketplace::css/ced/csmarketplace/vpanel-admin.css"  media="all"/> 
+        
+    </head>
+    <body>
+		<referenceBlock name="csmarketplace_vendor_navigation">
+		<!--     <block class="Ced\CsMarketplace\Block\Links" name="csmarketplace_vendor_navigation" >  -->
+			     <block class="Ced\CsMarketplace\Block\Link\Current" name="vendor_select_and_sell_addon" after="vendor_orders" ifconfig="ced_csmultiseller/general/activation_csmultiseller">
+			       <arguments>
+			       <argument name="name" xsi:type="string">vendor_select_and_sell_addon</argument>
+			       <argument name="path" xsi:type="string">#</argument>
+			       <argument name="label" xsi:type="string">Select and Sell</argument>
+			       <argument name="font_awesome" xsi:type="string">fa fa-hand-o-up</argument>
+			       </arguments>
+			       
+			       <block class="Ced\CsMarketplace\Block\Links" name="vendor_select_and_sell_container" as="vendor_select_and_sell_container">
+							<arguments>
+								<argument name="css_class" xsi:type="string">nav nav-second-level collapse</argument>
+							</arguments>
+							<block class="Ced\CsMarketplace\Block\Link\Current" name="new_product" ifconfig="ced_csmultiseller/general/activation_csmultiseller">
+								<arguments>
+									<argument name="name" xsi:type="string">new_product</argument>
+									<argument name="label" xsi:type="string">Add Product</argument>
+									<argument name="path" xsi:type="string">csmultiseller/product/new</argument>
+									<argument name="font_awesome" xsi:type="string">fa fa-hand-o-right</argument>
+									<argument name="sort_order" xsi:type="string">5</argument>
+								</arguments>
+							</block>
+							<block class="Ced\CsMarketplace\Block\Link\Current" name="product_list" ifconfig="ced_csmultiseller/general/activation_csmultiseller">
+								<arguments>
+									<argument name="name" xsi:type="string">product_list</argument>
+									<argument name="label" xsi:type="string">Product List</argument>
+									<argument name="path" xsi:type="string">csmultiseller/product/index</argument>
+									<argument name="font_awesome" xsi:type="string">fa fa-list</argument>
+									<argument name="sort_order" xsi:type="string">6</argument>
+								</arguments>
+							</block>
+						</block>
+			      </block>
+		      <!-- </block> -->
+		</referenceBlock>
+  </body>
+ </page>
+   

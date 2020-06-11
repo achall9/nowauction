@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * CedCommerce
+  *
+  * NOTICE OF LICENSE
+  *
+  * This source file is subject to the End User License Agreement (EULA)
+  * that is bundled with this package in the file LICENSE.txt.
+  * It is also available through the world-wide-web at this URL:
+  * http://cedcommerce.com/license-agreement.txt
+  *
+  * @category    Ced
+  * @package     Ced_CsMessaging
+  * @author       CedCommerce Core Team <connect@cedcommerce.com >
+  * @copyright   Copyright CEDCOMMERCE (http://cedcommerce.com/)
+  * @license      http://cedcommerce.com/license-agreement.txt
+  */
+-->
+<page layout="2columns-left" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="customer_account"/>
+    <body>
+        <attribute name="class" value="account"/>
+        <referenceContainer name="columns.top">
+            <block class="Ced\CsMessaging\Block\Customer\Notification" name="csmessaging_customer_notification" template="Ced_CsMessaging::customer/notification.phtml"/>
+        </referenceContainer>
+        <referenceContainer name="sidebar.main">
+            <referenceBlock name="customer_account_navigation">
+                <block class="Magento\Framework\View\Element\Html\Link\Current" name="ced-customer-vendor-inbox" after="customer-account-navigation-address-link" ifconfig="ced_csmarketplace/general/messaging_active">
+                    <arguments>
+                        <argument name="label" xsi:type="string" translate="true">Vendor Inbox</argument>
+                        <argument name="path" xsi:type="string">csmessaging/customer/vinbox</argument>
+                    </arguments>
+                </block>
+                <block class="Magento\Framework\View\Element\Html\Link\Current" name="ced-customer-admin-inbox" after="customer-account-navigation-address-link" ifconfig="ced_csmarketplace/general/messaging_active">
+                    <arguments>
+                        <argument name="label" xsi:type="string" translate="true">Admin Inbox</argument>
+                        <argument name="path" xsi:type="string">csmessaging/customer/ainbox</argument>
+                    </arguments>
+                </block>
+            </referenceBlock>
+        </referenceContainer>
+    </body>
+</page>
+

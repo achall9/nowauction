@@ -1,0 +1,40 @@
+<?php  $backUrl = $this->getUrl('customer/index/index'); ?>
+<?php $sendMessageUrl = $this->getUrl('*/*/save');?>
+<?php $ids = $block->getAllSelectedCustomerIds(); ?>
+
+<form method="post" name="customer-vendor-chat-form" id="cv-chat-form" action='<?php echo $sendMessageUrl; ?>'>
+    <div class="chat-wrapper">
+        <?php echo $block->getBlockHtml('formkey'); ?>
+        <div class="compose-box-wrapper">
+            <input type="hidden" name="receiver_id" value="<?php echo $ids; ?>">
+            <div class="cv-subject-wrapper">
+                <input placeholder="<?php echo __('Subject'); ?>" type="text" name="subject" value="" required/>
+            </div>
+            <textarea name="message" id="cv-textarea" class="input-text ced-message-box" row="4" cols="50" required></textarea>
+            <?php $adminSendMail = $this->helper('Ced\CsMarketplace\Helper\Data')->getStoreConfig('ced_csmarketplace/csmessaging/admin_send_mail'); ?>
+            <?php if ($adminSendMail) : ?>
+                <div class="send_mail_wrapper">
+                    <label><?php echo __('Notify Receiver by Email'); ?></label>
+                    <input type="checkbox" name="send_mail" value="1"/>
+                </div>
+            <?php endif; ?>
+            <div class="back-link">
+                <a href="<?php echo $backUrl; ?>"><?php echo __('Back');?></a>
+                <input class="btn-send" id="btn-chat" type="submit" value="<?php echo __('Send'); ?>">
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<?php $configArr = $this->helper('Ced\CsMessaging\Helper\Data')->getWysiwygConfigArrayAdmin(); ?>
+<script>
+    require(['jquery',
+        'mage/adminhtml/wysiwyg/tiny_mce/setup'
+    ],function ($) {
+        composeTextArea = new wysiwygSetup('cv-textarea',<?php echo json_encode($configArr);?>);
+        composeTextArea.setup("exact");
+    });
+</script>
+
+

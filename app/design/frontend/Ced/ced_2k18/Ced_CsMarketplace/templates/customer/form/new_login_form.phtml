@@ -1,0 +1,51 @@
+<form class="form form-login" id="login-form" method="post"
+      action="<?php echo $block->getPostActionUrl() ?>"
+      data-mage-init='{"validation":{}}'>
+    <?php echo $block->getBlockHtml('formkey'); ?>
+    <h3 class="head"><?php echo __('Login') ?></h3>
+    <div class="clearfix head_right">
+        <div class="form-element-padding-none">
+            <input type="email" name="login[username]"
+                   value="<?php echo $block->escapeHtml($block->getUsername()) ?>"
+                   id="email"
+                   class="form_size form-control input-text required-entry validate-email"
+                   placeholder="<?php echo __('Email Address') ?>"
+                   title="<?php echo __('Email Address') ?>"
+                   data-msg-validate-email="<?php echo __('Please enter a valid email address.');?>"
+                   data-validate="{required:true, 'validate-email':true}">
+        </div>
+        <div class="form-element-padding-none">
+            <input type="password"
+                   name="login[password]"
+                   value="<?php echo $block->escapeHtml($block->getPassword()) ?>"
+                   class="form_size form-control input-text required-entry validate-password"
+                   placeholder="<?php echo __('Password') ?>"
+                   id="pass"
+                   title="Password"
+                   data-validate="{required:true, 'validate-password':true}"/>
+        </div>
+        <div class="form-element-padding-none">
+            <button type="submit" class="btn btn-primary form-control"
+                    title="<?php echo __('Login') ?>" name="send" id="send2">
+                <span><span><?php echo __('Login') ?></span></span>
+            </button>
+        </div>
+    </div>
+    <div class="clearfix right_bottom">
+        <div class="checkbox custom_check">
+            <input name="remember" type="checkbox" id="remember" <?php echo $block->escapeHtml($block->getRememberMe()) == 1 ? 'checked="checked"' : ''; ?>>
+            <label class="remember_lable" for="remember">
+                <?php echo __('Remember Me'); ?>
+            </label>
+        </div>
+    </div>
+    <div class="forgot">
+        <a class="forget-psw"
+           href="<?php echo $block->getForgotPasswordUrl(); ?>">
+            <?php echo __('Forgot Your Password?') ?>
+        </a>
+    </div>
+    <p class="already-account">
+        <?php echo __('You have account ?'); ?><a href='<?php echo $this->getUrl("*/*/register"); ?>'><?php echo __('Create Account'); ?></a>
+    </p>
+</form>

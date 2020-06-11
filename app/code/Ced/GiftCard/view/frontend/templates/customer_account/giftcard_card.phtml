@@ -1,0 +1,147 @@
+<?php
+/*
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_GiftCard
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license     https://cedcommerce.com/license-agreement.txt
+ **/
+// @codingStandardsIgnoreFile
+/** @var \Magento\Vault\Block\CreditCards $block */
+
+$giftcard = $block->getCollection();
+
+
+?>
+
+<div class="block">
+    <div class="block-title">
+        <strong>
+            <?php echo __('Check Coupon')?>
+        </strong>
+    </div>
+    <div class="block-content">
+        <div id="coupon-form" class="coupon-form check-coupon-code">
+            <form id="cs_coupon_form">
+                <input type="text"
+                       name="couponcode"
+                       id="couponcode"
+                       placeholder="<?php echo __('Enter Coupon Code Here') ?>">
+
+                <input type="button" name="submit" id="checkCouponCode" value="Check">
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="coupon-table" class="coupon-table">
+    <?php if (true): ?>
+        <div class="block">
+            <div class="block-title">
+                <strong>
+                    <?php echo __('View all coupon')?>
+                </strong>
+            </div>
+            <div class="block-content">
+                <div class="table-wrapper my-credit-cards">
+
+                    <table class="data table table-credit-cards table-striped" id="my-orders-table">
+                        <caption class="table-caption"><?php /* @noEscape */ echo __('My Gift Cards') ?></caption>
+                        <thead>
+                            <tr>
+                                <th scope="col" class="col card-number"><?php /* @noEscape */ echo __('Card Number') ?></th>
+                                <th scope="col" class="col card-type"><?php /* @noEscape */ echo __('Initial Value') ?></th>
+                                <th scope="col" class="col card-type"><?php /* @noEscape */ echo __('Current Value') ?></th>
+                                <th scope="col" class="col expire"><?php /* @noEscape */ echo __('Expiration Date') ?></th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach($giftcard as $card) { ?>
+                            <tr>
+                                <td data-th="<?php echo __('Card Number') ?>" class="col card-number">
+                                   <?php /* @noEscape */ echo $card->getCode() ?>
+                                </td>
+                                <td data-th="<?php echo __('Value') ?>" class="col card-value">
+                                     <?php echo $block->getFormatedPrice($card->getCouponPrice()); ?>
+                                </td>
+                                <td data-th="<?php echo __('Value') ?>" class="col card-value">
+                                     <?php echo $block->getFormatedPrice($card->getCurrentAmount()); ?>
+                                </td>
+                                <td data-th="<?php echo (__('Expiration Date')) ?>" class="col card-expire">
+                                    <?php echo date('d-m-y', strtotime($card->getExpirationDate())); ?>
+                                </td>
+                            </tr>
+                            <?php  } ?>
+                            <?php echo $block->getPagerHtml() ?>
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+        </div>
+    <?php else: ?>
+        <div class="message info empty"><span><?php /* @noEscape */ echo __('You have no Gift cards.'); ?></span></div>
+    <?php endif ?> 
+</div>
+<script type="text/javascript">
+	require([
+	    'jquery',
+	    'mage/mage'
+	    ], function (jQuery) {
+	    	var checkCouponCode = jQuery('#checkCouponCode');
+            jQuery('#cs_coupon_form').on("keypress", function (e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    jQuery(checkCouponCode).click();
+                }
+            });
+	    	jQuery(checkCouponCode).on('click', function () {
+
+	    	    var couponcode = jQuery('#couponcode').val();
+                jQuery.ajax({
+                    url: "<?php echo $block->checkCouponCodeURL() ?>",
+                    type: 'post',
+                    showLoader: true,
+                    data:{couponcode:couponcode, form_key:jQuery.cookie('form_key')},
+                    dataType: 'json'
+                }).always(function(data){
+
+                    jQuery('.coupon-wrapper').remove();
+                    jQuery('.coupon-error').remove();
+                    /*prepare coupon html to render*/
+                    var form = jQuery('#coupon-form');
+                    var html = '<div class="coupon-wrapper">';
+                    if(data.length > 0){
+                        for(var i in data){
+                            html += '<div class="coupon-detail">';
+                            html += '<div class="coupon-code"><span class="label"><?php echo __('Coupon Code')?></span> :<span calss="value">'+data[i]['code']+'</span></div>';
+                            html += '<div class="coupon-price"><span class="label"><?php echo __('Price')?></span> :<span calss="value">'+data[i]['current_amount']+'</span></div>';
+                            html += '<div class="coupon-expirationdate"><span class="label"><?php echo __('Expiration Date')?></span> :<span calss="value">'+data[i]['expiration_date']+'</span></div>';
+                            html += '</div>';
+                        }
+                    }else{  
+                        /*to remove no card message if exist*/
+
+                        html = '<div class="coupon-error">';
+                        html += '<div class="coupon-detail no-card">';
+                        html += '<div class="error-message"><span class="label"><?php echo __('No Coupon Code Found.')?></span></div>'; 
+                        html += '</div>';
+                    }
+                    html += '</div>';
+
+                    jQuery(form).append(html);
+                });
+            });
+	    });
+</script>

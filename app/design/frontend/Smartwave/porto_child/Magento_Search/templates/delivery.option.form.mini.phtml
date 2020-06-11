@@ -1,0 +1,34 @@
+<?php
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+?>
+<?php
+/** @var $block \Magento\Framework\View\Element\Template */
+/** @var $helper \Magento\Search\Helper\Data */
+$helper = $this->helper('Magento\Search\Helper\Data');
+?>
+<h2 class="delivery-option-title">Delivery Options:</h2>
+<div class="deliveryOptionsCheckboxes">
+  <form action="#">
+	  <input type="checkbox" name="shipToMe" value="shipToMe" style="margin-bottom: 3%;">Ship To Me<br>
+	  <input type="checkbox" name="pickUp" value="pickUp" style="margin-bottom: 3%;">Pick It Up<br>
+	  <input type="checkbox" name="localDelivery" value="localDelivery" style="margin-bottom: 3%;">Local Delivery<br>
+	</form>
+</div>
+<hr style="border-top-width: 5px; margin-top: 10%;">
+<style type="text/css">
+
+  .delivery-option-title {
+
+    color: black;
+    font-weight: 550;
+    font-size: large;
+
+
+  }
+
+</style>

@@ -1,0 +1,533 @@
+<?php
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var $block \Magento\Catalog\Block\Product\View */
+?>
+<?php $_product = $block->getProduct(); ?>
+<?php // var_dump($_product->getAvailableForAuction());exit(); ?>
+<?php $buttonTitle = __('Add to Cart'); ?>
+<?php $dailydealhelper=$this->helper('Smartwave\Dailydeals\Helper\Data'); ?>
+<?php $product_helper = $this->helper('Magento\Catalog\Helper\Product');?>
+<?php $_helper     = $this->helper('Magento\Catalog\Helper\Output');
+$backwardbid_helper       = $this->helper('Nowauction\Backwardbid\Helper\Data');?>
+<?php  if ($_product->isSaleable() && $_product->getAvailableForAuction() == 0):  ?>
+    <?php // if($block->getRequest()->getParam('dailydealproduct') || $dailydealhelper->isDealProduct($_product->getId())) : ?>
+    <div class="box-tocart">
+        <div class="fieldset">
+            <?php if ($block->shouldRenderQuantity()): ?>
+            <div class="field qty">
+                <label class="label" for="qty"><span><?php /* @escapeNotVerified */ echo __('Qty') ?>:</span></label>
+                <div class="control">
+                    <input type="number"
+                        name="qty"
+                        id="qty"
+                        maxlength="12"
+                        value="<?php /* @escapeNotVerified */ echo $block->getProductDefaultQty() * 1 ?>"
+                        title="<?php /* @escapeNotVerified */ echo __('Qty') ?>" class="input-text qty"
+                        data-validate="<?php echo $block->escapeHtml(json_encode($block->getQuantityValidators())) ?>"
+                        />
+                    <div class="qty-changer">
+                        <a class="qty-inc"><i class="porto-icon-up-dir"></i></a>
+                        <a class="qty-dec"><i class="porto-icon-down-dir"></i></a>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+            <div class="actions">
+                <button type="submit"
+                        title="<?php /* @escapeNotVerified */ echo $buttonTitle ?>"
+                        class="action primary tocart"
+                        id="product-addtocart-button">
+                    <span><?php /* @escapeNotVerified */ echo $buttonTitle ?></span>
+                </button>
+                <?php echo $block->getChildHtml('', true) ?>
+            </div>
+        </div>
+    </div>
+<?php else: ?>
+    <!-- countdown price for nowauction -->
+        <?php $productSku=$_product->getSku(); ?>
+        <input type="text" id="todate" value="<?php echo $dailydealhelper->getDailydealToDate($productSku); ?>" style="display:none;" >
+        <input type="text" style="display: none;" id="fromdate" value="<?php echo $dailydealhelper->getDailydealFromDate($productSku); ?>">
+        <p id="countdown"></p>
+        <?php
+            $product_id      = $_product->getId();
+            $bid_status      = $backwardbid_helper->getBidStatus($product_id);
+            $bidStartAmount  = $_helper->productAttribute($_product, $_product->getBidStartingPrice(), 'bid_starting_price ');
+            $bid_start_date  = $_product->getBidStartDate();
+            $backwardbid_status     = $backwardbid_helper->getConfig('backwardbid/general/enable');
+            $max_bid         = $backwardbid_helper->getMaxbidAmount($product_id);
+            $currency_symbol = $backwardbid_helper->getCurrency();
+            $date            = date('m/d/Y H:i:s');
+            $current_date    = $backwardbid_helper->getCurrentDate();
+            $customer_id     = $backwardbid_helper->getCustomerId();
+            $purchase_date   = $backwardbid_helper->getPurchaseDate($product_id, $customer_id);
+            $customerBidAmount   = $backwardbid_helper->getBidAmountOfCustomer($product_id, $customer_id);
+            $customerBidRank   = $backwardbid_helper->getCustomerBidPosition($product_id, $customer_id);
+            $customer_bid_status   = $backwardbid_helper->getCustomerBidStatus($product_id, $customer_id);
+            $checkBidStatus   = $backwardbid_helper->checkBidStatus($product_id);
+            $bid_status_value = '';
+            switch ($customer_bid_status) {
+                case 0:
+                    $bid_status_value = 'NOT_STARTED';
+                    break;
+                case 1:
+                    $bid_status_value = 'STARTED';
+                    break;
+                case 2:
+                    $bid_status_value = 'Won';
+                    break;
+                default:
+                    $bid_status_value = 'CLOSED';
+
+            }
+        // var_dump($backwardbid_status);exit();
+        ?>
+        <?php if($_product->isSaleable() && $_product->getAvailableForAuction() == 1): ?>
+        <?php if ($bid_status == 1 || ($bid_status == 2 && $purchase_date <= $current_date)): ?>
+        <input type="hidden" id="startFinalPrice" value="<?php echo $product_helper->getFinalPrice($_product); ?>">
+        <div class="sw-dailydeal-wrapper">
+            <div class="sw-dailydeal">
+                <?php // if($block->getRequest()->getParam('dailydealproduct')) :?>
+                    <p id="expired" style="visibility: hidden;"></p> 
+                <?php // endif; ?>
+                <div class="countdowncontainer" style="display:none;">
+                    <span class="dailydeal-label">
+                        <?php echo __('Auction Ends In:'); ?>
+                    </span>
+
+                    <span class="number-wrapper">
+                        <div class="line"></div>
+                        <span class="number hour"><p id="countdown_hours"></p></span>
+                        <div class="caption"><?php echo __('Hours'); ?></div>
+                    </span>
+
+                    <span class="number-wrapper">
+                        <div class="line"></div>
+                        <span class="number min"><p id="countdown_minutes"></p></span>
+                        <div class="caption"><?php echo __('Minutes'); ?></div>
+                    </span>
+
+                    <span class="number-wrapper">
+                        <div class="line"></div>
+                        <span class="number sec"><p id="countdown_seconds"></p></span>
+                        <div class="caption"><?php echo __('Seconds'); ?></div>
+                    </span>
+                </div>
+                <div class="pricecountdowncontainer" style="visibility: hidden; display: flex; justify-content: space-between; align-items: center;padding: 15px;color: #fff !important;background-color: rgba(0,136,204,0.7);box-shadow: 0 25px 35px -5px rgba(0, 0, 0, 0.2);">
+                    <span id="start_price" data-price="<?php echo $_product->getPrice(); ?>" style="display:none;"></span>
+                    <span class="countdown-label" style="font-size: 2em;">
+                        <?php echo __('Current Price: '); ?>
+                    </span>
+                    <span class="countdown_price">
+                        <p id="countdown_price" style="font-size: 2em;"></p>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+        <?php endif;?>
+    <!-- end countdown price for nowauction -->
+    <!-- addtocart for nowauction -->
+        <?php
+        $product_id      = $_product->getId();
+        $bid_status      = $backwardbid_helper->getBidStatus($product_id);
+        $bidStartAmount  = $_helper->productAttribute($_product, $_product->getBidStartingPrice(), 'bid_starting_price ');
+        $bid_start_date  = $_product->getBidStartDate();
+        $backwardbid_status     = $backwardbid_helper->getConfig('backwardbid/general/enable');
+        $max_bid         = $backwardbid_helper->getMaxbidAmount($product_id);
+        $currency_symbol = $backwardbid_helper->getCurrency();
+        $date            = date('m/d/Y H:i:s');
+        $current_date    = $backwardbid_helper->getCurrentDate();
+        $customer_id     = $this->helper('Nowauction\Backwardbid\Helper\Data')->getCustomerId();
+        $purchase_date   = $backwardbid_helper->getPurchaseDate($product_id, $customer_id);
+        if ($_product->isSaleable() && $_product->getAvailableForAuction() == 1 && ($bid_status == 1 || $bid_status == 2) && $backwardbid_status == 1): ?>
+            <?php if ($bid_status == 1 || ($bid_status == 2 && $purchase_date <= $current_date)): ?>
+                <script>
+                    // document.getElementById("product_addtocart_form").action = "backwardbid/index/savebid";
+                </script>
+                <div class="box-to-timer">
+                    <?php
+                        $bid_end_date             = $_product->getBidEndDate();
+                        $timer_background_color   = $backwardbid_helper->getConfig('backwardbid/general/timer_background_color_text');
+                        $timer_foreground_color   = $backwardbid_helper->getConfig('backwardbid/general/timer_foreground_color_text');
+                        $highest_bid_amount_color = $backwardbid_helper->getConfig('backwardbid/general/highest_bid_amount_text_color');
+                        $increment_value          = $backwardbid_helper->getBidIncrementalPrice($product_id);
+                    ?>
+                    <div id="bid_update">
+                        <?php if($customer_id=='0') {
+                                echo "<div id=cuslog style='float:left; width:350px; color:#ff6550;'><a style='text-decoration:none; color:red;' href=".$this->getUrl('customer/account/login').">Login to place your bid</a></div></br>";
+                            }else {
+                                $position = $backwardbid_helper->getCustomerBidPosition($product_id, $customer_id);
+                                if($position!=0){
+                                    echo "<div id=curbidpos style='float:left; width:350px; color:#ff6550;'>Your bid ranking is ".$position."</div></br>";}
+                            }?>
+                        <?php if ($backwardbid_helper->getMaxbidAmount($product_id)): ?>
+                            <?php $bidamount = $max_bid + $increment_value;?>
+                            <?php if ($bid_status == 1): ?>
+                                <?php
+                                    echo "<br>";
+                                    // echo "<b>Current highest bid :</b> <div id=highest style='float:right; width:285px; color:" . $highest_bid_amount_color . "'>" . $currency_symbol . $max_bid . "</div>";
+                                    // echo "<br><b>Bid an amount greater than :</b> <div id=amount style='float:right; width:285px; color:" . $highest_bid_amount_color . "'>" . $currency_symbol . $bidamount . "</div>"; ?>
+                            <?php endif?>
+                        <?php else: ?>
+                            <?php echo "<b>Bid starting price is </b>" . $currency_symbol . $bidStartAmount; ?>
+                        <?php endif?>
+                    </div>
+                </div>
+
+                <script type="text/javascript">
+                    require(['jquery'],function($) {
+                        $("#bidAmount").keyup(function() {
+                            var charlgth = $("#bidAmount").val().length;
+                            var product_id = '<?php echo $product_id; ?>';
+                            if(charlgth>0) {
+                                $.ajax({
+                                    type: 'POST',
+                                    url: 'backwardbid/index/maxbid',
+                                    dataType:'json',
+                                    data: {productId:product_id},
+                                    success: function (result) {
+                                        $('#amount').html('<?php echo $currency_symbol; ?>'+result["max_bid_amount"]);
+                                        $('#highest').html('<?php echo $currency_symbol; ?>' + result["highest_bid"]);        }
+                                });
+                            }
+                        });
+                    });
+                </script>
+                <!-- <div id="timer-display" style="background-color: <?php // echo $timer_background_color; ?>; color: <?php // echo $timer_foreground_color; ?>; border-radius: 5px; padding: 5px 5px 5px 10px; margin: 5px 90px 5px 0;"></div> -->
+                    <script>
+                        // var countDownDate  = new Date("<?php // echo $bid_end_date; ?>").getTime();
+                        // displayTimer("timer-display",countDownDate);
+                    </script>
+                <!-- </div> -->
+
+                <div id = "bidForm">
+                    <form  id='placebid' method='post'
+                        accept-charset='UTF-8'
+                        data-mage-init='{"validation":{}}'>
+                        <div class="actions">
+                            <input   type="hidden" readonly="readonly" name="productId" id="product_id" value="<?php echo $product_id; ?>">
+                            <input   type="hidden" readonly="readonly" name="customerId" value="<?php echo $customer_id; ?>">
+                            <input   type='number' name='bidAmount' id='bidAmount' style="width:200px;height:32px;" maxlength="50" data-validate="{required:true}" />
+                            <a id="bid_submit" name="Place Bid" value="Place Bid" style="/* width:200px; height:34px; background-color:#ff6550; box-shadow: none; */" class="action primary" title="Bid NOW">
+                            <i class="fa fa-gavel" aria-hidden="true"></i><span> Bid NOW </span>
+                            </a>
+                            <?php $postDataHelper = $this->helper('Magento\Framework\Data\Helper\PostHelper');
+                                $postData                     = $postDataHelper->getPostData($block->getAddToCartUrl($_product), ['product' => $_product->getEntityId()]);
+                            ?>
+                            <!-- <button class="action tocart primary"
+                                data-post='<?php /* @escapeNotVerified */echo $postData; ?>'
+                                type="button" title="<?php /* @escapeNotVerified */echo __('Buy NOW') ?>">
+                                <span><?php /* @escapeNotVerified */echo __('Buy NOW') ?></span>
+                            </button> -->
+                            <?php echo $block->getChildHtml('', true) ?>
+                        </div>
+                    </form>
+                </div>
+                <script type="text/javascript">
+                    require([    
+                        "jquery"
+                        ], function ($) {
+                            $(document).ready(function(){          
+                                $( document ).on( 'click', '#bid_submit', function () {
+                                    var customerId = '<?php echo $customer_id; ?>'; 
+                                    var curBidamount = $("#bidAmount").val();
+                                    if(customerId=='0') {
+                                        alert('Please login for placing a bid'); return flase;
+                                    }
+                                    // if(curBidamount < maxbidamount) {
+                                    //     alert("Please enter an amount greater than "+ maxbidamount);
+                                    //     return false;
+                                    // }
+                                    var productId = $('#product_id').val();
+                                    var customerId = $('input[name=customerId]').val()
+                                    var bidAmount = $('#bidAmount').val();
+
+                                    $.ajax({
+                                        url: "<?php echo $this->getUrl('backwardbid/index/savebid'); ?>",
+                                        showLoader: true,
+                                        data: {
+                                            productId: productId,
+                                            customerId: customerId,
+                                            bidAmount: bidAmount,
+                                        },                   
+                                        type: 'POST',
+                                        success: function(data){
+                                            if(data.success == true){ // if true (1)
+                                                // setTimeout(function(){// wait for 5 secs(2)
+                                                    location.reload(); // then reload the page.(3)
+                                                // }, 5000); 
+                                            }
+                                        },
+                                    }).done(function(data) {
+                                        location.reload();
+                                    });                     
+                                    // $.post('<?php // echo $this->getUrl('backwardbid/index/savebid'); ?>',  
+                                    // {
+                                    //     productId: productId,
+                                    //     customerId: customerId,
+                                    //     bidAmount: bidAmount, 
+                                    // }, 
+                                    // function(data, status, xhr) {
+                                    //     location.reload();
+
+                                    // });
+                                }); 
+                            });         
+                        }); 
+                    </script>
+            <?php else: ?>
+                <?php if ($bid_status == 1 || ($bid_status == 2 && $purchase_date >= $current_date)): ?>
+                    <?php if ($bid_status == 2 && $backwardbid_helper->getMaxbidAmount($product_id)): ?>
+                        <?php $postDataHelper = $this->helper('Magento\Framework\Data\Helper\PostHelper');
+                            $postData                     = $postDataHelper->getPostData($block->getAddToCartUrl($_product), ['product' => $_product->getEntityId()]);
+                        ?>
+                        <button class="action tocart primary"
+                            data-post='<?php /* @escapeNotVerified */echo $postData; ?>'
+                            type="button" title="<?php /* @escapeNotVerified */echo __('Add to Cart1') ?>">
+                            <span><?php /* @escapeNotVerified */echo __('Add to Cart') ?></span>
+                        </button>
+                    <?php endif;?>
+                <?php endif;?>
+            <?php endif;?>
+        <?php else: ?>
+            <?php if ($_product->isSaleable() && $_product->getAvailableForAuction() == 1 && $bid_status == 0 && $backwardbid_status == 1): ?>
+                <?php echo "AUCTION STARTS ON :  " . $bid_start_date; ?>
+            <?php endif?>
+        <?php endif;?>
+    <!-- end addtocart for nowauction -->
+<?php endif;?>
+
+<?php if ($block->isRedirectToCartEnabled()) : ?>
+<script type="text/x-magento-init">
+    {
+        "#product_addtocart_form": {
+            "Magento_Catalog/product/view/validation": {
+                "radioCheckboxClosest": ".nested"
+            }
+        }
+    }
+</script>
+<?php else : ?>
+<script>
+    require([
+        'jquery',
+        'mage/mage',
+        'Magento_Catalog/product/view/validation',
+        'Magento_Catalog/js/catalog-add-to-cart'
+    ], function ($) {
+        'use strict';
+
+        $('#product_addtocart_form').mage('validation', {
+            radioCheckboxClosest: '.nested',
+            submitHandler: function (form) {
+                var widget = $(form).catalogAddToCart({
+                    bindSubmit: false
+                });
+
+                widget.catalogAddToCart('submitForm', $(form));
+
+                return false;
+            }
+        });
+    });
+</script>
+<?php endif; ?>
+<script type="text/javascript">
+require([
+    'jquery'        
+], function ($) {
+// Timer for LEFT time for Dailydeal product
+    var _second = 1000;
+    var _minute = _second * 60;
+    var _hour = _minute * 60;
+    var _day = _hour * 24;
+    var timer;
+
+    function showRemaining(currentdate) {
+        var cid='countdown';
+        var startdateid='fromdate';
+        var id='todate';
+        var daysid='countdown_days';
+        var hoursid='countdown_hours';
+        var minutesid='countdown_minutes';
+        var secondsid='countdown_seconds';
+        var showpriceid='countdown_price';
+        var start_priceid='start_price';
+        var startFinalPriceId='startFinalPrice';
+        var today = new Date(currentdate);
+        var tomorrow = new Date(today.getFullYear(), today.getMonth(), (today.getDate()+1), 8, 0, 0);
+        var enddate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 22, 0, 0);
+        var dealstartdate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8, 0, 0);
+        // Get Current Date from magentodatetime
+        var currentdate=new Date(currentdate);
+        if (initialFlag) {
+            countdownPrice = $('#'+start_priceid).data("price")-0.01*((currentdate-dealstartdate)/1000);
+            
+        }
+        else {
+            countdownPrice = $('#'+start_priceid).data("price")-0.01;
+        }
+        //Get Difference between Two dates
+        var distance = enddate - currentdate;
+
+      //Get Difference between Two dates
+      var distance = enddate - currentdate;
+
+      if (distance < 0) {
+        $('#expired').html("<div class='offermessage' >EXPIRED!</div>");
+        $('#expired').css("visibility","visible");
+
+      } else if(dealstartdate > currentdate) {
+        $('.countdowncontainer').hide();
+        $('.pricecountdowncontainer').hide();
+        // var msg="<div class='offermessage' > Coming Soon..<br>Deal Start at:<br>"+$('#'+startdateid).val()+"</div>";
+        var tomorrowday   = tomorrow.getDate();
+        var tomorrowmonth = tomorrow.getMonth();
+        var tomorrowyear  = tomorrow.getFullYear();
+        var tomorrowhours = "0" + tomorrow.getHours();
+        var tomorrowminutes = "0" + tomorrow.getMinutes();
+        var tomorrowseconds = "0" + tomorrow.getSeconds();
+        var tomorrowdate = tomorrowyear+'-'+(tomorrowmonth+1)+'-'+tomorrowday+' '+tomorrowhours.substr(tomorrowhours.length-2) + ':' + tomorrowminutes.substr(tomorrowminutes.length-2) + ':' + tomorrowseconds.substr(tomorrowseconds.length-2);
+        var limitTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+        if(currentdate > limitTime) {
+            var today   = today.getDate();
+            var todaymonth = today.getMonth();
+            var todayyear  = today.getFullYear();
+            var todayhours = "0" + today.getHours();
+            var todayminutes = "0" + today.getMinutes();
+            var todayseconds = "0" + today.getSeconds();
+            var todaydate = todayyear+'-'+(todaymonth+1)+'-'+todayday+' '+todayhours.substr(todayhours.length-2) + ':' + todayminutes.substr(todayminutes.length-2) + ':' + todayseconds.substr(todayseconds.length-2);
+            var msg="<span style='font-size:15px; color:#000;'> Coming Soon..<br>Auction Start at:<br>"+todaydate+"<span>";
+        
+        } else {
+            var msg="<span style='font-size:15px; color:#000;'> Coming Soon..<br>Auction Start at:<br>"+tomorrowdate+"<span>";
+        }
+        $('#expired').html(msg);
+        $('#expired').css("visibility","visible");
+      } else {
+        if (countdownPrice <= 0) {
+             // countdownPrice = <?php echo $product_helper->getFinalPrice($_product); ?>;
+             startFinalPrice =  $("#"+startFinalPriceId).val();
+            console.log("initialFlag: ", initialFlag);
+            console.log("countdownPrice: ", countdownPrice);
+            console.log("Math.abs(countdownPrice): ", Math.abs(countdownPrice));
+            console.log("Math.abs(countdownPrice) % startFinalPrice: ", Math.abs(countdownPrice) % startFinalPrice);
+            console.log("startFinalPrice: ", $("#"+startFinalPriceId).val());
+            countdownPrice = startFinalPrice - (Math.abs(countdownPrice) % startFinalPrice);
+            console.log("countdownPrice: ", countdownPrice);
+        }
+        var days = Math.floor(distance / _day);
+        var hours = Math.floor((distance % _day) / _hour);
+        var minutes = Math.floor((distance % _hour) / _minute);
+        var seconds = Math.floor((distance % _minute) / _second);
+        var showprice = '$' + parseFloat(countdownPrice, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString();
+
+        if(hours < 10)
+            hours = "0" + hours;
+        if(minutes < 10)
+            minutes = "0" + minutes;
+        if(seconds < 10)
+            seconds = "0" + seconds;
+        // $('.countdowncontainer').show();
+        // $('.pricecountdowncontainer').show();
+        $('.pricecountdowncontainer').css("visibility","visible");
+        $('#expired').css("visibility","hidden");
+        $('#'+daysid).html(days);
+        $('#'+hoursid).html(hours);
+        $('#'+minutesid).html(minutes);
+        $('#'+secondsid).html(seconds);
+        $('#'+showpriceid).text(showprice);
+        $('#'+start_priceid).data("price",countdownPrice);
+      }
+      initialFlag = false;
+    }
+
+    //Set date as magentodatetime 
+    var date = new Date('<?php echo $backwardbid_helper->getcurrentESTDate() ?>');
+
+    var day   = date.getDate();
+    var month = date.getMonth();
+    var year  = date.getFullYear();
+    var hours = date.getHours();
+    var minutes = "0" + date.getMinutes();
+    var seconds = "0" + date.getSeconds();
+    var initialFlag = true;
+    var fulldate = year+'-'+(month+1)+'-'+day+' '+hours + ':' + minutes.substr(minutes.length-2) + ':' + seconds.substr(seconds.length-2);
+
+    // Set Interval
+    timer = setInterval(function() 
+    {
+        date.setSeconds(date.getSeconds() + 1);
+        var month=date.getMonth();
+        var currentdatetime=date.getFullYear()+"-"+(month+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+        showRemaining(currentdatetime);
+    }, 1000);
+    // QTY INC & DEC
+    $('body').on("click",".qty-inc, .qty-dec",function(){
+        var obj = $(this);
+        var currentQty = $("#qty").val();
+        if(obj.hasClass('qty-inc')){
+            var newAdd = parseInt(currentQty)+parseInt(1);
+            $("#qty").val(newAdd);
+        }else{
+            if(parseInt(currentQty) > 1)
+            {
+                var newAdd = parseInt(currentQty)-parseInt(1);
+                $("#qty").val(newAdd);
+
+            }
+        }
+  });
+});
+</script>
+<style>
+
+/* .action:hover, */
+.action:focus,
+.action:active {
+  -webkit-animation: pulse 1s;
+          animation: pulse 1s;
+  box-shadow: 0 0 0 .7em rgba(255, 255, 255, 0);
+}
+
+@-webkit-keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--hover);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--hover);
+  }
+}
+
+.action {
+  --color: #ef6eae;
+  --hover: #ef8f6e;
+}
+
+#expired {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    background-color: rgba(0,136,204,0.7);
+    padding: 5px 0 5px 0;
+}
+.abs-margin-for-blocks-and-widgets-desktop, .page-main .block, .customer-review .product-details {
+    margin-bottom: 20px;
+}
+.product-options-bottom .price-box .price-container > span, .product-info-price .price-box .price-container > span {
+    padding-right: 1.1em;
+}
+.sw-dailydeal-wrapper {
+    z-index: 2;
+}
+</style>

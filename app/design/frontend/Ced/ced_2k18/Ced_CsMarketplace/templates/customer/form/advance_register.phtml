@@ -1,0 +1,466 @@
+<?php
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_CsMarketplace
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (http://cedcommerce.com/)
+ * @license      http://cedcommerce.com/license-agreement.txt
+ */
+?>
+<?php
+$helper = $this->helper('Ced\CsMarketplace\Helper\Tool\Image');
+$dataHelper = $this->helper('Ced\CsMarketplace\Helper\Data');
+$enable_tc = $helper->getStoreConfig("ced_csmarketplace/general/enable_tc", $this->getCurrentStoreId());
+$tc_content = $helper->getStoreConfig("ced_csmarketplace/general/tc_content", $this->getCurrentStoreId());
+$helper_data = $this->helper('Ced\CsMarketplace\Helper\Data');
+$vendor_attribute_enable = $helper_data->getStoreConfig('ced_csvendorattribute/general/activation');
+?>
+<?php //echo $block->getMessagesBlock()->getGroupedHtml() ?>
+
+<div class="ced_custom_register_page">
+    <div class="ced-vendor-signup reg clearfix">
+        <div class="ced_custom_cont">
+            <div class="clearfix ced_custom">
+                <div class="left_left">
+                    <div class="img-seller-mobile">
+                        <div class="left-container">
+                            <ul class="bullets">
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                            </ul>
+                            <h2 class="heading"><?php echo __('Grow your business.'); ?></h2>
+                            <h2 class="heading"><?php echo __('Sell on csmarketplace'); ?></h2>
+                            <p class="subtitle"><?php echo __('Give a kickstart to your business. Register now.'); ?></p>
+                            <p class="subtitle subtitle2"><?php echo __('It\'s quick and easy.'); ?></p>
+                            <ul class="bullets">
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                            </ul>
+                            <div class="need_help">
+                                <?php echo __('Need help ?'); ?>
+                                <span class="number"><?php echo $block->getStorePhoneNumber(); ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right_con">
+                    <form class="form create account form-create-account"
+                          action="<?php echo $block->getPostActionUrl() ?>" method="post" id="form-validate"
+                          enctype="multipart/form-data" onsubmit="return validateshopurl()" autocomplete="off"
+                          role="form">
+                        <fieldset>
+                            <div class="panel panel-default">
+                                <input type="hidden" name="success_url" value="<?php echo $block->getSuccessUrl() ?>"/>
+                                <input type="hidden" name="error_url" value="<?php echo $block->getErrorUrl() ?>"/>
+                                <div class="panel-heading heading-top"><?php echo __('Create Your Account Here') ?></div>
+                                <div class="panel-body">
+                                    <?php echo $block->getLayout()->createBlock('Magento\Customer\Block\Widget\Name')->setObject($block->getFormData())->setForceUseCustomerAttributes(true)->setTemplate('Ced_CsMarketplace::customer/widget/name.phtml')->toHtml() ?>
+                                    <div class="input-box email">
+                                        <input placeholder="<?php echo __('Email Address') ?>" type="text" name="email"
+                                               id="email_address"
+                                               value="<?php echo $block->escapeHtml($block->getFormData()->getEmail()) ?>"
+                                               title="<?php echo __('Email Address') ?>"
+                                               class="form-control input-text validate-email required-entry"
+                                               data-validate="{required:true, 'validate-email':true}"/>
+                                    </div>
+                                    <?php $_dob = $block->getLayout()->createBlock('Magento\Customer\Block\Widget\Dob') ?>
+                                    <?php if ($_dob->isEnabled()): ?>
+                                        <?php echo $_dob->setDate($block->getFormData()->getDob())->toHtml() ?>
+                                    <?php endif ?>
+                                    <?php $_taxvat = $block->getLayout()->createBlock('Magento\Customer\Block\Widget\Taxvat') ?>
+                                    <?php if ($_taxvat->isEnabled()): ?>
+                                        <?php echo $_taxvat->setTaxvat($block->getFormData()->getTaxvat())->toHtml() ?>
+                                    <?php endif ?>
+                                    <?php $_gender = $block->getLayout()->createBlock('Magento\Customer\Block\Widget\Gender') ?>
+                                    <?php if ($_gender->isEnabled()): ?>
+                                        <?php echo $_gender->setGender($block->getFormData()->getGender())->toHtml() ?>
+                                    <?php endif ?>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <?php echo $block->getChildHtml('vendor_reg_form') ?>
+                        <?php if ($block->getShowAddressFields()): ?>
+                            <fieldset>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <input type="hidden" name="create_address" value="1"/>
+                                        <?php echo __('Address Information') ?>
+                                    </div>
+                                    <div class="panel-body">
+                                        <ul class="form-list nav">
+                                            <li class="fields">
+                                                <div class="field">
+                                                    <div class="input-box">
+                                                        <input placeholder="<?php echo __('Company') ?>" type="text"
+                                                               name="company" id="company"
+                                                               value="<?php echo $block->escapeHtml($block->getFormData()->getCompany()) ?>"
+                                                               title="<?php echo __('Company') ?>"
+                                                               class="form-control input-text <?php echo $this->helper('Magento\Customer\Helper\Address')->getAttributeValidationClass('company') ?>"/>
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <div class="input-box">
+                                                        <input placeholder="<?php echo __('Telephone') ?>" type="text"
+                                                               name="telephone" id="telephone"
+                                                               value="<?php echo $block->escapeHtml($block->getFormData()->getTelephone()) ?>"
+                                                               title="<?php echo __('Telephone') ?>"
+                                                               class="form-control input-text required-entry <?php echo $this->helper('Magento\Customer\Helper\Address')->getAttributeValidationClass('telephone') ?>"/>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <?php $_streetValidationClass = $this->helper('Magento\Customer\Helper\Address')->getAttributeValidationClass('street'); ?>
+                                            <li class="wide">
+                                                <div class="input-box">
+                                                    <input placeholder="<?php echo __('Street Address') ?>" type="text"
+                                                           name="street[]"
+                                                           value="<?php echo $block->escapeHtml($block->getFormData()->getStreet(1)) ?>"
+                                                           title="<?php echo __('Street Address') ?>" id="street_1"
+                                                           class="form-control input-text required-entry <?php echo $_streetValidationClass ?>"/>
+                                                </div>
+                                            </li>
+                                            <?php for ($_i = 2, $_n = $this->helper('Magento\Customer\Helper\Address')->getStreetLines(); $_i <= $_n; $_i++): ?>
+                                                <li class="wide">
+                                                    <div class="input-box">
+                                                        <input placeholder="<?php echo __('Street Address') ?>"
+                                                               type="text" name="street[]"
+                                                               value="<?php echo $block->escapeHtml($block->getFormData()->getStreet($_i)) ?>"
+                                                               title="<?php echo __('Street Address %s', $_i) ?>"
+                                                               id="street_<?php echo $_i ?>"
+                                                               class="form-control input-text <?php echo $_streetValidationClass ?>"/>
+                                                    </div>
+                                                </li>
+                                            <?php endfor ?>
+                                            <li class="fields">
+                                                <div class="field">
+                                                    <div class="input-box">
+                                                        <input placeholder="<?php echo __('City') ?>" type="text"
+                                                               name="city"
+                                                               value="<?php echo $block->escapeHtml($block->getFormData()->getCity()) ?>"
+                                                               title="<?php echo __('City') ?>"
+                                                               class="form-control input-text required-entry <?php echo $this->helper('Magento\Customer\Helper\Address')->getAttributeValidationClass('city') ?>"
+                                                               id="city"/>
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <div class="input-box">
+                                                        <select placeholder="<?php echo __('State/Province') ?>"
+                                                                id="region_id" name="region_id"
+                                                                title="<?php echo __('State/Province') ?>"
+                                                                class="validate-select <?php echo $this->helper('Magento\Customer\Helper\Address')->getAttributeValidationClass('region') ?>"
+                                                                style="display:none;">
+                                                            <option value=""><?php echo __('Please select region, state or province') ?></option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="fields">
+                                                <div class="field">
+                                                    <div class="input-box">
+                                                        <input placeholder="<?php echo __('Zip/Postal Code') ?>"
+                                                               type="text" name="postcode"
+                                                               value="<?php echo $block->escapeHtml($block->getFormData()->getPostcode()) ?>"
+                                                               title="<?php echo __('Zip/Postal Code') ?>" id="zip"
+                                                               class="form-control input-text validate-zip-international required-entry <?php echo $this->helper('Magento\Customer\Helper\Address')->getAttributeValidationClass('postcode') ?>"/>
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label for="country"
+                                                           class="required"><em>*</em><?php echo __('Country') ?>
+                                                    </label>
+                                                    <div class="input-box">
+                                                        <?php echo $block->getCountryHtmlSelect() ?>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+
+                                        <?php $addressAttributes = $block->getChildBlock('customer_form_address_user_attributes'); ?>
+                                        <?php if ($addressAttributes): ?>
+                                            <ul>
+                                                <li>
+                                                    <?php $addressAttributes->setEntityType('customer_address'); ?>
+                                                    <?php $addressAttributes->setFieldIdFormat('address:%1$s')->setFieldNameFormat('address[%1$s]'); ?>
+                                                    <?php $block->restoreSessionData($addressAttributes->getMetadataForm(), 'address'); ?>
+                                                    <?php echo $addressAttributes->setShowContainer(false)->toHtml() ?>
+                                                </li>
+                                            </ul>
+                                        <?php endif; ?>
+
+                                        <input type="hidden" name="default_billing" value="1"/>
+                                        <input type="hidden" name="default_shipping" value="1"/>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        <?php endif; ?>
+                        <fieldset>
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><?php echo __('Login Information') ?></div>
+                                <div class="panel-body panel-psw">
+                                    <div class="field password enter-password required">
+                                        <div class="input-box">
+                                            <input placeholder="<?php echo __('Password') ?>" type="password"
+                                                   name="password" id="password"
+                                                   title="<?= $block->escapeHtmlAttr(__('Password')) ?>"
+                                                   class="form-control input-text"
+                                                   data-password-min-length="<?= $block->escapeHtmlAttr($block->getMinimumPasswordLength()) ?>"
+                                                   data-password-min-character-sets="<?= $block->escapeHtmlAttr($block->getRequiredCharacterClassesNumber()) ?>"
+                                                   data-validate="{required:true, 'validate-customer-password':true}"
+                                                   autocomplete="off">
+
+                                            <div id="password-strength-meter-container"
+                                                 data-role="password-strength-meter" aria-live="polite">
+                                                <div id="password-strength-meter" class="password-strength-meter">
+                                                    <?= $block->escapeHtml(__('Password Strength')) ?>:
+                                                    <span id="password-strength-meter-label"
+                                                          data-role="password-strength-meter-label">
+                                                        <?= $block->escapeHtml(__('No Password')) ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="field confirmation enter-confirm-password">
+                                        <div class="input-box">
+                                            <input placeholder="<?php echo __('Confirm Password') ?>" type="password"
+                                                   name="password_confirmation"
+                                                   title="<?= $block->escapeHtmlAttr(__('Confirm Password')) ?>"
+                                                   id="password-confirmation" class="form-control input-text"
+                                                   data-validate="{required:true, equalTo:'#password'}"
+                                                   autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="panel-body">
+                            <div class="clearfix">
+                                <?php if ($block->isNewsletterEnabled()): ?>
+                                    <div class="checkbox custom_check">
+                                        <input type="checkbox" name="is_subscribed"
+                                               title="<?php echo __('Sign Up for Newsletter') ?>" value="1"
+                                               id="is_subscribed"<?php if ($block->getFormData()->getIsSubscribed()): ?> checked="checked"<?php endif; ?> />
+                                        <label for="is_subscribed">
+                                            <?php echo __('Sign Up for Newsletter') ?>
+                                        </label>
+                                    </div>
+                                <?php endif ?>
+                            </div>
+                            <!-- For Terms & conditions  -->
+                            <?php if ($enable_tc){ ?>
+                            <div class="clearfix">
+                                <div class="checkbox custom_check">
+                                    <input name="terms" title="Terms and Condition" id="terms" class="checkbox required"
+                                           type="checkbox">
+                                    <label for="terms">
+                                        <?php echo __("I've read and accept ") ?>
+                                        <a class="term_condition"
+                                           href="javascript:void(0)"><?php echo __("terms and condition") ?></a>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="search_form_overlay ced-modal-overlay" style="display:none">
+                                <div class="terms-condition ced-modal-content">
+                                    <div class="terms-header ced-modal-header">
+                                        <h3><?php echo __('Terms And Condition') ?></h3>
+                                        <a title="Download Terms and Condition"
+                                           href="<?php echo $block->getUrl("csmarketplace/account/downloadtc") ?>"><span
+                                                    class="fa fa-download"></span></a>
+                                        <span title="Close" class="close_term ced_close">X</span>
+                                    </div>
+                                    <div class="terms-inner ced-modal-data">
+                                        <?php echo $tc_content; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php } ?>
+                        <div class="panel-body panel-submit">
+                            <div class="content">
+                                <div class="buttons-set">
+                                    <button type="submit" id="submit_button_id" title="<?php echo __('Submit') ?>"
+                                            class="button btn btn-primary"><span><span><?php echo __('Submit') ?></span></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="vendor_exitance">
+                                <?php echo __('Already have a vendor account? ') ?>
+                                <a href="<?php echo $block->getLoginUrl(); ?>"
+                                   class="axisting_venor"><?php echo __('Sign in') ?></a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php /**********  login popup if social login enable   **************/ ?>
+<?php if ($dataHelper->isSocialLoginEnabled()) : ?>
+    <div class="overlay-popup social_login">
+        <div class="register-popup ">
+            <div class="login-right-form">
+                <div class="popup-cancel-button">
+                    <button class="close-button-popup">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="panel_body sign_up_form_body">
+                    <?php echo $block->getChildHtml('ced_vendorsociallogin_login'); ?>
+                </div>
+                <?php echo $this->getLayout()->createBlock('Ced\CsMarketplace\Block\Vendor\Form\Login')->setTemplate('Ced_CsMarketplace::customer/form/new_login_form.phtml')->toHtml(); ?>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+<?php endif; ?>
+<?php  /***********  End of login popup if social login enable   **************/ ?>
+
+<script></script>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'mage/mage'
+    ], function (jQuery) {
+        jQuery(window).load(function () {
+            var formDataCount = "<?php echo $this->getRequest()->getParam('create') ?>";
+            if (parseInt(formDataCount) == 1) {
+                jQuery('.new_venor').trigger('click');
+            }
+        });
+    });
+</script>
+<script>
+    require([
+        'jquery',
+        'mage/mage'
+    ], function ($) {
+        var dataForm = $('#form-validate');
+        var ignore = <?php echo $_dob->isEnabled() ? '\'input[id$="full"]\'' : 'null'; ?>;
+        <?php if ($_gender->isEnabled()): ?>
+        $(".panel-body > div:nth-child(6) > label").remove();
+        $(".panel-body > div:nth-child(6) > div").addClass("input-box");
+        $(".panel-body > div:nth-child(6) > div >  #gender").addClass("input-text");
+        $("#gender").find("option").eq(0).remove();
+        $("#gender").prepend('<option value="" selected>Select Gender</option>');
+        <?php endif ?>
+        <?php if ($_taxvat->isEnabled()): ?>
+        $(".panel-body > div:nth-child(5) > label").remove();
+        $(".panel-body > div:nth-child(5) > div").addClass("input-box");
+        $(".panel-body > div:nth-child(5) > div >  #taxvat").attr("placeholder", "Taxvat");
+        <?php endif ?>
+        <?php if ($_dob->isEnabled()){ ?>
+        $(".panel-body > div:nth-child(4) > label").remove();
+        $(".panel-body > div:nth-child(4)").removeClass("date field-dob").addClass("input-box");
+        $(".panel-body > div:nth-child(4) > div >  #dob").addClass("input-text");
+        $(".panel-body > div:nth-child(4) > div >  #dob").attr("placeholder", "DOB");
+        <?php }?>
+        dataForm.mage('validation', {
+            <?php if ($_dob->isEnabled()): ?>
+            errorPlacement: function (error, element) {
+                if (element.prop('id').search('full') !== -1) {
+                    var dobElement = $(element).parents('.customer-dob'),
+                        errorClass = error.prop('class');
+                    error.insertAfter(element.parent());
+                    dobElement.find('.validate-custom').addClass(errorClass)
+                        .after('<div class="' + errorClass + '"></div>');
+                }
+                else {
+                    error.insertAfter(element);
+                }
+            },
+            ignore: ':hidden:not(' + ignore + ')'
+            <?php else: ?>
+            ignore: ignore ? ':hidden:not(' + ignore + ')' : ':hidden'
+            <?php endif ?>
+        }).find('input:text').attr('autocomplete', 'off');
+    });
+</script>
+<?php if ($block->getShowAddressFields()): ?>
+    <script type="text/x-magento-init">
+            {
+            "#country": {
+            "regionUpdater": {
+            "optionalRegionAllowed": <?php echo($block->getConfig('general/region/display_all') ? 'true' : 'false'); ?>,
+            "regionListId": "#region_id",
+            "regionInputId": "#region",
+            "postcodeId": "#zip",
+            "form": "#form-validate",
+            "regionJson": <?php echo $this->helper('Magento\Directory\Helper\Data')->getRegionJson() ?>,
+            "defaultRegion": "<?php echo $block->getFormData()->getRegionId() ?>",
+            "countriesWithOptionalZip": <?php echo $this->helper('Magento\Directory\Helper\Data')->getCountriesWithOptionalZip(true) ?>
+        }
+    }
+}
+
+    </script>
+<?php endif; ?>
+<?php if ($vendor_attribute_enable) { ?>
+    <script type="text/x-magento-init">
+        {
+            "#ced-country-id-field": {
+                "regionUpdater": {
+                    "optionalRegionAllowed": <?php echo($block->getConfig('general/region/display_all') ? 'true' : 'false'); ?>,
+                    "regionListId": "#ced-region-id-field",
+                    "regionInputId": "#ced-region-field",
+                    "postcodeId": "#ced-zip-code-field",
+                    "form": "#form-validate",
+                    "regionJson": <?php echo $this->helper('Magento\Directory\Helper\Data')->getRegionJson() ?>,
+                    "defaultRegion": "<?php echo $block->getFormData()->getRegionId() ?>",
+                    "countriesWithOptionalZip": <?php echo $this->helper('Magento\Directory\Helper\Data')->getCountriesWithOptionalZip(true) ?>
+                }
+            }
+        }
+
+    </script>
+<?php } ?>
+<script>
+    function validateshopurl() {
+        var patt = /^([a-zA-Z0-9\-])+$/;
+        var shopurl = document.getElementById('ced-shop-url-field').value;
+        if (patt.test(shopurl)) {
+            document.getElementById("advice-validate-shopurl-ced-shop-url-field").style.display = 'none';
+            return true;
+        } else {
+            document.getElementById('advice-validate-shopurl-ced-shop-url-field').innerHTML = "Invalid Shop Url";
+            document.getElementById("advice-validate-shopurl-ced-shop-url-field").style.display = 'block';
+            return false;
+        }
+    }
+</script>
+<script>
+    require([
+        'jquery',
+        'mage/mage'
+    ], function ($) {
+        $('.term_condition').click(function () {
+            $('.ced-modal-overlay').fadeIn('300');
+            $('.csmarketplace-account-login').addClass('modal-active');
+        });
+        $('.ced_close').click(function () {
+            $('.ced-modal-overlay').fadeOut('300');
+            $('.csmarketplace-account-login').removeClass('modal-active');
+        });
+    });
+</script>
+<script type="text/x-magento-init">
+    {
+        ".field.password": {
+            "passwordStrengthIndicator": {
+                "formSelector": "form.form-create-account"
+            }
+        }
+    }
+
+</script>

@@ -1,0 +1,102 @@
+/*/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_GiftCard
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license      https://cedcommerce.com/license-agreement.txt
+ */ 
+.coupon-form .coupon-wrapper {
+    box-sizing: border-box;
+    float: left;
+    padding: 5px;
+    width: 50%;
+}
+.coupon-form .coupon-wrapper .coupon-detail {
+    border: 1px solid #d2d2d2;
+    color: #7d7d7d;
+    padding: 10px;
+}
+.coupon-form .coupon-wrapper .coupon-detail {
+    line-height: 26px;
+}
+.coupon-form .coupon-wrapper .coupon-detail span.label {
+    color: #414141;
+    display: inline-block;
+}
+.coupon-form .coupon-wrapper .coupon-detail span.value {
+    display: inline-block;
+    margin-left: 5px;
+}
+.coupon-form::after {
+    clear: both;
+    content: "";
+    display: table;
+}
+.coupon-form {
+    margin-left: -5px;
+    margin-right: -5px;
+}
+.coupon-form > form::after {
+    clear: both;
+    content: "";
+    display: table;
+}
+.coupon-form > form {
+    margin-bottom: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.coupon-form > form input {
+    border: 1px solid #cfcfcf;
+    color: #2f2f2f;
+    float: left;
+    height: 46px;
+    width: calc(100% - 220px);
+}
+.coupon-form > form input[type="button"] {
+    background: rgb(241, 80, 0) none repeat scroll 0 0;
+    border: 1px solid rgb(241, 80, 0);
+    color: #fff;
+    font-size: 17px;
+    width: 220px;
+}
+
+
+
+@media screen and (max-width: 767px){
+    .coupon-form > form input[type="button"] {
+        
+        width: auto;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .my-credit-cards .pages {
+      margin-bottom: 10px;
+      margin-top: 5px;
+    }
+}
+@media (max-width: 450px){
+    .coupon-form > form input{
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    .coupon-form > form input[type="button"]{
+        width: 100%;
+    }
+    .coupon-form .coupon-wrapper{
+        width: 100%;
+    }
+    .coupon-form .coupon-wrapper .coupon-detail {
+        display: block;
+        word-break: break-all;
+    }
+}

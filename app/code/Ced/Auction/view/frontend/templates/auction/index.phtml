@@ -1,0 +1,76 @@
+<!--
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_Auction
+ * @author 		CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license      https://cedcommerce.com/license-agreement.txt
+ */
+-->
+<?php $winnerData = $block->getWinningAuction();
+$url = $block->getUrlInterface();?>
+<div class="table-wrapper orders-history">
+    <table class="data table table-order-items history" id="my-orders-table">
+        <caption class="table-caption">Auctions</caption>
+        <thead>
+        <tr>
+            <th scope="col" class="col id"><?php echo __('Product Name') ?></th>
+            <!--<th scope="col" class="col total"><?php /*echo __('Bid Price') */?></th>-->
+            <th scope="col" class="col total"><?php echo __('Winning Price') ?></th>
+            <th scope="col" class="col actions"><?php echo __('Action') ?></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php if($winnerData && $url){
+
+            foreach ($winnerData as $key => $data) { ?>
+            <tr>
+                <td data-th="Product" class="col id"><?= $block->getProductName($data['product_id']); ?></td>
+                <!--<td data-th="Bid Price" class="col total"><span class="price">$<?/*= $data['auction_price']; */?></span>
+                </td>-->
+                <td data-th="Winning Price" class="col total"><span class="price">$<?= $data['winning_price']; ?></span>
+                </td>
+                <td data-th="Action" class="col actions">
+                    <?php if($block->checkProductAvailability($data['product_id'])){ ?>
+                    <span><?= __('Unavailable') ?></span><?php } else { ?>
+                    <?php if ($data['status'] == 'order placed') { ?>
+                        <span><?= $data['status']; ?></span>
+                    <?php } elseif ($data['status'] == 'purchase link expired') { ?>
+                        <span><?= $data['status']; ?></span>
+                    <?php } else { ?>
+                        <a href="<?= $url ?>auction/cart/add/price/<?= $data['winning_price']; ?>/id/<?= $data['product_id']; ?>"
+                           class="action view">
+                            <span><?php echo __('Add To Cart') ?></span>
+                        </a>
+                    <?php } } ?>
+                </td>
+            </tr>
+        <?php }  }?>
+        </tbody>
+    </table>
+</div>
+
+<?php if ($block->getPagerHtml()){?>
+        <div class="order-products-toolbar toolbar bottom"><?php echo $block->getPagerHtml(); ?></div>
+    <?php } else { ?>
+    <div class="message info empty"><span><?php echo __('grid records not available.'); ?></span></div>
+<?php }?>
+
+<script>
+    require([
+        'Magento_Customer/js/customer-data'
+    ], function (customerData) {
+        var sections = ['cart'];
+        customerData.invalidate(sections);
+        customerData.reload(sections, true);
+    });
+</script>

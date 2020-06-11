@@ -1,0 +1,46 @@
+<?php 
+$trans_id = $this->getTransaction()->getId();
+$transaction = $this->helper('Ced\CsMarketplace\Helper\Data')->getTransaction($trans_id);
+$vendor = $this->getVendor();
+$acl = $this->helper('Ced\CsMarketplace\Helper\Acl');
+$priceHelper = $this->helper('Magento\Framework\Pricing\Helper\Data');
+
+?>
+<p><?php echo __('Hello').' '.$vendor->getName()?></p>
+<p><?php echo __('You have got the payment for the following order(s)')?>:</p>
+<p><?php foreach(json_decode($transaction->getAmountDesc(), true) as $key => $value){
+echo $key.'<br>';
+}?></p>
+<table class="containtable" bgcolor="FFFFFF" cellspacing="2" cellpadding="15" border="0" width="600" style="border:1px solid #E0E0E0; margin: auto;" summary="<?php echo __('Transaction Description') ?>">
+    <caption><?php echo __('Transaction Description') ?></caption>
+    <tbody>
+        <tr>
+			<td align="center"><?php echo __('Transaction Id')?></td>
+			<td align="center"><?php echo $transaction->getTransactionId(); ?></td>
+		</tr>
+		<tr>
+			<td align="center"><?php echo __('Transaction Date')?></td>
+			<td align="center"><?php echo $transaction->getCreatedAt(); ?></td>
+		</tr>
+		<tr>
+			<td align="center"><?php echo __('Transaction Mode')?></td>
+			<td align="center"><?php echo $acl->getDefaultPaymentTypeLabel($transaction->getData('payment_method')); ?></td>
+		</tr>
+		<tr>
+			<td align="center"><?php echo __('Transaction Type')?></td>
+			<td align="center"><?php echo ($transaction->getData('transaction_type') == 0)?__('Credit Type'):__('Debit Type'); ?></td>
+		</tr>
+		<tr>
+			<td align="center"><?php echo __('Amount')?></td>
+			<td align="center"><?php echo $priceHelper->currency($transaction->getBaseAmount(), true, false); ?></td>
+		</tr>
+		<tr>
+			<td align="center"><?php echo __('Adjustment Amount')?></td>
+			<td align="center"><?php echo $priceHelper->currency($transaction->getBaseFee(), true, false); ?></td>
+		</tr>
+	    <tr>
+			<td align="center"><?php echo __('Net Amount')?></td>
+			<td align="center"><?php echo $priceHelper->currency($transaction->getBaseNetAmount(), true, false); ?></td>
+		</tr>
+   	</tbody>
+</table>

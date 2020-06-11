@@ -1,0 +1,48 @@
+<?php
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_CsMultiSeller
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (http://cedcommerce.com/)
+ * @license     http://cedcommerce.com/license-agreement.txt
+ */
+?>
+<div id="messages"><?php //echo $this->getMessagesBlock()->getGroupedHtml() ?></div>
+ <?php echo $this->getChildHtml('store_switcher');?>
+<div class="row">
+	<div class="col-md-12" style="margin-top: 10px;">
+		<div class="panel panel-default">
+			<div class="content-header panel-heading col-md-12 uptransform">
+				<h3 class="icon-head head-products col-md-6"><?php echo __('Select and Sell Product List') ?></h3>
+				<div style="text-align:right;" class="buttons-set col-md-6 buttons_scb">
+					<?php ///echo $this->getButtonsHtml()
+					$url = $this->getUrl('csmultiseller/product/new'); ?>
+					<button class="button btn btn-primary uptransform" type="button" title="Add Product" onclick="window.location='<?php echo $url ?>';" style="line-height: 1.2em; float: right;">
+						<span>
+							<span><?php echo __('Add Product')?></span>
+						</span>
+					</button>
+				</div>
+			</div>
+			<div class="panel-body">
+				<?php echo $this->getGridHtml() ?>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+var BLANK_URL = '<?php echo $this->getJsUrl() ?>blank.html';
+var BLANK_IMG = '<?php echo $this->getJsUrl() ?>spacer.gif';
+var BASE_URL = '<?php echo $this->getUrl('*') ?>';
+var SKIN_URL = '<?php echo $this->getSkinUrl() ?>';
+var FORM_KEY = '<?php echo $this->getFormKey() ?>';
+</script>

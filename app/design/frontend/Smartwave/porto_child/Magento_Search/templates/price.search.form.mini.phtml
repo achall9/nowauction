@@ -1,0 +1,230 @@
+<?php
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+?>
+<?php
+/** @var $block \Magento\Framework\View\Element\Template */
+/** @var $helper \Magento\Search\Helper\Data */
+$helper = $this->helper('Magento\Search\Helper\Data');
+?>
+<h2 class="item-price-title">Price:</h2>
+<!-- <div class="priceRadios">
+  <div class="anywhereRadio" style="display: flex;align-items: center;">
+    <input type="radio" name="anywhere" value="60" selected="true"  label="Anywhere"><span> Anywhere</span>
+  </div>
+  <div class="withinRadio" style="display: flex;align-items: center;">
+    <input type="radio" name="within" value="100"  label="Within"><span> Within</span> 
+   </div>
+</div> -->
+
+<!-- <div class="priceRadios owl-carousel  owl-theme owl-loaded owl-drag">
+  <div class="owl-controls">
+    <div class="owl-nav disabled">
+      <div class="owl-prev">
+        <em class="porto-icon-left-open-huge"></em>
+      </div>
+      <div class="owl-next">
+        <em class="porto-icon-right-open-huge"></em>
+      </div>
+    </div>
+    <div class="owl-dots" style="display: flex;flex-direction: column;">
+      <div class="owl-dot active" style="display: flex;">
+        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Anywhere</div>
+      </div><div class="owl-dot active" style="display: flex;">
+        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Within</div>
+      </div>
+      
+    </div>
+  </div>
+</div> -->
+
+<div class="block block-search">
+    <div class="block block-title"><strong><?php /* @escapeNotVerified */ echo __('Search'); ?></strong></div>
+    <div class="block block-content">
+        <form class="form minisearch" id="price_search_mini_form" action="<?php /* @escapeNotVerified */ echo $helper->getResultUrl() ?>" method="get">
+            <div class="field search price-search-field">
+                <label class="label" for="search" data-role="minisearch-label">
+                    <span><?php /* @escapeNotVerified */ echo __('Search'); ?></span>
+                </label>
+                <div class="control price-control">
+                   <input id="lowPriceSearch"
+                           data-mage-init='{"quickSearch":{
+                                "formSelector":"#price_search_mini_form",
+                                "url":"<?php /* @escapeNotVerified */ echo $block->getUrl('search/ajax/suggest', ['_secure' => $block->getRequest()->isSecure()]); ?>",
+                                "destinationSelector":"#search_autocomplete"}
+                           }'
+                           type="text"
+                           name="<?php /* @escapeNotVerified */ echo $helper->getQueryParamName() ?>"
+                           value="<?php /* @escapeNotVerified */ echo $helper->getEscapedQueryText() ?>"
+                           placeholder="<?php /* @escapeNotVerified */ echo __('Low'); ?>"
+                           class="input-text"
+                           maxlength="<?php /* @escapeNotVerified */ echo $helper->getMaxQueryLength();?>"
+                           role="combobox"
+                           aria-haspopup="false"
+                           aria-autocomplete="both"
+                           autocomplete="off"/>
+                    <div id="search_autocomplete" class="search-autocomplete"></div>
+                    <?php echo $block->getChildHtml() ?>
+                </div>
+            </div>
+            <div style="width: 4%;text-align: center;display: flex;align-items: center;justify-content: center;font-size: 30px;">-</div>
+             <div class="field search price-search-field">
+                <label class="label" for="search" data-role="minisearch-label">
+                    <span><?php /* @escapeNotVerified */ echo __('Search'); ?></span>
+                </label>
+                <div class="control price-control" style="border-right: none!important;">
+                    <input id="highPriceSearch"
+                           data-mage-init='{"quickSearch":{
+                                "formSelector":"#price_search_mini_form",
+                                "url":"<?php /* @escapeNotVerified */ echo $block->getUrl('search/ajax/suggest', ['_secure' => $block->getRequest()->isSecure()]); ?>",
+                                "destinationSelector":"#search_autocomplete"}
+                           }'
+                           type="text"
+                           name="<?php /* @escapeNotVerified */ echo $helper->getQueryParamName() ?>"
+                           value="<?php /* @escapeNotVerified */ echo $helper->getEscapedQueryText() ?>"
+                           placeholder="<?php /* @escapeNotVerified */ echo __('High'); ?>"
+                           class="input-text"
+                           maxlength="<?php /* @escapeNotVerified */ echo $helper->getMaxQueryLength();?>"
+                           role="combobox"
+                           aria-haspopup="false"
+                           aria-autocomplete="both"
+                           autocomplete="off"/>
+                    <div id="search_autocomplete" class="search-autocomplete"></div>
+                    <?php echo $block->getChildHtml() ?>
+                </div>
+            </div>
+            <div class="actions">
+                <button type="submit"
+                        title="<?php echo $block->escapeHtml(__('Search')) ?>"
+                        class="action search" id="priceSearchAction">
+                    <span><?php /* @escapeNotVerified */ echo __('Search'); ?></span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<hr style="border-top-width: 5px; margin-top: 10%;">
+
+<style type="text/css">
+
+  .block-search {
+
+    margin-left: 0;
+    width: 100%;
+
+  }
+
+  .block-search input {
+
+    background-color: #eee;
+    border: none;
+
+  }
+  
+  .block-search input:focus {
+
+    box-shadow: none;
+
+  }
+
+  .block-search .action.search {
+
+    background-color: #f26c4f;
+    width: 20%;
+    color: #fff;
+    margin-right: -1px;
+
+  }
+
+  .block-search .action.search:hover {
+
+    background-color: #f26c4f;
+    width: 20%;
+    color: #fff;
+    margin-right: -1px;
+
+  }
+
+  .block-search .action.search::before {
+
+    color: #fff;
+
+  }
+
+  .priceRadios {
+
+    margin-bottom: 3%;
+
+  }
+
+  .priceRadios span:after {
+
+    background-color: #f26c4f!important;
+
+  }
+
+  .price-search-field {
+
+    width: 38%!important;
+
+  }
+
+  .price-control {
+
+    border: 1px solid #ddd!important;
+    /* height: 100%; */
+
+  }
+
+  .item-price-title {
+
+    color: black;
+    font-weight: 550;
+    font-size: large;
+
+
+  }
+
+  #price_search_mini_form {
+
+    display: flex;
+
+
+  }
+
+  #lowPriceSearch {
+
+    padding: 10px 30px 10px 20px;
+    background-color: #fff!important;
+    height: 38px;
+  }
+
+  #highPriceSearch {
+
+    padding: 10px 30px 10px 20px;
+    background-color: #fff!important;
+    height: 38px;
+  }
+
+  #priceSearchAction {
+
+    border: 1px solid #aaa;
+
+  }
+
+/*  #priceSearchAction:before {
+
+    content: 'GO';
+
+  }*/
+
+  #LowPriceSearch:focus, #highPriceSearch:focus, #priceSearchAction:active {
+
+    background-color: : #f26c4f;
+
+  }
+</style>

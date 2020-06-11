@@ -1,0 +1,772 @@
+<?php
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+use Magento\Framework\App\Action\Action;
+
+// @codingStandardsIgnoreFile
+?>
+<?php
+/**
+ * Product list template
+ *
+ * @var $block \Smartwave\Filterproducts\Block\
+ */
+?>
+<?php
+$_productCollection = $block->getLoadedProductCollection();
+$_helper = $this->helper('Magento\Catalog\Helper\Output');
+$_imagehelper = $this->helper('Magento\Catalog\Helper\Image');
+$_portohelper = $this->helper('Smartwave\Porto\Helper\Data');
+$product_helper = $this->helper('Magento\Catalog\Helper\Product');
+$dailydealhelper=$this->helper('Smartwave\Dailydeals\Helper\Data');
+$backwardbid_helper        = $this->helper('Nowauction\Backwardbid\Helper\Data');
+
+$review_model = $_portohelper->getModel('\Magento\Review\Model\Review');
+$_category_config = $_portohelper->getConfig('porto_settings/category');
+$_category_grid_config = $_portohelper->getConfig('porto_settings/category_grid');
+$_product_label_config = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_settings/product_label');
+$_lazyload = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_settings/optimization/lazyload');
+
+$aspect_ratio = $this->getData("aspect_ratio");
+if($aspect_ratio == null) {
+    $aspect_ratio = $_category_config['aspect_ratio'];
+}
+$image_width = $this->getData("image_width");
+if(!$image_width) {
+    $image_width = ($_category_config['ratio_width'])?$_category_config['ratio_width']:300;
+}
+$image_height = $this->getData("image_height");
+if($aspect_ratio)
+    $image_height = $image_width;
+if(!$image_height) {
+    $image_height = ($_category_config['ratio_height'])?$_category_config['ratio_height']:300;  
+}
+$move_actions = $this->getData("move_actions");
+if($move_actions == null) {
+    $move_actions = $_category_grid_config['move_actions'];
+}
+$column_count = $this->getData("column_count");
+if($column_count == null) {
+    $column_count = 4;
+}
+?>
+<?php if (!$_productCollection->count()): ?>
+    <div class="message info empty"><div><?php echo __('We can\'t find products matching the selection.') ?></div></div>
+<?php else: ?>
+    <?php
+    $viewMode = 'grid';
+    $image = 'category_page_grid';
+    $hover_image = 'category_page_grid-hover';
+    $showDescription = false;
+    $templateType = \Magento\Catalog\Block\Product\ReviewRendererInterface::SHORT_VIEW;
+    ?>
+    <div class="products wrapper <?php echo $viewMode; ?> columns<?php echo $column_count; ?> products-<?php echo $viewMode; ?>">
+        <?php $iterator = 1; ?>
+        <ol class="filterproducts products list items product-items <?php if(isset($_category_config['qty_field']) && $_category_config['qty_field']):?>has-qty<?php endif;?>">
+            <?php /** @var $_product \Magento\Catalog\Model\Product */ ?>
+            <?php foreach ($_productCollection as $_product): ?>
+                <?php
+                    $product_id      = $_product->getId();
+                    $bid_status      = $backwardbid_helper->getBidStatus($product_id);
+                    $bidStartAmount  = $_helper->productAttribute($_product, $_product->getBidStartingPrice(), 'bid_starting_price ');
+                    $bid_start_date  = $_product->getBidStartDate();
+                    $backwardbid_status     = $backwardbid_helper->getConfig('backwardbid/general/enable');
+                    $max_bid         = $backwardbid_helper->getMaxbidAmount($product_id);
+                    $currency_symbol = $backwardbid_helper->getCurrency();
+                    $date            = date('m/d/Y H:i:s');
+                    $current_date    = $backwardbid_helper->getCurrentDate();
+                    $customer_id     = $backwardbid_helper->getCustomerId();
+                    $purchase_date   = $backwardbid_helper->getPurchaseDate($product_id, $customer_id);
+                    $customerBidAmount   = $backwardbid_helper->getBidAmountOfCustomer($product_id, $customer_id);
+                    $customerBidRank   = $backwardbid_helper->getCustomerBidPosition($product_id, $customer_id);
+                    $customer_bid_status   = $backwardbid_helper->getCustomerBidStatus($product_id, $customer_id);
+                    $bid_status_value = '';
+                    switch ($customer_bid_status) {
+                        case 0:
+                            $bid_status_value = 'NOT_STARTED';
+                            break;
+                        case 1:
+                            $bid_status_value = 'STARTED';
+                            break;
+                        case 2:
+                            $bid_status_value = 'Won';
+                            break;
+                        default:
+                            $bid_status_value = 'CLOSED';
+
+                    }
+                // var_dump($backwardbid_status);exit();
+                ?>
+                <?php echo($iterator++ == 1) ? '<li class="item product product-item">' : '</li><li class="item product product-item">' ?>
+                <div class="product-item-info" data-container="product-grid">
+                    <?php // Product Image ?>
+                    <div class="product photo product-item-photo">
+                        <a href="<?php echo $_product->getProductUrl() ?>" tabindex="-1">
+                        <?php
+                            if($aspect_ratio)
+                                $productImage = $_imagehelper->init($_product, $image)->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(FALSE)->resize($image_width);
+                            else
+                                $productImage = $_imagehelper->init($_product, $image)->resize($image_width, $image_height);
+                            $productImageUrl = $productImage->getUrl();
+                        ?>
+                            <img class="product-image-photo default_image <?php if(!$_lazyload): ?>porto-lazyload<?php endif;?>" <?php if(!$_lazyload): ?>data-<?php endif; ?>src="<?php echo $productImageUrl; ?>" width="<?php echo $image_width; ?>" height="<?php echo $image_height; ?>"/>
+                        <?php if($_category_config['alternative_image']): ?>
+                        <?php
+                            if($aspect_ratio)
+                                $productHoverImage = $_imagehelper->init($_product, $hover_image)->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(FALSE)->resize($image_width);
+                            else
+                                $productHoverImage = $_imagehelper->init($_product, $hover_image)->resize($image_width, $image_height);
+                            $productHoverImageUrl = $productHoverImage->getUrl();
+                        ?>
+                            <?php if($productImageUrl != str_replace("/thumbnail/","/small_image/",$productHoverImageUrl)): ?>
+                            <img class="product-image-photo hover_image" src="<?php echo $productHoverImageUrl; ?>"/>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        </a>
+                        <?php
+                            $product_label = "";
+                            if($_product_label_config['sale_label']) {
+                                $orgprice = $_product->getPrice();
+                                $specialprice = $_product->getSpecialPrice();
+                                $specialfromdate = $_product->getSpecialFromDate();
+                                $specialtodate = $_product->getSpecialToDate();
+                                $today = time();
+                                if(!$specialprice)
+                                    $specialprice = $orgprice;
+                                if($specialprice < $orgprice) {
+                                    if((is_null($specialfromdate) && is_null($specialtodate)) || ($today >= strtotime($specialfromdate) && is_null($specialtodate)) || ($today <= strtotime($specialtodate) && is_null($specialfromdate)) || ($today >= strtotime($specialfromdate) && $today <= strtotime($specialtodate))){
+                                        if($_product_label_config['sale_label_percent']) {
+                                            $save_percent = 100-round(($specialprice/$orgprice)*100);
+                                            $product_label .= '<div class="product-label sale-label">'.'-'.$save_percent.'%'.'</div>';
+                                        } else {
+                                            $product_label .= '<div class="product-label sale-label">'.$_product_label_config['sale_label_text'].'</div>';
+                                        }
+                                    }
+                                }
+                            }
+                            if($_product_label_config['new_label']) {
+                                $now = date("Y-m-d");
+                                $newsFrom= substr($_product->getData('news_from_date'),0,10);
+                                $newsTo=  substr($_product->getData('news_to_date'),0,10);
+                                
+                                if ($newsTo != '' || $newsFrom != ''){
+                                    if (($newsTo != '' && $newsFrom != '' && $now>=$newsFrom && $now<=$newsTo) || ($newsTo == '' && $now >=$newsFrom) || ($newsFrom == '' && $now<=$newsTo)) {
+                                        $product_label .= '<div class="product-label new-label">'.$_product_label_config['new_label_text'].'</div>';
+                                    }
+                                }
+                            }
+                            if($product_label)
+                                echo '<div class="product-labels">'.$product_label.'</div>';
+                        ?>
+                       <!-- Dailydeal Product data -->
+                        <?php if($_product->isSaleable() && $_product->getAvailableForAuction() == 1): ?>
+                        <?php if ($bid_status == 1 || ($bid_status == 2 && $purchase_date <= $current_date)): ?>
+                        <input type="hidden" id="featured_product_todate_<?php echo $iterator; ?>" value="<?php echo $dailydealhelper->getDailydealToDate($_product->getSku()); ?>" >
+                        <input type="hidden" id="featured_product_fromdate_<?php echo $iterator; ?>" value="<?php echo $dailydealhelper->getDailydealFromDate($_product->getSku()); ?>">
+                        <input type="hidden" id="featured_product_startFinalPrice_<?php echo $iterator; ?>" value="<?php echo $product_helper->getFinalPrice($_product); ?>">
+                        <div class="sw-dailydeal-wrapper" style="display:none;">
+                            <div class="sw-dailydeal">
+                                <p id="featured_product_expired_<?php echo $iterator; ?>"></p> 
+                                <div class="featured_product_countdowncontainer_<?php echo $iterator; ?>" style="display:none;">
+                                    <span class="dailydeal-label">
+                                        <?php echo __('Ends In:'); ?>
+                                    </span>
+
+                                    <span class="number-wrapper">
+                                        <div class="line"></div>
+                                        <span class="number hour"><p id="featured_product_countdown_hours_<?php echo $iterator; ?>"></p></span>
+                                        <div class="caption">:</div>
+                                    </span>
+
+                                    <span class="number-wrapper">
+                                        <div class="line"></div>
+                                        <span class="number min"><p id="featured_product_countdown_minutes_<?php echo $iterator; ?>"></p></span>
+                                        <div class="caption">:</div>
+                                    </span>
+
+                                    <span class="number-wrapper">
+                                        <div class="line"></div>
+                                        <span class="number sec"><p id="featured_product_countdown_seconds_<?php echo $iterator; ?>"></p></span>
+                                        <div class="caption"></div>
+                                    </span>
+                                </div>
+                                <div class="featured_product_pricecountdowncontainer_<?php echo $iterator; ?>" style="display:none;">
+                                    <span id="featured_product_start_price_<?php echo $iterator; ?>" data-price="<?php echo $product_helper->getFinalPrice($_product); ?>" style="display:none;"></span>
+                                    <span class="dailydeal-label" style="font-weight:600;">
+                                        <?php echo __('Current Price: '); ?>
+                                    </span>
+                                    <span class="number-wrapper">
+                                        <div class="line"></div>
+                                        <span class="number day"><p id="featured_product_countdown_price_<?php echo $iterator; ?>"></p></span>
+                                        <!-- <div class="caption"><?php // echo __('Day(s), '); ?></div> -->
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <?php  endif; ?> 
+                        <?php  endif; ?> 
+                       <!-- Dailydeal Product End -->
+                        <?php if($_category_config['actions'] && $move_actions): ?>
+                        <div class="product-item-inner">
+                            <div class="product actions product-item-actions">
+                                <div class="actions-primary">
+                                    <?php if ($_product->isSaleable()): ?>
+                                        <?php $postParams = $block->getAddToCartPostParams($_product); ?>
+                                        <form data-role="tocart-form" action="<?php echo $postParams['action']; ?>" method="post">
+                                            <input type="hidden" name="product" value="<?php echo $postParams['data']['product']; ?>">
+                                            <input type="hidden" name="<?php echo Action::PARAM_NAME_URL_ENCODED; ?>" value="<?php echo $postParams['data'][Action::PARAM_NAME_URL_ENCODED]; ?>">
+                                            <?php if(isset($_category_config['qty_field']) && $_category_config['qty_field']):?>
+                                                <div class="qty-box">
+                                                    <a href="javascript:void(0)" class="qtyminus"><i class="porto-icon-minus"></i></a>
+                                                    <input type="text" name="qty" id="featured_product_qty" maxlength="12" value="<?php /* @escapeNotVerified */ echo $block->getProductDefaultQty() * 1 ?>" title="<?php /* @escapeNotVerified */ echo __('Qty') ?>" class="input-text qty" data-validate="<?php echo $block->escapeHtml(json_encode($block->getQuantityValidators())) ?>"/>
+                                                    <a href="javascript:void(0)" class="qtyplus"><i class="porto-icon-plus"></i></a>
+                                                </div>
+                                            <?php endif;?>
+                                            <?php echo $block->getBlockHtml('formkey')?>
+                                            <button type="submit"
+                                                    title="<?php echo $block->escapeHtml(__('Add to Cart')); ?>"
+                                                    class="action tocart primary">
+                                                <span><?php echo __('Add to Cart') ?></span>
+                                            </button>
+                                            <?php
+                                                $product_id      = $_product->getId();
+                                                $bid_status      = $backwardbid_helper->getBidStatus($product_id);
+                                                $bidStartAmount  = $_helper->productAttribute($_product, $_product->getBidStartingPrice(), 'bid_starting_price ');
+                                                $bid_start_date  = $_product->getBidStartDate();
+                                                $backwardbid_status     = $backwardbid_helper->getConfig('backwardbid/general/enable');
+                                                $max_bid         = $backwardbid_helper->getMaxbidAmount($product_id);
+                                                $currency_symbol = $backwardbid_helper->getCurrency();
+                                                $date            = date('m/d/Y H:i:s');
+                                                $current_date    = $backwardbid_helper->getCurrentDate();
+                                                $customer_id     = $backwardbid_helper->getCustomerId();
+                                                // var_dump($backwardbid_status);exit();
+                                                if ($_product->isSaleable() && $_product->getAvailableForAuction() == 1 && ($bid_status == 1 || $bid_status == 2) && $backwardbid_status == 1): ?>
+                                            <?php if ($bid_status == 1 || ($bid_status == 2 && $purchase_date <= $current_date)): ?>
+                                            <?php if ($customer_id == 0): ?>
+                                                <a type="button" id="featured_product_quickViewButton<?php /* @noEscape */ echo $product_id ?>" 
+                                                    class="button-quickview" href="<?php echo $backwardbid_helper->getBaseLinkUrl(); ?>customer/account/login" title="BID NOW"> 
+                                                    <i class="fa fa-gavel" aria-hidden="true"></i>
+                                                    <?php /* @noEscape */ echo __('BID NOW') ?> 
+                                                </a>
+                                            <?php else: ?>
+                                                <button type="button" id="featured_product_quickViewButton<?php /* @noEscape */ echo $product_id ?>" 
+                                                    class="button-quickview" 
+                                                    data-mage-init='{ "Magento_Catalog/js/product/productlist/item/quickview": { } }' 
+                                                    data-product_id="<?php /* @noEscape */ echo $product_id ?>" 
+                                                    data-customer_id="<?php /* @noEscape */ echo $customer_id ?>" 
+                                                    data-url="<?php /* @noEscape */ echo $_product->getProductUrl() ?>" title="BID NOW"> 
+                                                    <i class="fa fa-gavel" aria-hidden="true"></i>
+                                                    <?php /* @noEscape */ echo __('BID NOW') ?> 
+                                                </button>
+                                            <?php endif;?>
+                                            <?php endif;?>
+                                            <?php endif;?> 
+                                            <div id="featured_product_quickViewContainer<?php /* @noEscape */ echo $_product->getId() ?>"></div> 
+                                        </form>
+                                    <?php else: ?>
+                                        <?php if ($_product->getIsSalable()): ?>
+                                            <div class="stock available"><span><?php echo __('In stock') ?></span></div>
+                                        <?php else: ?>
+                                            <div class="stock unavailable"><span><?php echo __('Out of stock') ?></span></div>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
+                                <?php if ($block->getMode() == 'grid'): ?>
+                                <?php if($_category_config['addtowishlist']): ?>
+                                <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
+                                    <a href="#"
+                                       class="action towishlist actions-secondary"
+                                       title="<?php echo $block->escapeHtml(__('Add to Wish List')); ?>"
+                                       aria-label="<?php echo $block->escapeHtml(__('Add to Wish List')); ?>"
+                                       data-post='<?php echo $block->getAddToWishlistParams($_product); ?>'
+                                       data-action="add-to-wishlist"
+                                       role="button">
+                                        <span><?php echo __('Add to Wish List') ?></span>
+                                    </a>
+                                <?php endif; ?>
+                                <?php endif; ?>
+                                <?php endif; ?>
+                                <?php if($_category_config['addtocompare']): ?>
+                                <?php
+                                $compareHelper = $this->helper('Magento\Catalog\Helper\Product\Compare');
+                                ?>
+                                <a href="#"
+                                   class="action tocompare actions-secondary"
+                                   title="<?php echo $block->escapeHtml(__('Add to Compare')); ?>"
+                                   aria-label="<?php echo $block->escapeHtml(__('Add to Compare')); ?>"
+                                   data-post='<?php echo $compareHelper->getPostDataParams($_product); ?>'
+                                   role="button">
+                                    <span><?php echo __('Add to Compare') ?></span>
+                                </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="product details product-item-details">
+                        <?php
+                            $_productNameStripped = $block->stripTags($_product->getName(), null, true);
+                        ?>
+                        <?php if(!$_category_grid_config['move_title']):?>
+                        <strong class="product name product-item-name">
+                            <a class="product-item-link"
+                               href="<?php echo $_product->getProductUrl() ?>">
+                                <?php echo $_helper->productAttribute($_product, $_product->getName(), 'name'); ?>
+                            </a>
+                        </strong>
+                        <?php endif;?>
+                        <?php //$_category_config['rating_star'] = "";  //disabled at the moment ?>
+                        <?php if($_category_config['rating_star']): ?>
+                        <?php
+                            $review_model->getEntitySummary($_product);
+                            $review_html = $block->getReviewsSummaryHtml($_product, $templateType);
+                        ?>
+                        <?php if($review_html): ?>
+                            <?php echo $block->getReviewsSummaryHtml($_product, $templateType); ?>
+                        <?php else: ?>
+                        <div class="product-reviews-summary short">
+                            <div class="rating-summary">
+                                <span class="label"><span>Rating:</span></span>
+                                <div class="rating-result" title="0%">
+                                    <span style="width:0"><span>0%</span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        <?php endif; ?>
+                        <?php if($_category_grid_config['move_title']):?>
+                            <strong class="product name product-item-name">
+                                <a class="product-item-link"
+                                   href="<?php echo $_product->getProductUrl() ?>">
+                                    <?php echo $_helper->productAttribute($_product, $_product->getName(), 'name'); ?>
+                                </a>
+                            </strong>
+                        <?php endif;?>
+                        <?php if ($showDescription):?>
+                            <div class="product description product-item-description">
+                                <?php echo $_helper->productAttribute($_product, $_product->getShortDescription(), 'short_description') ?>
+                                <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $_productNameStripped ?>"
+                                   class="action more"><?php echo __('Learn More') ?></a>
+                            </div>
+                        <?php endif; ?>
+                        <?php if($_category_config['product_price']): ?>
+                        <?php echo $block->getProductPrice($_product) ?>
+                        <?php endif; ?>
+                        <?php echo $block->getProductDetailsHtml($_product); ?>
+                        
+                        <?php if($_category_config['actions'] && !$move_actions): ?>
+                        <div class="product-item-inner">
+                            <div class="product actions product-item-actions">
+                                <?php if ($block->getMode() == 'grid'): ?>
+                                <?php if($_category_config['addtowishlist']): ?>
+                                <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
+                                    <a href="#"
+                                       class="action towishlist actions-secondary <?php if(isset($_category_config['qty_field']) && $_category_config['qty_field']):?>has-qty<?php endif;?>"
+                                       title="<?php echo $block->escapeHtml(__('Add to Wish List')); ?>"
+                                       aria-label="<?php echo $block->escapeHtml(__('Add to Wish List')); ?>"
+                                       data-post='<?php echo $block->getAddToWishlistParams($_product); ?>'
+                                       data-action="add-to-wishlist"
+                                       role="button">
+                                        <span><?php echo __('Add to Wish List') ?></span>
+                                    </a>
+                                <?php endif; ?>
+                                <?php endif; ?>
+                                <?php endif; ?>
+                                <div class="actions-primary">
+                                    <?php if ($_product->isSaleable()): ?>
+                                        <?php $postParams = $block->getAddToCartPostParams($_product); ?>
+                                        <form data-role="tocart-form" action="<?php echo $postParams['action']; ?>" method="post">
+                                        <?php
+                                            $product_id      = $_product->getId();
+                                            $bid_status      = $backwardbid_helper->getBidStatus($product_id);
+                                            $bidStartAmount  = $_helper->productAttribute($_product, $_product->getBidStartingPrice(), 'bid_starting_price ');
+                                            $bid_start_date  = $_product->getBidStartDate();
+                                            $backwardbid_status     = $backwardbid_helper->getConfig('backwardbid/general/enable');
+                                            $max_bid         = $backwardbid_helper->getMaxbidAmount($product_id);
+                                            $currency_symbol = $backwardbid_helper->getCurrency();
+                                            $date            = date('m/d/Y H:i:s');
+                                            $current_date    = $backwardbid_helper->getCurrentDate();
+                                            $customer_id     = $backwardbid_helper->getCustomerId();
+                                            $purchase_date   = $backwardbid_helper->getPurchaseDate($product_id, $customer_id);
+
+                                            // var_dump($backwardbid_status);exit();
+                                        if ($_product->getAvailableForAuction() == 0): ?>
+                                            <input type="hidden" name="product" value="<?php echo $postParams['data']['product']; ?>">
+                                            <input type="hidden" name="<?php echo Action::PARAM_NAME_URL_ENCODED; ?>" value="<?php echo $postParams['data'][Action::PARAM_NAME_URL_ENCODED]; ?>">
+                                            <?php if(isset($_category_config['qty_field']) && $_category_config['qty_field']):?>
+                                                <div class="qty-box">
+                                                    <a href="javascript:void(0)" class="qtyminus"><i class="porto-icon-minus"></i></a>
+                                                    <input type="text" name="qty" id="qty" maxlength="12" value="<?php /* @escapeNotVerified */ echo $block->getProductDefaultQty() * 1 ?>" title="<?php /* @escapeNotVerified */ echo __('Qty') ?>" class="input-text qty" data-validate="<?php echo $block->escapeHtml(json_encode($block->getQuantityValidators())) ?>"/>
+                                                    <a href="javascript:void(0)" class="qtyplus"><i class="porto-icon-plus"></i></a>
+                                                </div>
+                                            <?php endif;?>
+                                            <?php echo $block->getBlockHtml('formkey')?>
+                                            <button type="submit"
+                                                    title="<?php echo $block->escapeHtml(__('Add to Cart')); ?>"
+                                                    class="action tocart primary">
+                                                <span><?php echo __('Add to Cart') ?></span>
+                                            </button>
+                                            <?php
+                                        else:
+                                                if ($_product->isSaleable() && $_product->getAvailableForAuction() == 1 && ($bid_status == 1 || $bid_status == 2) && $backwardbid_status == 1): ?>
+                                            <?php if ($bid_status == 1 || ($bid_status == 2 && $purchase_date <= $current_date)): ?>
+                                            <?php if ($customer_id == 0): ?>
+                                                <a type="button" id="featured_product_quickViewButton<?php /* @noEscape */ echo $product_id ?>" 
+                                                    class="button-quickview actions-secondary " href="<?php echo $backwardbid_helper->getBaseLinkUrl(); ?>customer/account/login" title="BID NOW"> 
+                                                    <i class="fa fa-gavel" aria-hidden="true"></i>
+                                                    <?php /* @noEscape */ echo __('BID NOW') ?> 
+                                                </a>
+                                            <?php else: ?>
+                                                <button type="button" id="featured_product_quickViewButton<?php /* @noEscape */ echo $product_id ?>" 
+                                                    class="button-quickview actions-secondary " 
+                                                    data-mage-init='{ "Magento_Catalog/js/product/productlist/item/quickview": { } }' 
+                                                    data-product_id="<?php /* @noEscape */ echo $product_id ?>" 
+                                                    data-customer_id="<?php /* @noEscape */ echo $customer_id ?>" 
+                                                    data-url="<?php /* @noEscape */ echo $_product->getProductUrl() ?>" title="BID NOW"> 
+                                                    <i class="fa fa-gavel" aria-hidden="true"></i>
+                                                    <?php /* @noEscape */ echo __('BID NOW') ?> 
+                                                </button>
+                                            <?php endif;?>
+                                            <?php endif;?>
+                                            <?php endif;?> 
+                                            <div id="featured_product_quickViewContainer<?php /* @noEscape */ echo $_product->getId() ?>"></div> 
+                                        <?php endif;?> 
+
+                                        </form>
+                                    <?php else: ?>
+                                        <?php if ($_product->getIsSalable()): ?>
+                                            <div class="stock available"><span><?php echo __('In stock') ?></span></div>
+                                        <?php else: ?>
+                                            <div class="stock unavailable"><span><?php echo __('Out of stock') ?></span></div>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
+                                <?php if($_category_config['addtocompare']): ?>
+                                <?php
+                                $compareHelper = $this->helper('Magento\Catalog\Helper\Product\Compare');
+                                ?>
+                                <a href="#"
+                                   class="action tocompare actions-secondary <?php if(isset($_category_config['qty_field']) && $_category_config['qty_field']):?>has-qty<?php endif;?>"
+                                   title="<?php echo $block->escapeHtml(__('Add to Compare')); ?>"
+                                   aria-label="<?php echo $block->escapeHtml(__('Add to Compare')); ?>"
+                                   data-post='<?php echo $compareHelper->getPostDataParams($_product); ?>'
+                                   role="button">
+                                    <span><?php echo __('Add to Compare') ?></span>
+                                </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php echo($iterator == count($_productCollection)+1) ? '</li>' : '' ?>
+            <?php endforeach; ?>
+        </ol>
+    </div>
+    <script type="text/javascript">
+        require([
+            'jquery'
+        ], function ($) {
+            $('.products.grid .product-items.filterproducts li.product-item:nth-child(2n)').addClass('nth-child-2n');
+            $('.products.grid .product-items.filterproducts li.product-item:nth-child(2n+1)').addClass('nth-child-2np1');
+            $('.products.grid .product-items.filterproducts li.product-item:nth-child(3n)').addClass('nth-child-3n');
+            $('.products.grid .product-items.filterproducts li.product-item:nth-child(3n+1)').addClass('nth-child-3np1');
+            $('.products.grid .product-items.filterproducts li.product-item:nth-child(4n)').addClass('nth-child-4n');
+            $('.products.grid .product-items.filterproducts li.product-item:nth-child(4n+1)').addClass('nth-child-4np1');
+            $('.products.grid .product-items.filterproducts li.product-item:nth-child(5n)').addClass('nth-child-5n');
+            $('.products.grid .product-items.filterproducts li.product-item:nth-child(5n+1)').addClass('nth-child-5np1');
+            $('.products.grid .product-items.filterproducts li.product-item:nth-child(6n)').addClass('nth-child-6n');
+            $('.products.grid .product-items.filterproducts li.product-item:nth-child(6n+1)').addClass('nth-child-6np1');
+            $('.products.grid .product-items.filterproducts li.product-item:nth-child(7n)').addClass('nth-child-7n');
+            $('.products.grid .product-items.filterproducts li.product-item:nth-child(7n+1)').addClass('nth-child-7np1');
+            $('.products.grid .product-items.filterproducts li.product-item:nth-child(8n)').addClass('nth-child-8n');
+            $('.products.grid .product-items.filterproducts li.product-item:nth-child(8n+1)').addClass('nth-child-8np1');
+        });
+    </script>
+    <?php if (!$block->isRedirectToCartEnabled()) : ?>
+        <script type="text/x-magento-init">
+        {
+            "[data-role=tocart-form], .form.map.checkout": {
+                "catalogAddToCart": {}
+            }
+        }
+        </script>
+    <?php endif; ?>
+<?php endif; ?>
+<script type="text/javascript">
+require([
+    'jquery'        
+], function ($) {
+// Timer for LEFT time for Dailydeal product
+    var _second = 1000;
+    var _minute = _second * 60;
+    var _hour = _minute * 60;
+    var _day = _hour * 24;
+    var timer;
+   
+    function showRemaining(currentdate) 
+    {
+        var count;
+        var countdownPrice = 0;
+        for (count = 2; count <= <?php echo $iterator; ?>; count++) 
+        {
+            // get Value of dailydeal product
+            var cid='featured_product_countdown_'+count;
+            var daysid='featured_product_countdown_days_'+count;
+            var hoursid='featured_product_countdown_hours_'+count;
+            var minutesid='featured_product_countdown_minutes_'+count;
+            var secondsid='featured_product_countdown_seconds_'+count;
+            var showpriceid='featured_product_countdown_price_'+count;
+            var start_priceid='featured_product_start_price_'+count;
+            var startFinalPriceId='featured_product_startFinalPrice_'+count;
+            // var countdownPrice = $('#'+start_priceid).data("price")-0.01;
+
+            var startdateid='featured_product_fromdate_'+count;
+            var id='featured_product_todate_'+count;
+
+            // var enddate = new Date($('#'+id).val());
+            // var dealstartdate=new Date($('#'+startdateid).val());
+
+            var today = new Date(currentdate);
+            // var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            // var tomorrow = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+(today.getDate()+1);
+            var tomorrow = new Date(today.getFullYear(), today.getMonth(), (today.getDate()+1), 8, 0, 0);
+            var enddate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 22, 0, 0);
+            var dealstartdate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8, 0, 0);
+            // Get Current Date from magentodatetime
+            var currentdate=new Date(currentdate);
+            if (initialFlag) {
+                countdownPrice = $('#'+start_priceid).data("price")-0.01*((currentdate-dealstartdate)/1000);
+            }
+            else {
+                countdownPrice = $('#'+start_priceid).data("price")-0.01;
+            }
+            //Get Difference between Two dates
+            var distance = enddate - currentdate;
+
+            $('.sw-dailydeal-wrapper').show();
+
+            if (distance < 0) {
+               // clearInterval(timer);
+                $('#featured_product_expired_'+count).html("<span style='font-size:25px; color:#000;'>EXPIRED!<span>");
+                $('#featured_product_expired_'+count).css("visibility","visible");
+            } else if(dealstartdate > currentdate) {
+               $('.featured_product_countdowncontainer_'+count).hide();
+               $('.featured_product_pricecountdowncontainer_'+count).hide();
+            //    var msg="<span style='font-size:15px; color:#000;'> Coming Soon..<br>Deal Start at:<br>"+$('#'+startdateid).val()+"<span>";
+                var tomorrowday   = tomorrow.getDate();
+                var tomorrowmonth = tomorrow.getMonth();
+                var tomorrowyear  = tomorrow.getFullYear();
+                var tomorrowhours = "0" + tomorrow.getHours();
+                var tomorrowminutes = "0" + tomorrow.getMinutes();
+                var tomorrowseconds = "0" + tomorrow.getSeconds();
+                var tomorrowdate = tomorrowyear+'-'+(tomorrowmonth+1)+'-'+tomorrowday+' '+tomorrowhours.substr(tomorrowhours.length-2) + ':' + tomorrowminutes.substr(tomorrowminutes.length-2) + ':' + tomorrowseconds.substr(tomorrowseconds.length-2);
+                var limitTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+                if(currentdate > limitTime) {
+                    var today   = today.getDate();
+                    var todaymonth = today.getMonth();
+                    var todayyear  = today.getFullYear();
+                    var todayhours = "0" + today.getHours();
+                    var todayminutes = "0" + today.getMinutes();
+                    var todayseconds = "0" + today.getSeconds();
+                    var todaydate = todayyear+'-'+(todaymonth+1)+'-'+todayday+' '+todayhours.substr(todayhours.length-2) + ':' + todayminutes.substr(todayminutes.length-2) + ':' + todayseconds.substr(todayseconds.length-2);
+                    var msg="<span style='font-size:15px; color:#000;'> Coming Soon..<br>Auction Start at:<br>"+todaydate+"<span>";
+                
+                } else {
+                    var msg="<span style='font-size:15px; color:#000;'> Coming Soon..<br>Auction Start at:<br>"+tomorrowdate+"<span>";
+                }
+               $('#featured_product_expired_'+count).html(msg);
+               $('#featured_product_expired_'+count).css("visibility","visible");
+
+            } else {
+                if (countdownPrice <= 0) {
+                     // countdownPrice = <?php echo $product_helper->getFinalPrice($_product); ?>;
+                     startFinalPrice =  $("#"+startFinalPriceId).val();
+                    console.log("initialFlag: ", initialFlag);
+                    console.log("countdownPrice: ", countdownPrice);
+                    console.log("Math.abs(countdownPrice): ", Math.abs(countdownPrice));
+                    console.log("Math.abs(countdownPrice) % startFinalPrice: ", Math.abs(countdownPrice) % startFinalPrice);
+                    console.log("startFinalPrice: ", $("#"+startFinalPriceId).val());
+                    countdownPrice = startFinalPrice - (Math.abs(countdownPrice) % startFinalPrice);
+                    console.log("countdownPrice: ", countdownPrice);
+                }
+                var days = Math.floor(distance / _day);
+                var hours = Math.floor((distance % _day) / _hour);
+                var minutes = Math.floor((distance % _hour) / _minute);
+                var seconds = Math.floor((distance % _minute) / _second);
+                var showprice = '$' + parseFloat(countdownPrice, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString();
+
+                if(hours < 10)
+                    hours = "0" + hours;
+                if(minutes < 10)
+                    minutes = "0" + minutes;
+                if(seconds < 10)
+                    seconds = "0" + seconds;
+                // $('.featured_product_countdowncontainer_'+count).show();
+                $('.featured_product_pricecountdowncontainer_'+count).show();
+                $('#featured_product_expired_'+count).css("visibility","hidden");
+
+                $('#'+daysid).html(days);
+                $('#'+hoursid).html(hours);
+                $('#'+minutesid).html(minutes);
+                $('#'+secondsid).html(seconds);
+                $('#'+showpriceid).text(showprice);
+                $('#'+start_priceid).data("price",countdownPrice)
+                // if (countdownPrice > 0) {
+                //     var days = Math.floor(distance / _day);
+                //     var hours = Math.floor((distance % _day) / _hour);
+                //     var minutes = Math.floor((distance % _hour) / _minute);
+                //     var seconds = Math.floor((distance % _minute) / _second);
+                //     var showprice = '$' + parseFloat(countdownPrice, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString();
+
+                //     if(hours < 10)
+                //         hours = "0" + hours;
+                //     if(minutes < 10)
+                //         minutes = "0" + minutes;
+                //     if(seconds < 10)
+                //         seconds = "0" + seconds;
+                //     $('.countdowncontainer_'+count).show();
+                //     $('.pricecountdowncontainer_'+count).show();
+                //     $('#'+daysid).html(days);
+                //     $('#'+hoursid).html(hours);
+                //     $('#'+minutesid).html(minutes);
+                //     $('#'+secondsid).html(seconds);
+                //     $('#'+showpriceid).text(showprice);
+                //     $('#'+start_priceid).data("price",countdownPrice)
+
+                // }
+                // else {
+                //     // var msg="<span style='font-size:15px; color:#000;'> This Auction was ended today! <br> Try again tomorrow! <span>";
+                //     // $('#expired_'+count).html(msg);
+                //     // $('#'+showpriceid).text(showprice);
+                //     // $('#'+start_priceid).data("price",countdownPrice)
+                // }
+            }
+        }
+        initialFlag = false;
+    }
+    
+    //Set date as magentodatetime 
+    var date = new Date('<?php echo $backwardbid_helper->getcurrentESTDate() ?>');
+    
+    var day   = date.getDate();
+    var month = date.getMonth();
+    var year  = date.getFullYear();
+    var hours = date.getHours();
+    var minutes = "0" + date.getMinutes();
+    var seconds = "0" + date.getSeconds();
+    var initialFlag = true;
+    var fulldate = year+'-'+(month+1)+'-'+day+' '+hours + ':' + minutes.substr(minutes.length-2) + ':' + seconds.substr(seconds.length-2);
+
+    // Set Interval
+    timer = setInterval(function() 
+    {
+        date.setSeconds(date.getSeconds() + 1);
+        var month=date.getMonth();
+        var currentdatetime=date.getFullYear()+"-"+(month+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+        showRemaining(currentdatetime);
+    }, 1000); 
+});   
+</script>
+<style>
+.sw-dailydeal-wrapper {
+    padding: 13px;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    z-index: 2;
+}
+.sw-dailydeal {
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+    background-color: rgba(0,136,204,0.7);
+    width: 100%;
+    z-index: 2;
+    font-family: 'Oswald';
+    text-transform: uppercase;
+    line-height: 1;
+    padding: 9px 10px 11px;
+    text-align: center;
+}
+.sw-dailydeal p {
+    margin: 0;
+}
+.sw-dailydeal .dailydeal-label {
+    display: inline-block;
+    vertical-align: bottom;
+    font-size: 11px;
+    font-weight: 400;
+}
+.sw-dailydeal .line {
+    display: none;
+}
+.sw-dailydeal .number {
+    display: inline-block;
+    vertical-align: middle;
+}
+.sw-dailydeal .caption {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 -3px;
+}
+/* .products-grid .product-item-details .product-item-actions .button-quickview {
+    position: absolute;
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+    bottom: 0;
+    left: 7px;
+    visibility: hidden;
+    opacity: 0;
+} */
+.products-grid .product-item-details .product-item-actions .button-quickview {
+    background-color: #f4f4f4;
+    color: #6f6e6b;
+    border-color: #d8d8d6;
+    font-size: 12.5px;
+    font-family: 'Oswald';
+    font-weight: 400;
+    line-height: 28px;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+a.button-quickview {
+    background-color: #f4f4f4;
+    color: #6f6e6b;
+    border-color: #d8d8d6;
+    font-size: 12.5px;
+    font-family: 'Oswald';
+    font-weight: 400;
+    line-height: 28px;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    padding: 6px 17px 6px 17px;
+    border: 1px solid #d8d8d6;
+}
+.products-grid .product-item-info:hover .product-item-details .product-item-actions .actions-secondary.button-quickview {
+    bottom: -36px;
+    left: 7px;
+    visibility: visible;
+    opacity: 1;
+}
+.products-grid .product-item-info:hover .product-item-details .product-item-actions .button-quickview {
+    background-color: #F26C4F;
+    border-color: #F26C4F;
+    color: #fff;
+}
+.products-grid .product-item-info:hover .product-item-details .product-item-actions a.button-quickview {
+    padding: 6px 17px 6px 17px;
+    text-decoration: none;
+}
+iframe {
+    width: 100%!important;
+    height: 450px;
+}
+.modal-inner-wrap {
+    width: 50%!important;
+}
+</style>

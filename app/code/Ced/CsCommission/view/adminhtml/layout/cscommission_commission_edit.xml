@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+     <update handle="editor"/>
+    <body>
+	   <referenceContainer name="content">
+            <block class="Ced\CsCommission\Block\Adminhtml\Commission\Edit" name="cscommission_commission_edit"/>
+        </referenceContainer>
+		 <referenceContainer name="left">
+            <block class="Ced\CsCommission\Block\Adminhtml\Commission\Edit\Tabs" name="cscommission_commission_edit_tabs">
+				<block class="Ced\CsCommission\Block\Adminhtml\Commission\Edit\Tab\Commission" name="cscommission_commission_edit_tab_commission"/>
+				 <action method="addTab">
+                    <argument name="name" xsi:type="string">commission_section</argument>
+                    <argument name="block" xsi:type="string">cscommission_commission_edit_tab_commission</argument>
+                </action>
+				<!--CedAddTab-->
+			</block>
+        </referenceContainer>
+    </body>
+</page>

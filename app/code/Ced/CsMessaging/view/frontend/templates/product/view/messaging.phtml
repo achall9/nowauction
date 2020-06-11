@@ -1,0 +1,11 @@
+<?php $_product = $block->getProduct();  ?>
+<?php $vendorId = $block->getVendor(); ?>
+<?php $isMessagingEnableForAllProduct = $this->helper('Ced\CsMarketplace\Helper\Data')->getStoreConfig('ced_csmarketplace/csmessaging/enable_messaging_forallproduct');?>
+
+<?php if ($_product->getEnableMessaging() || $isMessagingEnableForAllProduct) : ?>
+    <a href="<?php if ($vendorId == \Ced\CsMessaging\Helper\Data::ADMIN_ID) {
+        echo $this->getUrl('csmessaging/customer/vcompose',['admin'=>true,'product_id'=>$_product->getId()]);
+    } else {
+        echo $this->getUrl('csmessaging/customer/vcompose',['vendor_id'=>$vendorId,'product_id'=>$_product->getId()]);
+    }?>"><?php echo __('Send message');?></a>
+<?php endif; ?>

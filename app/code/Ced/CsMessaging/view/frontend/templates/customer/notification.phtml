@@ -1,0 +1,14 @@
+<?php $vcustomerMessageCount = $block->getVcustomerNewMessages(); ?>
+<?php $cadminMessageCount = $block->getCadminNewMessages(); ?>
+
+<?php if ($vcustomerMessageCount > 0): ?>
+    <div class="message message-warning warning">
+        <?php echo __('You have '.$vcustomerMessageCount.' new message(s) from vendor(s). ').'<a href="'.$this->getUrl('csmessaging/customer/vinbox').'">'.__('click here').'</a>'; ?>
+    </div>
+<?php endif; ?>
+
+<?php if ($cadminMessageCount > 0): ?>
+    <div class="message message-warning warning">
+        <?php echo __('You have '.$cadminMessageCount.' new message(s) from admin. ').'<a href="'.$this->getUrl('csmessaging/customer/ainbox').'">'.__('click here').'</a>'; ?>
+    </div>
+<?php endif; ?>

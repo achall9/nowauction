@@ -1,0 +1,174 @@
+<?php
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_CsMultiSeller
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license     https://cedcommerce.com/license-agreement.txt
+ */
+?>
+<?php
+$title = $this->getTitle();
+?>
+<form
+        action="<?php echo $this->getSaveUrl(); ?>"
+        enctype="multipart/form-data" method="post"
+        id="assign-form" role="form">
+    <input type="hidden" name="id" id="product_id"
+           value="<?php echo $this->getRequest()->getParam('id', '') ?>"/>
+
+    <?php echo $block->getChildHtml('formkey') ?>
+    <div class="row">
+        <div class="col-md-12" style="margin-top:10px;">
+            <div class="panel panel-default">
+                <div class="panel-heading col-md-12 uptransform" style="font-weight:bold;padding:4px 15px;">
+                    <div class="col-md-6 panel_product_heading" style="line-height:31px;font-size:17px;">
+                        <?php echo $title;
+                        if ($block->getProductName()) echo " - " . $block->getProductName(); ?>
+                    </div>
+                    <div class="buttons-set col-md-6 buttons_scb" style="text-align:right;">
+                        <button class="button btn btn-success uptransform product-button" title="Save" type="submit"
+                                id="save_butn"
+                                style="float: none;">
+                            <span><span><?php echo __('Save') ?></span></span>
+                        </button>
+                        <button type="reset" style="float: none;"
+                                class="uptransform button btn btn-warning product-button">
+                            <span><span><?php echo __('Cancel') ?></span></span>
+                        </button>
+                        <button style="float: none;" type="button"
+                                onCLick="window.location='<?php echo $this->escapeUrl($this->getBackUrl()) ?>'"
+                                title="<?php echo __('Back') ?>"
+                                class="button btn btn-info uptransform product-button back-button">
+                            <span><span><?php echo __('Back') ?></span></span></button>
+                    </div>
+                </div>
+                <div class="panel-body panel-min-height panel-min-height-ak">
+                    <div class="col-md-12">
+                        <br/>
+                        <div style="clear:both;"></div>
+                        <div class="form-group col-md-6 rtl-active">
+                            <label class="required"><em>*</em><?php echo __('SKU') ?></label>:
+                            <div style="clear:both"></div>
+                            <div class="input-box col-md-6" style="padding-left:0">
+                                <input name="product[sku]" id="sku" type="text" value=""
+                                       class="form-control required-entry input-text"/>
+                            </div>
+                            <div id="skuavailable" style="line-height:2.3em; display:none;">
+                                <span class="sku-success-msg skuavailable">&nbsp;<?php echo __('SKU Available') ?></span>
+                            </div>
+                            <div id="skunotavailable" style="line-height:2.3em; display:none;">
+                                <span class="sku-error-msg skunotavailable">&nbsp;<?php echo __('SKU Already Exist') ?></span>
+                            </div>
+                            <div style="clear:both"></div>
+                        </div>
+
+                        <div class="form-group col-md-6 rtl-active">
+                            <label class="required"><em>*</em><?php echo __('Price') ?></label>:
+                            <div class="input-box form-group input-group price-imput-box ced_currency_setting">
+                                <div class="wrap-in-grp">
+                                    <span class="input-group-addon"><?php $currency_code = $this->storeFactory->create()->load(0)->getBaseCurrencyCode();
+                                        echo $this->currency->getCurrency($currency_code)->getSymbol(); ?></span>
+                                    <input type="text" name="product[price]" value="" id="price"
+                                           class="form-control required-entry validate-number validate-zero-or-greater  input-text"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-6 rtl-active"><label
+                                    class="required"><em>*</em><?php echo __('Stock Availability') ?></label>:
+                            <div class="input-box">
+                                <select id="is_in_stock" class="form-control select required-entry"
+                                        name="product[stock_data][is_in_stock]">
+                                    <option value="-1"><?php echo __('--Please Select--'); ?></option>
+                                    <option value="1"><?php echo __('In Stock'); ?></option>
+                                    <option value="0"><?php echo __('Out of Stock'); ?></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-6 rtl-active">
+                            <label class="required"><em>*</em><?php echo __('Stock') ?></label>:
+                            <div class="input-box">
+                                <input type="text" name="product[stock_data][qty]" value="" id="qty"
+                                       class="form-control required-entry validate-number input-text"/>
+                            </div>
+                        </div>
+                        <div style="clear:both;"></div>
+                        <p class="required"><?php echo __('* Required Fields') ?></p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    require([
+        "jquery",
+        "mage/mage"
+    ], function ($) {
+
+        jQuery('#sku').change(function () {
+            var sku = jQuery('#sku').val();
+            var url = "<?php echo $this->getUrl('*/*/checksku', array('_secure' => true, 'id' => 1)); ?>";
+
+            var skulength = sku.length;
+            if (skulength == 0) {
+                alert("<?php echo __("SKU can't be empty") ?>");
+                jQuery('#skuavailable').css('display', 'none');
+                jQuery('#skunotavailable').css('display', 'none');
+            } else {
+                jQuery.ajax({
+                    url: url,
+                    type: "POST",
+                    data: {sku: sku},
+                    dataType: 'json',
+                    success: function ($data) {
+                        if ($data.result) {
+                            jQuery('#skuavailable').css('display', 'block');
+                            jQuery('#skunotavailable').css('display', 'none');
+                        } else {
+                            jQuery('#skunotavailable').css('display', 'block');
+                            jQuery('#skuavailable').css('display', 'none');
+                            jQuery("#sku").attr('value', '');
+                        }
+                    }
+                });
+            }
+        });
+        var dataForm = $('#assign-form');
+
+        dataForm.mage('validation', {}).find('input:text').attr('autocomplete', 'off');
+    });
+
+
+</script>
+<style>
+    .ced_currency_setting .input-group-addon {
+        display: inline-block;
+        float: left;
+        height: 34px;
+        padding-right: 20px;
+        padding-top: 10px;
+    }
+
+    .ced_currency_setting .input-text {
+        display: inline-block !important;
+        padding: 4px !important;
+        width: 89% !important;
+    }
+
+    .ced_currency_setting {
+        width: 100%;
+    }
+</style>

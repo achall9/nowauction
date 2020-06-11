@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!--
+ *
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_GiftCard
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license     https://cedcommerce.com/license-agreement.txt
+ *
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="styles"/>
+    <body>
+        <referenceContainer name="content">
+            <uiComponent name="cedgiftcard_templates_form"/>
+            <referenceContainer name="cedgiftcard_templates_form">
+                <block name="gallery" class="Ced\GiftCard\Block\Adminhtml\Form\Gallery">
+                    <arguments>
+                        <argument name="config" xsi:type="array">
+                            <item name="label" xsi:type="string" translate="true">Images</item>
+                            <item name="collapsible" xsi:type="boolean">true</item>
+                            <item name="opened" xsi:type="boolean">false</item>
+                            <item name="sortOrder" xsi:type="string">22</item>
+                            <item name="canShow" xsi:type="boolean">true</item>
+                            <item name="componentType" xsi:type="string">fieldset</item>
+                        </argument>
+                    </arguments>
+                    <block class="Ced\GiftCard\Block\Adminhtml\Form\Gallery\Content" as="content" template="Ced_GiftCard::helper/gallery.phtml">
+                        <arguments>
+                            <argument name="config" xsi:type="array">
+                                <item name="parentComponent" xsi:type="string">cedgiftcard_templates_form.cedgiftcard_templates_form.block_gallery.block_gallery</item>
+                            </argument>
+                        </arguments>
+                    </block>
+                </block>
+            </referenceContainer>
+        </referenceContainer>
+    </body>
+</page>
