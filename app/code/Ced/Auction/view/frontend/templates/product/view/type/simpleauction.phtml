@@ -26,8 +26,8 @@ if ($enableAuctionDetails) {
         $productId = $this->getRequest()->getParam('id');
         $auctionId = $block->getAuctionDetails()->getId();
         $status = $block->getAuctionDetails()->getStatus();
-        $startTime = $block->getAuctionDetails()->getStartDatetime();
-       $endTime = $block->getAuctionDetails()->getEndDatetime();
+       $startTime = $block->getAuctionDetails()->getStartDatetime();
+        $endTime = $block->getAuctionDetails()->getEndDatetime();
         $currTime = $block->getDateTimeCurrent();
         $timezone = $block->getTimeZone()->getConfigTimezone();
 	
@@ -47,6 +47,7 @@ if ($enableAuctionDetails) {
 				
 			$startprice = $block->getAuctionDetails()->getMaxPrice();
 			$productstartprice = $block->getAuctionDetails()->getMaxPrice();
+			
         if ($status == 'processing') {
              //$countDownTime = $endTime;
              $countDownTime = $finalDate;

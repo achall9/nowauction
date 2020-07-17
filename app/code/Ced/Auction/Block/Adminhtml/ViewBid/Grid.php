@@ -18,7 +18,7 @@
 
 namespace Ced\Auction\Block\Adminhtml\ViewBid;
 
-use Ced\Auction\Model\ResourceModel\Biddetails\CollectionFactory;
+use Ced\Auction\Model\ResourceModel\BidDetails\CollectionFactory;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Visibility;
 

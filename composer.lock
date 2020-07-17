@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe8cd5c2c18178d74e74ff9eb2fe2cee",
+    "content-hash": "2c6233b333bcaa9765f84d38a27a00f0",
     "packages": [
         {
             "name": "amzn/amazon-pay-and-login-magento-2-module",
@@ -1495,6 +1495,7 @@
                 }
             ],
             "description": "Provides a simple API and specification that abstracts away the details of HTTP into a single PHP function.",
+            "abandoned": true,
             "time": "2018-07-31T13:22:33+00:00"
         },
         {
@@ -1545,6 +1546,7 @@
                 "Guzzle",
                 "stream"
             ],
+            "abandoned": true,
             "time": "2014-10-12T19:18:40+00:00"
         },
         {
@@ -12940,6 +12942,105 @@
             "time": "2018-09-13T19:25:26+00:00"
         },
         {
+            "name": "stripe/module-payments",
+            "version": "1.8.9",
+            "dist": {
+                "type": "zip",
+                "url": "https://repo.magento.com/archives/stripe/module-payments/stripe-module-payments-1.8.9.0.zip",
+                "shasum": "73899fc5eba9ded30ec45503174e6d06a69be5f1"
+            },
+            "require": {
+                "stripe/stripe-php": "^7.33.0"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "StripeIntegration\\Payments\\": ""
+                }
+            },
+            "license": [
+                "https://stripe.com/magento/legal"
+            ],
+            "description": "Shared component for accepting online payments in Magento 2 using the Stripe payment gateway."
+        },
+        {
+            "name": "stripe/stripe-payments",
+            "version": "1.8.7",
+            "dist": {
+                "type": "zip",
+                "url": "https://repo.magento.com/archives/stripe/stripe-payments/stripe-stripe-payments-1.8.7.0.zip",
+                "shasum": "d6b94ed44c8824a8e6ce22bccb0ad360529a4a29"
+            },
+            "require": {
+                "stripe/module-payments": ">=1.8.7"
+            },
+            "type": "metapackage",
+            "license": [
+                "https://stripe.com/magento/legal"
+            ],
+            "description": "Accept online payments in Magento 2 using the Stripe payment gateway."
+        },
+        {
+            "name": "stripe/stripe-php",
+            "version": "v7.37.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stripe/stripe-php.git",
+                "reference": "e3e29131a131785c3d2f85556b0154e8170e9bba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/e3e29131a131785c3d2f85556b0154e8170e9bba",
+                "reference": "e3e29131a131785c3d2f85556b0154e8170e9bba",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "2.16.1",
+                "php-coveralls/php-coveralls": "^2.1",
+                "phpunit/phpunit": "^5.7",
+                "squizlabs/php_codesniffer": "^3.3",
+                "symfony/process": "~3.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Stripe\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stripe and contributors",
+                    "homepage": "https://github.com/stripe/stripe-php/contributors"
+                }
+            ],
+            "description": "Stripe PHP Library",
+            "homepage": "https://stripe.com/",
+            "keywords": [
+                "api",
+                "payment processing",
+                "stripe"
+            ],
+            "time": "2020-06-11T16:27:35+00:00"
+        },
+        {
             "name": "symfony/console",
             "version": "v4.1.12",
             "source": {
@@ -18086,12 +18187,12 @@
             "version": "1.7.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/facebook/php-webdriver.git",
+                "url": "https://github.com/php-webdriver/php-webdriver-archive.git",
                 "reference": "e43de70f3c7166169d0f14a374505392734160e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/facebook/php-webdriver/zipball/e43de70f3c7166169d0f14a374505392734160e5",
+                "url": "https://api.github.com/repos/php-webdriver/php-webdriver-archive/zipball/e43de70f3c7166169d0f14a374505392734160e5",
                 "reference": "e43de70f3c7166169d0f14a374505392734160e5",
                 "shasum": ""
             },
@@ -18139,6 +18240,7 @@
                 "selenium",
                 "webdriver"
             ],
+            "abandoned": "php-webdriver/webdriver",
             "time": "2019-06-13T08:02:18+00:00"
         },
         {

@@ -59,7 +59,7 @@ $productPriceById = $productCollection->getPrice();
                     $countDownTime = $startTime;
                     ?>
 
-     <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6" data-product="<?= $productId; ?>"
+     <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 upcoming_auction all-auctions"  data-product="<?= $productId; ?>"
              data-counter="<?= $countDownTime; ?>" data-price="<?= $productStartingAmount; ?>" data-status="<?= $status; ?>" data-finaltime="<?= $finalTime; ?>">
                         <div class="product-item-info" data-container="product-grid">
 
@@ -151,11 +151,36 @@ $productPriceById = $productCollection->getPrice();
                 } ?>
                     <?php
                 if ($detail->getStatus() == 'processing') {
+				
+				$addCls ='';
+					$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+					$resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
+					$connection = $resource->getConnection();
+					$tableName = $resource->getTableName('ced_auction_biddetails');
+
+					//Select Data from table
+					$sql = "Select * FROM " . $tableName."  WHERE product_id = " . $productId;
+					$results = $connection->fetchAll($sql);
+					//echo "<pre>";print_r($results);
+					$countStatus = array();
+					foreach ($results as $key => $data)
+					 {
+					  if ($data['status'] == 'bidding') 
+					  {
+						 if ($data['product_id'] == $productId) 
+						 { 
+						 $addCls = "trending_auction featured_auction";						
+						 }			
+						}
+					 }
+		
+		
+		
                    // $countDownTime = $endTime;
 					$countDownTime = $finalDate;
 			
                     ?>
-                   <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6" data-product="<?= $productId; ?>"
+                   <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 live_auction all-auctions <?php echo $addCls;?>" data-product="<?= $productId; ?>"
                         data-counter="<?= $countDownTime; ?>" data-price="<?= $productStartingAmount; ?>" data-status="<?= $status; ?>" data-finaltime="<?= $finalTime; ?>">
                         <div class="product-item-info" data-container="product-grid">
 
@@ -249,7 +274,7 @@ $productPriceById = $productCollection->getPrice();
 
                     <?php
                 if ($detail->getStatus() == 'closed') { ?>
-                    <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6" data-product="<?= $productId; ?>">
+                    <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 closed_auction all-auctions" data-product="<?= $productId; ?>">
                         <div class="product-item-info" data-container="product-grid">
 
                             <a href="<?= $block->getAuctionProductUrl($productId) ?>"
@@ -283,7 +308,7 @@ $productPriceById = $productCollection->getPrice();
 
                     <?php
                 if ($detail->getStatus() == 'cancelled') { ?>
-                    <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6" data-product="<?= $productId; ?>">
+                    <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 cancel_auction all-auctions" data-product="<?= $productId; ?>">
                         <div class="product-item-info" data-container="product-grid">
 
                             <a href="<?php if ($block->getAuctionProductUrl($productId)) {

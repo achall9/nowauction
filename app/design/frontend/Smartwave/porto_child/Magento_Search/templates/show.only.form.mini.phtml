@@ -23,31 +23,44 @@ $helper = $this->helper('Magento\Search\Helper\Data');
       </div>
     </div>
     <div class="owl-dots" style="display: flex;flex-direction: column;">
-      <div class="owl-dot" style="display: flex; margin-bottom: 3%;">
-        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Live NOWauctions</div>
-      </div>
-      <div class="owl-dot" style="display: flex; margin-bottom: 3%;">
-        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Upcoming Auctions</div>
-      </div>
-      <div class="owl-dot" style="display: flex; margin-bottom: 3%;">
-        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Watchlist</div>
-      </div>
-      <div class="owl-dot active" style="display: flex; margin-bottom: 3%;">
-        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Featured</div>
-      </div>
-      <div class="owl-dot" style="display: flex; margin-bottom: 3%;">
-        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Trending</div>
-      </div>
-      <div class="owl-dot" style="display: flex; margin-bottom: 3%;">
+	 <div class="owl-dot active"  id="all-auctions" style="display: flex; margin-bottom: 3%;">
         <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>All items</div>
       </div>
+      <div class="owl-dot"  id="live_auction"  style="display: flex; margin-bottom: 3%;">
+        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Live NOWauctions</div>
+      </div>
+      <div class="owl-dot" id="upcoming_auction" style="display: flex; margin-bottom: 3%;">
+        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Upcoming Auctions</div>
+      </div>
+      <!--<div class="owl-dot" id="watchlist_auction" style="display: flex; margin-bottom: 3%;">
+        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Watchlist</div>
+      </div> -->
+      <div class="owl-dot"  id="featured_auction" style="display: flex; margin-bottom: 3%;">
+        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Featured</div>
+      </div>
+      <div class="owl-dot"  id="trending_auction" style="display: flex; margin-bottom: 3%;">
+        <span style="margin: 0 5px 2px 0;border-color: #f26c4f;width: 18px;height: 18px;"></span><div>Trending</div>
+      </div>
+     
       
     </div>
   </div>
 </div>
 
 <hr style="border-top-width: 5px; margin-top: 10%;">
-
+<script type="text/javascript">
+jQuery(function() {
+    jQuery('.owl-dot').click(function() {
+        jQuery('.owl-dot').removeClass("active");
+        jQuery(this).addClass("active");
+		 var id = jQuery(this).attr("id");
+		 jQuery('.all-auctions').css('display','none');
+		  jQuery('.'+id).css('display','block');
+		 
+		
+    });
+});
+</script>
 <style type="text/css">
 
 
