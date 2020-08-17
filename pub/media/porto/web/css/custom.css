@@ -14,6 +14,10 @@ body > p {
 .clearer {
     clear:both;
 }
+.owl-carousel .owl-item img {
+    display: block;
+    margin: 0 auto;
+	}
 @media (min-width: 1200px) {
     .col-xl-2-4 {
         width: 20%;
@@ -4317,6 +4321,9 @@ table .col {
         padding-left: 20px;
         padding-right: 20px;
     }
+	.csmarketplace-vshops-index .column.main {
+    width: 73%!important;
+}
 }
 .sticky-logo .logo {
     max-width: none;
@@ -4701,6 +4708,7 @@ table .col {
 }
 .product.info.detailed {
     margin-bottom: 20px;
+  
 }
 .catalog-product-view.product-type-sticky-right .product.info.detailed {
     margin-top: 20px;
@@ -5337,4 +5345,121 @@ p.price-to > span {
         left: 380px;
     }
 	
-}.account-nav .nav li:nth-child(3), .account-nav .nav li:nth-child(6),.account-nav .nav li:nth-child(7), .account-nav .nav li:nth-child(11), .account-nav .nav li:nth-child(12) {    display: none;}
+}
+.account-nav .nav li:nth-child(3), .account-nav .nav li:nth-child(6),.account-nav .nav li:nth-child(7), .account-nav .nav li:nth-child(11), .account-nav .nav li:nth-child(12) {    display: none;}
+.page-main {
+     margin-bottom: 0!important;
+	 }
+	 .csmarketplace-vshops-view .column.main {
+    -webkit-box-ordinal-group: 2;
+    -moz-box-ordinal-group: 2;
+    -ms-flex-order: 2;
+    -webkit-order: 2;
+    order: 2;
+}
+.csmarketplace-vshops-view .sidebar.sidebar-additional {
+    -webkit-box-ordinal-group: 1;
+    -moz-box-ordinal-group: 1;
+    -ms-flex-order: 1;
+    -webkit-order: 1;
+    order: 1;
+}
+.csmarketplace-vshops-view .columns {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-align: start;
+    -moz-box-align: start;
+    -ms-flex-align: start;
+    -webkit-align-items: flex-start;
+    align-items: flex-start;
+}
+@media (min-width: 768px) {
+
+.csmarketplace-vshops-view .sidebar.sidebar-additional {
+    width: 100%!important;
+    padding: 0;
+    margin: 0;
+}
+.csmarketplace-vshops-view .sidebar .block.block-poll {
+    float: left;
+    width: 65%!important;
+    margin: 0!important;
+}
+.csmarketplace-vshops-view .sidebar .block.block-poll img {
+    width: 20%;
+	float:left;
+}
+.csmarketplace-vshops-view .sidebar .block.block-poll ul {
+    float: left;
+    margin: 0 10px;
+    width: 75%;
+}
+.csmarketplace-vshops-view .sidebar  .block.block-poll ul li {
+    float: left;
+    width: 48%;
+    height: 40px;
+    padding: 0!important;
+    margin: 5px 3px 5px 3px;
+}
+.csmarketplace-vshops-view .sidebar .block {
+    float: left;
+    width: 15%;
+	margin-bottom: 0;
+    margin-right: 10px;
+}
+.csmarketplace-vshops-view .sidebar .block.block-layered-nav {
+    float: left;
+    width: 15%;
+    text-align: center;
+    display: none;
+    margin: 0 10px;
+}
+.csmarketplace-vshops-view .sidebar .block.block-layered-nav.block-layered-nav-1 {
+    display: block!important;
+}
+.csmarketplace-vshops-view .column.main {
+    width: 100%!important;
+    margin: 0;
+	
+    padding: 0;
+}
+.csmarketplace-vshops-view .products-grid.columns4 .product-item {
+    padding: 0;
+    width: 20%;
+}
+.csmarketplace-vshops-view .toolbar.toolbar-products {
+    background: #ccc;
+    padding: 15px;
+	margin-top: 20px;
+}
+
+/* product view */	 
+	 .catalog-product-view .column.main {
+    width: 100%!important;
+}
+.page-layout-1column .column.main > .custom-block ~ .product.media, .page-layout-2columns-left .column.main > .custom-block ~ .product.media, .page-layout-2columns-right .column.main > .custom-block ~ .product.media, .page-layout-3columns .column.main > .custom-block ~ .product.media {
+    width: 45%!important;
+}
+.product.info.detailed {
+    margin-bottom: 20px;
+    width: 45%;
+    float: left;
+}
+.block.related {
+    padding: 0 20px;
+    width: 55%;
+    float: left;
+}
+}
+.product.media {
+    border: 1px solid #ddd;
+    padding: 20px!important;
+}

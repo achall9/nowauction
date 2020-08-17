@@ -45,7 +45,7 @@ switch ($type = $block->getType()) {
             $class = $type;
 
             $image = 'related_products_list';
-            $title = __('Related Products');
+            $title = __('Similar Products');
             $items = $block->getItems();
             $limit = 0;
             $shuffle = 0;
@@ -189,8 +189,8 @@ $image_height = ($_category_config['ratio_height'])?$_category_config['ratio_hei
     <div class="block-content content" aria-labelledby="block-<?php /* @escapeNotVerified */ echo $class?>-heading">
         <?php if ($type == 'related' && $canItemsAddToCart): ?>
         <div class="block-actions">
-            <?php /* @escapeNotVerified */ echo __('Check items to add to the cart or') ?>
-            <button type="button" class="action select" role="select-all"><span><?php /* @escapeNotVerified */ echo __('select all') ?></span></button>
+            <?php /* @escapeNotVerified */ //echo __('Check items to add to the cart or') ?>
+            <button type="button" class="action select" role="select-all"><span><?php /* @escapeNotVerified */ //echo __('select all') ?></span></button>
         </div>
         <?php endif; ?>
         <div class="products wrapper grid <?php if ($type == 'upsell' || $type == 'crosssell'): ?><?php echo $columns; ?><?php endif; ?> products-grid products-<?php /* @escapeNotVerified */ echo $type; ?>">
@@ -204,16 +204,13 @@ $image_height = ($_category_config['ratio_height'])?$_category_config['ratio_hei
                     <?php endif; ?>
                 <?php endif; ?>
                 <?php if ($type == 'related'): ?>
-                    <?php
-                        $iterator ++;
-                        if($iterator % 2 == 1)
-                            echo '<div class="item product product-item" style="display: none;">';
-                    ?>
-                <?php elseif ($type == 'upsell'): ?>
+  <?php echo($iterator++ == 0) ? '<div class="item product product-item" style="display: none;">' : '</div><div class="item product product-item" style="display: none;">' ?>
+  <?php elseif ($type == 'upsell'): ?>
                     <?php echo($iterator++ == 0) ? '<div class="item product product-item" style="display: none;">' : '</div><div class="item product product-item" style="display: none;">' ?>
                 <?php else: ?>
                     <?php /* @escapeNotVerified */ echo($iterator++ == 0) ? '<div class="item product product-item">' : '</div><div class="item product product-item">' ?>
                 <?php endif; ?>
+				
                 <div class="product-item-info <?php /* @escapeNotVerified */ echo $available; ?>">
                     <?php /* @escapeNotVerified */ echo '<!-- ' . $image . '-->' ?>
                     <a href="<?php echo $_item->getProductUrl() ?>" class="product photo product-item-photo" tabindex="-1">
@@ -344,10 +341,7 @@ $image_height = ($_category_config['ratio_height'])?$_category_config['ratio_hei
                         </div>
                     </div>
                     <?php if ($type == 'related'): ?>
-                    <?php
-                        if($iterator == count($items) || $iterator % 2 == 0)
-                            echo '</div>';
-                    ?>
+                     <?php echo($iterator == count($items)) ? '</div>' : '' ?>
                     <?php else: ?>
                     <?php echo($iterator == count($items)) ? '</div>' : '' ?>
                     <?php endif; ?>
@@ -357,6 +351,12 @@ $image_height = ($_category_config['ratio_height'])?$_category_config['ratio_hei
     </div>
 </div>
 <?php if ($type == 'related'): ?>
+<style>
+.block.related img.product-image-photo{
+    width: 140px;
+    height: 140px;
+}
+</style>
     <script type="text/javascript">
         require([
             'jquery',
@@ -365,8 +365,21 @@ $image_height = ($_category_config['ratio_height'])?$_category_config['ratio_hei
             $(".products-related .owl-carousel").owlCarousel({
                 nav: true,
                 dots: false,
-                items: 1,
                 nav: true,
+				 responsive: {
+        0: {
+          items:2
+        },
+        768: {
+          items:3
+        },
+        992: {
+          items:4
+        },
+        1200: {
+          items:4
+        }
+      },
                 navText: ["<em class='porto-icon-left-open-huge'></em>","<em class='porto-icon-right-open-huge'></em>"]
             });
         });
