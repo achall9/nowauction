@@ -37,13 +37,14 @@
             <div class="product info detailed <?php echo $tab_style; ?> <?php if($page_type == 'sticky_right'): ?>fullwidth-row<?php endif; ?>">
             <?php $layout = $block->getLayout(); ?>
             <?php if(!$tab_style || $tab_style != "sticky"): ?>
-                <div class="product data items <?php if($page_type == 'sticky_right'): ?>container<?php endif; ?>" data-mage-init='{"tabs":{"openedState":"active"}}'>
+                <div class="12 product data items <?php if($page_type == 'sticky_right'): ?>container<?php endif; ?>" data-mage-init='{"tabs":{"openedState":"active"}}'>
                     <?php foreach ($detailedInfoGroup as $name):?>
                         <?php
+						
                         $html = $layout->renderElement($name);
-                        if (!trim($html)) {
-                            continue;
-                        }
+                      //  if (!trim($html)) {
+                        //    continue;
+                        //}
                         $alias = $layout->getElementAlias($name);
                         $label = $block->getChildData($alias, 'title');
                         ?>
@@ -216,3 +217,13 @@
 </div>
 <?php endif;?>
 <?php endif; ?>
+<style>
+div#tab-label-additional {
+    display: none;
+}
+.price-box.price-final_price {
+   height: 0!important;
+    margin: 0;
+    padding: 0;
+}
+</style>

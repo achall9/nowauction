@@ -10,6 +10,14 @@
 ?>
 
 <?php
+$timezone = $block->getTimeZone()->getConfigTimezone();
+
+ $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); 
+    $storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface'); 
+    $currencyCode = $storeManager->getStore()->getCurrentCurrencyCode(); 
+    $currency = $objectManager->create('Magento\Directory\Model\CurrencyFactory')->create()->load($currencyCode); 
+ $currencySymbol = $currency->getCurrencySymbol(); 
+ 
 $columns = "columns4";
 $_imagehelper = $this->helper('Magento\Catalog\Helper\Image');
 $_portohelper = $this->helper('Smartwave\Porto\Helper\Data');
@@ -52,8 +60,8 @@ switch ($type = $block->getType()) {
             $canItemsAddToCart = $block->canItemsAddToCart();
 
             $showWishlist = true;
-            $showCompare = true;
-            $showCart = false;
+            $showCompare = false;
+            $showCart = true;
             $templateType = \Magento\Catalog\Block\Product\ReviewRendererInterface::SHORT_VIEW;
             $description = false;
         }
@@ -276,8 +284,21 @@ $image_height = ($_category_config['ratio_height'])?$_category_config['ratio_hei
                                     <?php echo $block->escapeHtml($_item->getName()) ?></a>
                             </strong>
                         <?php endif;?>
-                        <?php /* @escapeNotVerified */ echo $block->getProductPrice($_item); ?>
-
+                        <?php /* @escapeNotVerified */ //echo $block->getProductPrice($_item); ?>
+				
+				<div class="related-starting-bid" bis_skin_checked="1">
+                <label>Starting Price</label>
+                <span>
+                   <?php 
+				   $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); // Instance of Object Manager
+	$priceHelper = $objectManager->create('Magento\Framework\Pricing\Helper\Data'); // Instance of Pricing Helper
+	$price =  $_item->getPrice();
+	echo $priceHelper->currency($price, true, false);
+				   ?>         </span>
+            </div>
+				
+					
+				
                             <?php if (!$_item->isComposite() && $_item->isSaleable() && $type == 'related'): ?>
                                 <?php if (!$_item->getRequiredOptions()): ?>
                                     <div class="field choice related">
@@ -288,31 +309,16 @@ $image_height = ($_category_config['ratio_height'])?$_category_config['ratio_hei
                             <?php endif; ?>
 
                             <?php if ($showWishlist || $showCompare || $showCart): ?>
-                                <div class="product actions product-item-actions">
+                                <div style="display:block;" class="product actions product-item-actions">
                                     <?php if ($showCart): ?>
                                         <div class="actions-primary">
-                                            <?php if ($_item->isSaleable()): ?>
-                                                <?php if ($_item->getTypeInstance()->hasRequiredOptions($_item)): ?>
-                                                    <button class="action tocart primary" data-mage-init='{"redirectUrl": {"url": "<?php /* @escapeNotVerified */ echo $block->getAddToCartUrl($_item) ?>"}}' type="button" title="<?php /* @escapeNotVerified */ echo __('Add to Cart') ?>">
-                                                        <span><?php /* @escapeNotVerified */ echo __('Add to Cart') ?></span>
-                                                    </button>
-                                                <?php else: ?>
-                                                    <?php $postDataHelper = $this->helper('Magento\Framework\Data\Helper\PostHelper');
-                                                    $postData = $postDataHelper->getPostData($block->getAddToCartUrl($_item), ['product' => $_item->getEntityId()])
-                                                    ?>
-                                                    <button class="action tocart primary"
-                                                            data-post='<?php /* @escapeNotVerified */ echo $postData; ?>'
-                                                            type="button" title="<?php /* @escapeNotVerified */ echo __('Add to Cart') ?>">
-                                                        <span><?php /* @escapeNotVerified */ echo __('Add to Cart') ?></span>
-                                                    </button>
-                                                <?php endif; ?>
-                                            <?php else: ?>
-                                                <?php if ($_item->getIsSalable()): ?>
-                                                    <div class="stock available"><span><?php /* @escapeNotVerified */ echo __('In stock') ?></span></div>
-                                                <?php else: ?>
-                                                    <div class="stock unavailable"><span><?php /* @escapeNotVerified */ echo __('Out of stock') ?></span></div>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
+                                        
+                                                   <a class="action tocart primary" href=
+													"<?php /* @escapeNotVerified */ echo $_item->getProductUrl();?>" type="button" 
+													title="<?php /* @escapeNotVerified */ echo __('Buy Now') ?>">
+                                                        <span><?php /* @escapeNotVerified */ echo __('Buy Now') ?></span>
+                                                    </a>
+                                                
                                         </div>
                                     <?php endif; ?>
 
@@ -345,6 +351,95 @@ $image_height = ($_category_config['ratio_height'])?$_category_config['ratio_hei
                     <?php else: ?>
                     <?php echo($iterator == count($items)) ? '</div>' : '' ?>
                     <?php endif; ?>
+					
+            <script>
+                require(['jquery', 'jquery/ui'], function ($) {
+                    $(document).ready(function () {
+                        let timezone = '<?= $timezone ?>';
+                        console.log('time');
+                        console.log(timezone);
+
+                        $('.product-item').each(function (index, value) {
+                            console.log(index);
+                            console.log(value);
+                            let counter = $(this).data('counter');
+                            let product = $(this).data('product');
+                            let price = $(this).data('price');
+                            let status = $(this).data('status');
+                            let finalTime = $(this).data('finaltime');
+							 if (product !== undefined && product !== null && counter !== undefined && counter !== null)
+                                runTimer(counter, product, price, status, finalTime);
+                        });
+
+                        function runTimer($countDownTime, productid, price, status, finalTime) {
+                            var countDownDate = new Date($countDownTime).getTime();
+
+                            var x = setInterval(function () {
+                                let currLocalTime = new Date().toLocaleString("en-US", {timeZone: timezone});
+                                let currentLocalTime = new Date(currLocalTime);
+                                console.log('Current ' + timezone + ' time: ' + currentLocalTime.toLocaleString());
+
+
+                                let now = currentLocalTime.getTime();
+									
+                                var distance = countDownDate - now;
+								console.log("dist is "+countDownDate);
+								console.log("curent time  is "+now);
+                                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                //var productid = $productId;
+
+                                console.log(document.getElementById("auction_days_" + productid));
+                                document.getElementById("auction_days_" + productid).innerHTML = days + "d: ";
+                                document.getElementById("auction_hours_" + productid).innerHTML = hours + "h: ";
+                                document.getElementById("auction_minutes_" + productid).innerHTML = minutes + "m: ";
+                                document.getElementById("auction_seconds_" + productid).innerHTML = seconds + "s ";
+								
+								
+								var stattus = status;
+							
+							if(stattus == "processing")
+							{
+								var mainDif = finalTime;
+								var remainDif = distance / 1000;
+								var diff1 = mainDif - remainDif;
+								var diff2 = diff1 / 100;
+								var productPrice = price;
+								var finalProductPrice = productPrice - diff2;												
+								var finalProductPrice =finalProductPrice.toFixed(2);
+								var currency = '<?php echo $currencySymbol;?>';
+								var auc_price = currency+""+finalProductPrice;
+								console.log(productPrice);
+								console.log(auc_price);
+								document.getElementById("aPrice_" + productid).innerHTML = auc_price ;
+								
+								
+							}
+
+                                if (distance < 0) {
+                                    clearInterval(x);
+                                    document.getElementById("auction_days_" + productid).innerHTML = 0 + "d: ";
+                                    document.getElementById("auction_hours_" + productid).innerHTML = 0 + "h: ";
+                                    document.getElementById("auction_minutes_" + productid).innerHTML = 0 + "m: ";
+                                    document.getElementById("auction_seconds_" + productid).innerHTML = 0 + "s ";
+
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: "<?php echo $this->getUrl('auction/startbid/start');?>",
+                                        data: {remove: true},
+                                        dataType: "json",
+                                        success: function (res) {
+                                            window.location.reload();
+                                        }
+                                    });
+                                }
+                            }, 1000);
+                        }
+                    });
+                });
+            </script>
                 <?php endforeach ?>
             </div>
         </div>
@@ -352,9 +447,62 @@ $image_height = ($_category_config['ratio_height'])?$_category_config['ratio_hei
 </div>
 <?php if ($type == 'related'): ?>
 <style>
-.block.related img.product-image-photo{
-    width: 140px;
-    height: 140px;
+.secondary-addto-links.actions-secondary {
+    position: absolute!Important;
+    top: 0!important;
+    right: -3px;
+}
+a.product-item-link {
+    font-size: 12px;
+    text-align: center;
+    DISPLAY: block;
+}
+a.action.towishlist {
+    border: none!important;
+}
+.item.product.product-item {
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    margin-right: 3px;
+}
+.item.product.product-item {
+    padding: 10px 5PX!important;
+}
+.checkbox.related {
+    display: none;
+}
+a.product.photo.product-item-photo {
+    border: 1px solid #ddd;
+}
+
+.product-item .tocart:before
+{
+display:none;
+}
+.block.related img.product-image-photo {
+    width: 115px;
+    height: 115px;
+    left: -10px;
+}
+.related-starting-bid {
+    padding: 0px 0 10px 0px;
+}
+.product.actions.product-item-actions {
+    margin: 0;
+}
+a.action.tocart.primary {
+    height: 28px;
+}
+.related-starting-bid label {
+    font-size: 12px;
+}
+.related-starting-bid span {
+    font-size: 12px;
+	font-weight:bold;
+}
+.products-grid .product-item-actions .tocart
+{
+display:block;
 }
 </style>
     <script type="text/javascript">

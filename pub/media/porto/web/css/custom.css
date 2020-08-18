@@ -5458,6 +5458,14 @@ p.price-to > span {
     width: 55%;
     float: left;
 }
+.product-info-main {
+    width: 52%!important;
+}
+
+}
+.product-info-main {
+    border: 2px solid #ddd;
+    padding: 20px;
 }
 .product.media {
     border: 1px solid #ddd;
