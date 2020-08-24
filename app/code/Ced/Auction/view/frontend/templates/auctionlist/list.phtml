@@ -72,7 +72,7 @@ $productPriceById = $productCollection->getPrice();
                                     echo $image->toHtml();
                                 } ?>
                             </a>
-                            <div class="product details product-item-details">
+           <div class="product details product-item-details">
                                 <input type="hidden" value="1">
                                 <strong class="product name product-item-name">
 
@@ -86,22 +86,49 @@ $productPriceById = $productCollection->getPrice();
                                         } ?>
                                     </a>
                                 </strong>
+							
+                                        <div class="secondary-addto-links actions-secondary" data-role="add-to-links">
+                                            <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
+                                                <a href="#" data-post='<?php /* @escapeNotVerified */ echo $block->getAddToWishlistParams($productCollection); ?>'  class="action towishlist" data-action="add-to-wishlist" title="<?php /* @escapeNotVerified */ echo __('Add to Wish List') ?>">
+                                                    <span><?php /* @escapeNotVerified */ echo __('Add to Wish List') ?></span>
+                                                </a>
+                                            <?php endif; ?>
+                                           
+                                        </div>
+								 <div class="related-starting-bid" bis_skin_checked="1">
+												<label>Starting Price</label>
+												<span>
+												   <?php 
+												   $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); // Instance of Object Manager
+													$priceHelper = $objectManager->create('Magento\Framework\Pricing\Helper\Data'); // Instance of Pricing Helper
+													$price =  $productCollection->getPrice();
+													echo $priceHelper->currency($price, true, false);
+																   ?>         </span>
+											</div>
+									
+                               
 
-                                <div class="price-box price-final_price">
-                                                <span>
-                                                    <span class="price-container price-final_price tax weee">
-                                                        <span class="price-wrapper ">
-                                                            <span class="price" style="font-size:14px;"><?= __('Retail Price:') ?></span>
-															<?php $startingPrice = $this->helper('Magento\Framework\Pricing\Helper\Data')
-                                        ->currency($productPriceById, true, false);
-                                    if ($startingPrice) {
-                                        echo $startingPrice;
-                                    } ?>
-                                                        </span>
-                                                    </span>
-                                                </span>
+                             
+								    <button class="action tocart primary"
+                                        onclick="window.location.href='<?= $url ?>'">
+										Bid <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span>
+                                </button>
+							<?php
+							
+								$listBlock = $objectManager->get('\Magento\Catalog\Block\Product\ListProduct');
+								$addToCartUrl =  $listBlock->getAddToCartUrl($productCollection);
+								?>
+								<form data-role="tocart-form" action="<?php echo $addToCartUrl; ?>" method="post">
+									<?php echo $block->getBlockHtml('formkey')?>
+									   <button  style="margin:10px 0 15px 0px;" type="submit"
+											   title="Add to Cart"
+											   class="action tocart primary">
+											   <span>Buy <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span></span>
+										</button>
+								 </form>
+          </div>
+		   <div class="price-box price-final_price">                                            
                                     
-									<br/>
                                     <span class="price-wrapper ">
                                                             <span class="price"><?= __('Starts at:') ?></span>
                                                 </span>
@@ -126,25 +153,6 @@ $productPriceById = $productCollection->getPrice();
                                         </div>
                                     </div>
                                 </div>
-
-                             
-								    <button class="action tocart primary"
-                                        onclick="window.location.href='<?= $url ?>'"><?= __('Bid Now') ?>
-                                </button>
-							<?php
-							
-								$listBlock = $objectManager->get('\Magento\Catalog\Block\Product\ListProduct');
-								$addToCartUrl =  $listBlock->getAddToCartUrl($productCollection);
-								?>
-								<form data-role="tocart-form" action="<?php echo $addToCartUrl; ?>" method="post">
-									<?php echo $block->getBlockHtml('formkey')?>
-									   <button  style="margin-top:15px;" type="submit"
-											   title="Add to Cart"
-											   class="action tocart primary">
-											   <span>Buy Now</span>
-										</button>
-								 </form>
-                            </div>
                         </div>
                     </li>
                     <?php
@@ -207,16 +215,48 @@ $productPriceById = $productCollection->getPrice();
                                             echo $detail->getProductName();
                                         } ?></a>
                                 </strong>
+								         <div class="secondary-addto-links actions-secondary" data-role="add-to-links">
+                                            <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
+                                                <a href="#" data-post='<?php /* @escapeNotVerified */ echo $block->getAddToWishlistParams($productCollection); ?>'  class="action towishlist" data-action="add-to-wishlist" title="<?php /* @escapeNotVerified */ echo __('Add to Wish List') ?>">
+                                                    <span><?php /* @escapeNotVerified */ echo __('Add to Wish List') ?></span>
+                                                </a>
+                                            <?php endif; ?>
+                                           
+                                        </div>
+ <div class="related-starting-bid" bis_skin_checked="1">
+                <label>Starting Price</label>
+                <span>
+                   <?php 
+				   $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); // Instance of Object Manager
+					$priceHelper = $objectManager->create('Magento\Framework\Pricing\Helper\Data'); // Instance of Pricing Helper
+					$price =  $productCollection->getPrice();
+					echo $priceHelper->currency($price, true, false);
+								   ?>         </span>
+            </div>
+						
+						
 
                                 <div class="price-box price-final_price">
-                                  <div class="auc_price">
+                                  <?php
+							
+								$listBlock = $objectManager->get('\Magento\Catalog\Block\Product\ListProduct');
+								$addToCartUrl =  $listBlock->getAddToCartUrl($productCollection);
+								?>
+								<form data-role="tocart-form" action="<?php echo $addToCartUrl; ?>" method="post">
+									<?php echo $block->getBlockHtml('formkey')?>
+									   <button  style="margin-top:0px;" type="submit"
+											   title="Add to Cart"
+											   class="action tocart primary">
+											   <span>Buy <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span></span>
+										</button>
+								 </form><div class="auc_price">
 								  <span id="aPrice_<?php if ($productId) {
                                                  echo $productId;
-                                             } ?>" style="color: #F26C4F;
-    font-size: 21px;
+                                             } ?>" style="    color: #F26C4F;
+    font-size: 20px;
     font-weight: bold;
-    padding: 20px 0;
-    line-height: 50px;"></span>
+    padding: 0px 0;
+    line-height: 28px;"></span>
 								  </div>
 
                                     <span class="price-wrapper ">
@@ -250,21 +290,10 @@ $productPriceById = $productCollection->getPrice();
                                 </div>
 
                                 <button class="action tocart primary"
-                                        onclick="window.location.href='<?= $url ?>'"><?= __('Bid Now') ?>
+                                        onclick="window.location.href='<?= $url ?>'">
+										Bid <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span>
                                 </button>
-							<?php
 							
-								$listBlock = $objectManager->get('\Magento\Catalog\Block\Product\ListProduct');
-								$addToCartUrl =  $listBlock->getAddToCartUrl($productCollection);
-								?>
-								<form data-role="tocart-form" action="<?php echo $addToCartUrl; ?>" method="post">
-									<?php echo $block->getBlockHtml('formkey')?>
-									   <button  style="margin-top:15px;" type="submit"
-											   title="Add to Cart"
-											   class="action tocart primary">
-											   <span>Buy Now</span>
-										</button>
-								 </form>
                             </div>
                         </div>
                     </li>
@@ -446,4 +475,102 @@ $productPriceById = $productCollection->getPrice();
     <?php
 } ?>
 
+<style>
+div#countdown_timer {
+    margin-top: 0;
+    padding: 0;
+}
+.item.product.product-item {
+    padding: 20px 4px!important;
+}
+.price-box {
+    height: 38px;
+    clear: both;
+    padding-top: 0px;
+	margin:0;
+}
+button.action.tocart.primary {
+    background: #fff;
+    font-weight: 500;
+    color: #000;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    box-shadow: 2px 2px 4px grey;
+	  float: left;
+    width: 45%;
+	clear:both;
+	line-height:25px;
+	height:28px;
+}
+.secondary-addto-links.actions-secondary {
+    position: absolute!Important;
+    top: 0!important;
+    right: -3px;
+}
+a.product-item-link {
+    font-size: 12px;
+    text-align: center;
+    DISPLAY: block;
+}
+a.action.towishlist {
+    border: none!important;
+}
+.item.product.product-item {
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    margin-right: 10px;
+    max-width: 23%!important;
+}
+.item.product.product-item {
+    padding: 10px 5PX!important;
+}
+.checkbox.related {
+    display: none;
+}
+a.product.photo.product-item-photo {
+    border: 1px solid #ddd;
+}
+
+.product-item .tocart:before
+{
+display:none;
+}
+img.product-image-photo {
+    width: 165px;
+    height: 165px;
+    left: -10px;
+}
+.related-starting-bid {
+    padding: 0px 0 10px 0px;
+}
+.product.actions.product-item-actions {
+    margin: 0;
+}
+a.action.tocart.primary {
+    height: 28px;
+}
+.related-starting-bid label {
+    font-size: 12px;
+}
+.related-starting-bid span {
+    font-size: 12px;
+	font-weight:bold;
+}
+.products-grid .product-item-actions .tocart
+{
+display:block;
+}
+.action.towishlist span {
+    display: none;
+}
+.product-item .action.towishlist:before {
+    color: #ed4949;
+}
+
+.auc_price {
+    font-size: large;
+    margin-left: 10px;
+    float: left;
+}
+</style>
 
