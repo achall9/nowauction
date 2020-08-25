@@ -182,39 +182,7 @@ $_lazyload = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_sett
                             </div>
                         </div>
                         <?php endif; ?> 
-                       <!-- Dailydeal Product End -->
-                        <?php if($_category_config['actions'] && $move_actions): ?>
-                        <div class="product-item-inner">
-                            <div class="product actions product-item-actions">
-                                <div class="actions-primary">
-                                    <?php if ($_product->isSaleable()): ?>
-                                        <?php $postParams = $block->getAddToCartPostParams($_product); ?>
-                                        <form data-role="tocart-form" action="<?php echo $postParams['action']; ?>" method="post">
-                                            <input type="hidden" name="product" value="<?php echo $postParams['data']['product']; ?>">
-                                            <input type="hidden" name="<?php echo Action::PARAM_NAME_URL_ENCODED; ?>" value="<?php echo $postParams['data'][Action::PARAM_NAME_URL_ENCODED]; ?>">
-                                            <?php if(isset($_category_config['qty_field']) && $_category_config['qty_field']):?>
-                                                <div class="qty-box">
-                                                    <a href="javascript:void(0)" class="qtyminus"><i class="porto-icon-minus"></i></a>
-                                                    <input type="text" name="qty" id="qty" maxlength="12" value="<?php /* @escapeNotVerified */ echo $block->getProductDefaultQty() * 1 ?>" title="<?php /* @escapeNotVerified */ echo __('Qty') ?>" class="input-text qty" data-validate="<?php echo $block->escapeHtml(json_encode($block->getQuantityValidators())) ?>"/>
-                                                    <a href="javascript:void(0)" class="qtyplus"><i class="porto-icon-plus"></i></a>
-                                                </div>
-                                            <?php endif;?>
-                                            <?php echo $block->getBlockHtml('formkey')?>
-                                            <button type="submit"
-                                                    title="<?php echo $block->escapeHtml(__('Add to Cart')); ?>"
-                                                    class="action tocart primary">
-                                                <span><?php echo __('Add to Cart') ?></span>
-                                            </button>
-                                        </form>
-                                    <?php else: ?>
-                                        <?php if ($_product->getIsSalable()): ?>
-                                            <div class="stock available"><span><?php echo __('In stock') ?></span></div>
-                                        <?php else: ?>
-                                            <div class="stock unavailable"><span><?php echo __('Out of stock') ?></span></div>
-                                        <?php endif; ?>
-                                    <?php endif; ?>
-                                </div>
-                                <?php if ($block->getMode() == 'grid'): ?>
+						 <?php if ($block->getMode() == 'grid'): ?>
                                 <?php if($_category_config['addtowishlist']): ?>
                                 <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
                                     <a href="#"
@@ -229,6 +197,63 @@ $_lazyload = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_sett
                                 <?php endif; ?>
                                 <?php endif; ?>
                                 <?php endif; ?>
+                       <!-- Dailydeal Product End -->
+                       
+                    </div>
+                    <div class="product details product-item-details">
+                        <?php
+                            $_productNameStripped = $block->stripTags($_product->getName(), null, true);
+                        ?>
+                        <?php if(!$_category_grid_config['move_title']):?>
+                        <strong class="product name product-item-name 1">
+                            <a class="product-item-link"
+                               href="<?php echo $_product->getProductUrl() ?>">
+                                <?php echo $_helper->productAttribute($_product, $_product->getName(), 'name'); ?>
+                            </a>
+                        </strong>
+                        <?php endif;?>
+						 <div class="related-starting-bid" bis_skin_checked="1">
+												<label>Starting Price</label>
+												<span>
+												   <?php 
+												   $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); // Instance of Object Manager
+													$priceHelper = $objectManager->create('Magento\Framework\Pricing\Helper\Data'); // Instance of Pricing Helper
+													$price =  $_product->getPrice();
+													echo $priceHelper->currency($price, true, false);
+																   ?>         </span>
+											</div>
+											 <?php if($_category_config['actions'] && $move_actions): ?>
+                        <div class="product-item-inner">
+                            <div class="product actions product-item-actions">
+                                <div class="actions-primary 1">
+                                    <?php if ($_product->isSaleable()): ?>
+                                        <?php $postParams = $block->getAddToCartPostParams($_product); ?>
+                                        <form data-role="tocart-form" action="<?php echo $postParams['action']; ?>" method="post">
+                                            <input type="hidden" name="product" value="<?php echo $postParams['data']['product']; ?>">
+                                            <input type="hidden" name="<?php echo Action::PARAM_NAME_URL_ENCODED; ?>" value="<?php echo $postParams['data'][Action::PARAM_NAME_URL_ENCODED]; ?>">
+                                            <?php if(isset($_category_config['qty_field']) && $_category_config['qty_field']):?>
+                                                <div class="qty-box">
+                                                    <a href="javascript:void(0)" class="qtyminus"><i class="porto-icon-minus"></i></a>
+                                                    <input type="text" name="qty" id="qty" maxlength="12" value="<?php /* @escapeNotVerified */ echo $block->getProductDefaultQty() * 1 ?>" title="<?php /* @escapeNotVerified */ echo __('Qty') ?>" class="input-text qty" data-validate="<?php echo $block->escapeHtml(json_encode($block->getQuantityValidators())) ?>"/>
+                                                    <a href="javascript:void(0)" class="qtyplus"><i class="porto-icon-plus"></i></a>
+                                                </div>
+                                            <?php endif;?>
+                                            <?php echo $block->getBlockHtml('formkey')?>
+                                            <button type="submit"
+                                                    title="<?php echo $block->escapeHtml(__('buy now')); ?>"
+                                                    class="action tocart primary">
+                                                <span>BUY <span style="color: #F26C4F;font-style: italic;font-size: 15px;">NOW</span></span>
+                                            </button>
+                                        </form>
+                                    <?php else: ?>
+                                        <?php if ($_product->getIsSalable()): ?>
+                                            <div class="stock available"><span><?php echo __('In stock') ?></span></div>
+                                        <?php else: ?>
+                                            <div class="stock unavailable"><span><?php echo __('Out of stock') ?></span></div>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
+                               
                                 <?php if($_category_config['addtocompare']): ?>
                                 <?php
                                 $compareHelper = $this->helper('Magento\Catalog\Helper\Product\Compare');
@@ -245,19 +270,6 @@ $_lazyload = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_sett
                             </div>
                         </div>
                         <?php endif; ?>
-                    </div>
-                    <div class="product details product-item-details">
-                        <?php
-                            $_productNameStripped = $block->stripTags($_product->getName(), null, true);
-                        ?>
-                        <?php if(!$_category_grid_config['move_title']):?>
-                        <strong class="product name product-item-name 1">
-                            <a class="product-item-link"
-                               href="<?php echo $_product->getProductUrl() ?>">
-                                <?php echo $_helper->productAttribute($_product, $_product->getName(), 'name'); ?>
-                            </a>
-                        </strong>
-                        <?php endif;?>
 						<div class="auction_product">
 						<?php
 						if($check == 1)
@@ -269,7 +281,7 @@ $_lazyload = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_sett
 							  $url = $blockObj->getAuctionProductUrl($aucProductId);
 							  ?>
 							   <button class="action tocart primary"
-                                        onclick="window.location.href='<?= $url ?>'"><?= __('Bid Now') ?>
+                                        onclick="window.location.href='<?= $url ?>'">Bid <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span>
                                 </button>
 							  <?php
 							  
@@ -316,7 +328,8 @@ $_lazyload = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_sett
                             </div>
                         <?php endif; ?>
                         <?php if($_category_config['product_price']): ?>
-                        <?php echo $block->getProductPrice($_product) ?>
+						
+                        <?php //echo $block->getProductPrice($_product) ?>
                         <?php endif; ?>
                         <?php echo $block->getProductDetailsHtml($_product); ?>
                         
@@ -338,7 +351,7 @@ $_lazyload = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_sett
                                 <?php endif; ?>
                                 <?php endif; ?>
                                 <?php endif; ?>
-                                <div class="actions-primary">
+                                <div class="actions-primary 2">
                                     <?php if ($_product->isSaleable()): ?>
                                         <?php $postParams = $block->getAddToCartPostParams($_product); ?>
                                         <form data-role="tocart-form" action="<?php echo $postParams['action']; ?>" method="post">
@@ -353,9 +366,9 @@ $_lazyload = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_sett
                                             <?php endif;?>
                                             <?php echo $block->getBlockHtml('formkey')?>
                                             <button type="submit"
-                                                    title="<?php echo $block->escapeHtml(__('Add to Cart')); ?>"
+                                                    title="<?php echo $block->escapeHtml(__('Buy Now')); ?>"
                                                     class="action tocart primary">
-                                                <span><?php echo __('Add to Cart') ?></span>
+                                                <span>BUY <span style="color: #F26C4F;font-style: italic;font-size: 15px;">NOW</span></span>
                                             </button>
                                         </form>
                                     <?php else: ?>
@@ -399,6 +412,15 @@ $_lazyload = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_sett
                         <?php endif; ?>
                     </div>
                 </div>
+					<div class="delivery-sec">
+				<?php
+				$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$mediaUrl = $objectManager->get('Magento\Store\Model\StoreManagerInterface')
+                    ->getStore()
+                    ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+					?>
+				<img src="<?php echo $mediaUrl;?>delivery_img.png">
+			</div>
                 <?php echo($iterator == count($_productCollection)+1) ? '</li>' : '' ?>
             <?php endforeach; ?>
         </ol>
@@ -529,4 +551,58 @@ require([
 </script>
 <?php
     echo $block->getChildHtml('filter_toggle');
-?><style>.product-image-photo.default_image {    height: 180px;	width:180px;}.toolbar.toolbar-products {    padding-top: 20px;}</style>
+?><style>.product-image-photo.default_image {    height: 180px;	width:180px;}.toolbar.toolbar-products {    padding-top: 20px;}
+.products-grid.columns4 .product-item.nth-child-4np1 {
+    clear: none;
+}
+.products-grid .product-item .product-item-info:hover .product-item-photo>a:not(.weltpixel-quickview):after {
+    visibility: visible;
+    opacity: 0;
+}
+.stock.unavailable {
+    display: none;
+}
+a.action.towishlist.actions-secondary:before {
+    color: #ed4949;
+}
+a.action.towishlist.actions-secondary span {
+    display: none;
+}
+a.action.towishlist.actions-secondary {
+    position: absolute;
+    top: 0;
+    right: -5px;
+    border: 0;
+}
+.csmarketplace-vshops-view .products-grid.columns4 .product-item {
+    padding: 0 10px;
+    border: 1px solid #ddd!important;
+    width: 18%;
+    margin: 5px 10px;
+}
+.product-image-photo.default_image {
+    position: relative;
+    z-index: 2;
+    margin: 10px 0 0 0px;
+}
+.auction_product {
+    height: 35px;
+}
+.product-item-photo .product-item-inner .product-item-actions>.actions-primary .tocart span
+{
+display:block;
+}
+.product-item-photo .product-item-inner .product-item-actions>.actions-primary .tocart {
+    width: 50%;
+	
+}
+.products-grid .product-item-actions .tocart
+{
+display:block;
+}
+.products-grid .product-item-info:hover .product-item-details .product-item-actions .tocart
+{
+background-color: transparent;
+    border: 1px solid #ddd;
+}
+</style>

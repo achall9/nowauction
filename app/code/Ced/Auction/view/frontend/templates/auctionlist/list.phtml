@@ -120,13 +120,14 @@ $productPriceById = $productCollection->getPrice();
 								?>
 								<form data-role="tocart-form" action="<?php echo $addToCartUrl; ?>" method="post">
 									<?php echo $block->getBlockHtml('formkey')?>
-									   <button  style="margin:10px 0 15px 0px;" type="submit"
-											   title="Add to Cart"
+									   <button  style="margin:10px 0 0px 0px;" type="submit"
+											   title="BUY NOW"
 											   class="action tocart primary">
 											   <span>Buy <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span></span>
 										</button>
 								 </form>
           </div>
+		  <div class="start-price-box">
 		   <div class="price-box price-final_price">                                            
                                     
                                     <span class="price-wrapper ">
@@ -153,7 +154,17 @@ $productPriceById = $productCollection->getPrice();
                                         </div>
                                     </div>
                                 </div>
+								</div>
                         </div>
+						<div class="delivery-sec">
+				<?php
+				$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$mediaUrl = $objectManager->get('Magento\Store\Model\StoreManagerInterface')
+                    ->getStore()
+                    ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+					?>
+				<img src="<?php echo $mediaUrl;?>delivery_img.png">
+			</div>
                     </li>
                     <?php
                 } ?>
@@ -245,7 +256,7 @@ $productPriceById = $productCollection->getPrice();
 								<form data-role="tocart-form" action="<?php echo $addToCartUrl; ?>" method="post">
 									<?php echo $block->getBlockHtml('formkey')?>
 									   <button  style="margin-top:0px;" type="submit"
-											   title="Add to Cart"
+											   title="BUY NOW"
 											   class="action tocart primary">
 											   <span>Buy <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span></span>
 										</button>
@@ -295,7 +306,18 @@ $productPriceById = $productCollection->getPrice();
                                 </button>
 							
                             </div>
+							<div class="start-price-box">
+							</div>
                         </div>
+						<div class="delivery-sec">
+				<?php
+				$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$mediaUrl = $objectManager->get('Magento\Store\Model\StoreManagerInterface')
+                    ->getStore()
+                    ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+					?>
+				<img src="<?php echo $mediaUrl;?>delivery_img.png">
+			</div>
                     </li>
 
                     <?php
@@ -571,6 +593,26 @@ display:block;
     font-size: large;
     margin-left: 10px;
     float: left;
+}
+.delivery-sec {
+    margin: 0 0 -10px 0;
+    border-top: 1px solid #ddd;
+}
+.products-grid .product-item .product-item-info {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+.products-grid .product-item .product-item-details {
+    text-align: left;
+    display: inline-block;
+    width: 100%;
+}
+.start-price-box {
+    height: 50px;
+}
+.delivery-sec img {
+    width: 100%;
 }
 </style>
 

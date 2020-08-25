@@ -66,7 +66,22 @@ if($column_count == null) {
                 <?php echo($iterator++ == 1) ? '<li class="item product product-item">' : '</li><li class="item product product-item">' ?>
                 <div class="product-item-info" data-container="product-grid">
                     <?php // Product Image ?>
-                    <div class="product photo product-item-photo">
+                    <div class="product photo product-item-photo 1">
+					  <?php if ($block->getMode() == 'grid'): ?>
+                                <?php if($_category_config['addtowishlist']): ?>
+                                <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
+                                    <a href="#"
+                                       class="action towishlist actions-secondary"
+                                       title="<?php echo $block->escapeHtml(__('Add to Wish List')); ?>"
+                                       aria-label="<?php echo $block->escapeHtml(__('Add to Wish List')); ?>"
+                                       data-post='<?php echo $block->getAddToWishlistParams($_product); ?>'
+                                       data-action="add-to-wishlist"
+                                       role="button">
+                                        <span><?php echo __('Add to Wish List') ?></span>
+                                    </a>
+                                <?php endif; ?>
+                                <?php endif; ?>
+                                <?php endif; ?>
                         <a href="<?php echo $_product->getProductUrl() ?>" tabindex="-1">
                         <?php
                             if($aspect_ratio)
@@ -124,68 +139,7 @@ if($column_count == null) {
                             if($product_label)
                                 echo '<div class="product-labels">'.$product_label.'</div>';
                         ?>
-                        <?php if($_category_config['actions'] && $move_actions): ?>
-                        <div class="product-item-inner">
-                            <div class="product actions product-item-actions">
-                                <div class="actions-primary">
-                                    <?php if ($_product->isSaleable()): ?>
-                                        <?php $postParams = $block->getAddToCartPostParams($_product); ?>
-                                        <form data-role="tocart-form" action="<?php echo $postParams['action']; ?>" method="post">
-                                            <input type="hidden" name="product" value="<?php echo $postParams['data']['product']; ?>">
-                                            <input type="hidden" name="<?php echo Action::PARAM_NAME_URL_ENCODED; ?>" value="<?php echo $postParams['data'][Action::PARAM_NAME_URL_ENCODED]; ?>">
-                                            <?php if(isset($_category_config['qty_field']) && $_category_config['qty_field']):?>
-                                                <div class="qty-box">
-                                                    <a href="javascript:void(0)" class="qtyminus"><i class="porto-icon-minus"></i></a>
-                                                    <input type="text" name="qty" id="qty" maxlength="12" value="<?php /* @escapeNotVerified */ echo $block->getProductDefaultQty() * 1 ?>" title="<?php /* @escapeNotVerified */ echo __('Qty') ?>" class="input-text qty" data-validate="<?php echo $block->escapeHtml(json_encode($block->getQuantityValidators())) ?>"/>
-                                                    <a href="javascript:void(0)" class="qtyplus"><i class="porto-icon-plus"></i></a>
-                                                </div>
-                                            <?php endif;?>
-                                            <?php echo $block->getBlockHtml('formkey')?>
-                                            <button type="submit"
-                                                    title="<?php echo $block->escapeHtml(__('Add to Cart')); ?>"
-                                                    class="action tocart primary">
-                                                <span><?php echo __('Add to Cart') ?></span>
-                                            </button>
-                                        </form>
-                                    <?php else: ?>
-                                        <?php if ($_product->getIsSalable()): ?>
-                                            <div class="stock available"><span><?php echo __('In stock') ?></span></div>
-                                        <?php else: ?>
-                                            <div class="stock unavailable"><span><?php echo __('Out of stock') ?></span></div>
-                                        <?php endif; ?>
-                                    <?php endif; ?>
-                                </div>
-                                <?php if ($block->getMode() == 'grid'): ?>
-                                <?php if($_category_config['addtowishlist']): ?>
-                                <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
-                                    <a href="#"
-                                       class="action towishlist actions-secondary"
-                                       title="<?php echo $block->escapeHtml(__('Add to Wish List')); ?>"
-                                       aria-label="<?php echo $block->escapeHtml(__('Add to Wish List')); ?>"
-                                       data-post='<?php echo $block->getAddToWishlistParams($_product); ?>'
-                                       data-action="add-to-wishlist"
-                                       role="button">
-                                        <span><?php echo __('Add to Wish List') ?></span>
-                                    </a>
-                                <?php endif; ?>
-                                <?php endif; ?>
-                                <?php endif; ?>
-                                <?php if($_category_config['addtocompare']): ?>
-                                <?php
-                                $compareHelper = $this->helper('Magento\Catalog\Helper\Product\Compare');
-                                ?>
-                                <a href="#"
-                                   class="action tocompare actions-secondary"
-                                   title="<?php echo $block->escapeHtml(__('Add to Compare')); ?>"
-                                   aria-label="<?php echo $block->escapeHtml(__('Add to Compare')); ?>"
-                                   data-post='<?php echo $compareHelper->getPostDataParams($_product); ?>'
-                                   role="button">
-                                    <span><?php echo __('Add to Compare') ?></span>
-                                </a>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                        <?php endif; ?>
+                     
                     </div>
                     <div class="product details product-item-details">
                         <?php
@@ -226,37 +180,29 @@ if($column_count == null) {
                                 </a>
                             </strong>
                         <?php endif;?>
-                        <?php if ($showDescription):?>
-                            <div class="product description product-item-description">
-                                <?php echo $_helper->productAttribute($_product, $_product->getShortDescription(), 'short_description') ?>
-                                <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $_productNameStripped ?>"
-                                   class="action more"><?php echo __('Learn More') ?></a>
-                            </div>
+						<?php if($_category_config['product_price']): ?>
+						<div class="related-starting-bid" bis_skin_checked="1">
+												<label>Starting Price</label>
+												<span>
+												   <?php 
+												   $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); // Instance of Object Manager
+													$priceHelper = $objectManager->create('Magento\Framework\Pricing\Helper\Data'); // Instance of Pricing Helper
+													$price =  $_product->getPrice();
+													echo $priceHelper->currency($price, true, false);
+																   ?>         </span>
+											</div>
+									
+                        <?php //echo $block->getProductPrice($_product) ?>
                         <?php endif; ?>
-                        <?php if($_category_config['product_price']): ?>
-                        <?php echo $block->getProductPrice($_product) ?>
-                        <?php endif; ?>
-                        <?php echo $block->getProductDetailsHtml($_product); ?>
-                        
-                        <?php if($_category_config['actions'] && !$move_actions): ?>
+						   <?php if($_category_config['actions'] && $move_actions): ?>
                         <div class="product-item-inner">
                             <div class="product actions product-item-actions">
-                                <?php if ($block->getMode() == 'grid'): ?>
-                                <?php if($_category_config['addtowishlist']): ?>
-                                <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
-                                    <a href="#"
-                                       class="action towishlist actions-secondary <?php if(isset($_category_config['qty_field']) && $_category_config['qty_field']):?>has-qty<?php endif;?>"
-                                       title="<?php echo $block->escapeHtml(__('Add to Wish List')); ?>"
-                                       aria-label="<?php echo $block->escapeHtml(__('Add to Wish List')); ?>"
-                                       data-post='<?php echo $block->getAddToWishlistParams($_product); ?>'
-                                       data-action="add-to-wishlist"
-                                       role="button">
-                                        <span><?php echo __('Add to Wish List') ?></span>
-                                    </a>
-                                <?php endif; ?>
-                                <?php endif; ?>
-                                <?php endif; ?>
                                 <div class="actions-primary">
+								
+								    <button class="action tocart primary"
+                                        onclick="window.location.href='<?= $_product->getProductUrl(); ?>'">
+										Bid <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span>
+                                </button>
                                     <?php if ($_product->isSaleable()): ?>
                                         <?php $postParams = $block->getAddToCartPostParams($_product); ?>
                                         <form data-role="tocart-form" action="<?php echo $postParams['action']; ?>" method="post">
@@ -271,11 +217,12 @@ if($column_count == null) {
                                             <?php endif;?>
                                             <?php echo $block->getBlockHtml('formkey')?>
                                             <button type="submit"
-                                                    title="<?php echo $block->escapeHtml(__('Add to Cart')); ?>"
+                                                    title="<?php echo $block->escapeHtml(__('BUY NOW')); ?>"
                                                     class="action tocart primary">
-                                                <span><?php echo __('Add to Cart') ?></span>
+                                               BUY <span style="color: #F26C4F;font-style: italic;font-size: 15px;">NOW</span></span>
                                             </button>
                                         </form>
+										
                                     <?php else: ?>
                                         <?php if ($_product->getIsSalable()): ?>
                                             <div class="stock available"><span><?php echo __('In stock') ?></span></div>
@@ -284,12 +231,13 @@ if($column_count == null) {
                                         <?php endif; ?>
                                     <?php endif; ?>
                                 </div>
+                              
                                 <?php if($_category_config['addtocompare']): ?>
                                 <?php
                                 $compareHelper = $this->helper('Magento\Catalog\Helper\Product\Compare');
                                 ?>
                                 <a href="#"
-                                   class="action tocompare actions-secondary <?php if(isset($_category_config['qty_field']) && $_category_config['qty_field']):?>has-qty<?php endif;?>"
+                                   class="action tocompare actions-secondary"
                                    title="<?php echo $block->escapeHtml(__('Add to Compare')); ?>"
                                    aria-label="<?php echo $block->escapeHtml(__('Add to Compare')); ?>"
                                    data-post='<?php echo $compareHelper->getPostDataParams($_product); ?>'
@@ -300,8 +248,28 @@ if($column_count == null) {
                             </div>
                         </div>
                         <?php endif; ?>
+                        <?php if ($showDescription):?>
+                            <div class="product description product-item-description">
+                                <?php echo $_helper->productAttribute($_product, $_product->getShortDescription(), 'short_description') ?>
+                                <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $_productNameStripped ?>"
+                                   class="action more"><?php echo __('Learn More') ?></a>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php echo $block->getProductDetailsHtml($_product); ?>
+                        
+                       
                     </div>
                 </div>
+			<div class="delivery-sec">
+				<?php
+				$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$mediaUrl = $objectManager->get('Magento\Store\Model\StoreManagerInterface')
+                    ->getStore()
+                    ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+					?>
+				<img src="<?php echo $mediaUrl;?>delivery_img.png">
+			</div>
                 <?php echo($iterator == count($_productCollection)+1) ? '</li>' : '' ?>
             <?php endforeach; ?>
         </ol>
@@ -336,3 +304,38 @@ if($column_count == null) {
         </script>
     <?php endif; ?>
 <?php endif; ?>
+<style>
+.product-item-inner {
+    POSITION: RELATIVE!important;
+    bottom: 0!important;
+}
+.products-grid .product-item-details .product-item-actions .actions-primary {
+    display: block;
+	}
+a.action.towishlist.actions-secondary {
+    position: absolute;
+    top: 0;
+    right: -9px;
+}
+.products-grid .product-item-info:hover .product-item-details .product-item-actions .tocart {
+    background: transparent;
+    color: #000;
+}
+.products-grid .product-item .product-item-info:hover .product-item-photo>a:not(.weltpixel-quickview):after {
+    visibility: visible;
+    opacity: 0;
+}
+.item.product.product-item {
+    margin-bottom: 10px;
+}
+.filterproducts .product-item-info {
+    display: grid;
+}
+.filterproducts button.action.tocart.primary {
+    margin-bottom: 10px;
+}
+.delivery-sec {
+    margin: 0 0 -10px 0;
+    border-top: 1px solid #ddd;
+}
+</style>
