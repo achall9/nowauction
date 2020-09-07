@@ -1,0 +1,147 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// phpcs:disable Magento2.Templates.ThisInTemplate.FoundThis
+
+/**
+ * Product view template
+ *
+ * @var $block \Magento\Catalog\Block\Product\View
+ */
+?>
+<?php $_helper = $this->helper(Magento\Catalog\Helper\Output::class); ?>
+<?php $_product = $block->getProduct(); ?>
+
+
+
+
+<div class="product-add-form">
+    <form data-product-sku="<?= $block->escapeHtmlAttr($_product->getSku()) ?>"
+          action="<?= $block->escapeUrl($block->getSubmitUrl($_product)) ?>" method="post"
+          id="product_addtocart_form"<?php if ($_product->getOptions()) :?> enctype="multipart/form-data"<?php endif; ?>>
+        <input type="hidden" name="product" value="<?= (int)$_product->getId() ?>" />
+        <input type="hidden" name="selected_configurable_option" value="" />
+        <input type="hidden" name="related_product" id="related-products-field" value="" />
+        <input type="hidden" name="item"  value="<?= (int)$block->getRequest()->getParam('id') ?>" />
+        <?= $block->getBlockHtml('formkey') ?>
+        <?= $block->getChildHtml('form_top') ?>
+        <?php if (!$block->hasOptions()) :?>
+            <?= $block->getChildHtml('product_info_form_content') ?>
+        <?php else :?>
+            <?php if ($_product->isSaleable() && $block->getOptionsContainer() == 'container1') :?>
+                <?= $block->getChildChildHtml('options_container') ?>
+            <?php endif;?>
+        <?php endif; ?>
+
+        <?php if ($_product->isSaleable() && $block->hasOptions() && $block->getOptionsContainer() == 'container2') :?>
+            <?= $block->getChildChildHtml('options_container') ?>
+        <?php endif;?>
+        <?= $block->getChildHtml('form_bottom') ?>
+    </form>
+</div>
+
+<script>
+    require([
+        'jquery',
+        'priceBox'
+    ], function($){
+        var dataPriceBoxSelector = '[data-role=priceBox]',
+            dataProductIdSelector = '[data-product-id=<?= $block->escapeHtml($_product->getId()) ?>]',
+            priceBoxes = $(dataPriceBoxSelector + dataProductIdSelector);
+
+        priceBoxes = priceBoxes.filter(function(index, elem){
+            return !$(elem).find('.price-from').length;
+        });
+        priceBoxes.priceBox({'priceConfig': <?= /* @noEscape */ $block->getJsonConfig() ?>});
+    });
+</script>
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+<body>
+
+<div class="tab">
+<div class="row2">
+
+ <?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$mediaUrl = $objectManager->get('Magento\Store\Model\StoreManagerInterface')
+                   ->getStore()
+                   ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+?>
+
+<img src="<?php echo $mediaUrl;?>icon1.png">
+
+
+<b>Ship to me</b>  <input type="radio" id="me" name="shipping" value="me" class="tablinks" onclick="openCity(event, 'ship')">
+
+ </div><div class="row2"> 
+ 
+<img src="<?php echo $mediaUrl;?>icon2.png">
+
+ <b>Pick up</b><input type="radio" id="pick" name="shipping" value="pick" class="tablinks" onclick="openCity(event, 'Pick')">
+
+  </div><div class="row2">
+  
+<img src="<?php echo $mediaUrl;?>icon3.png">
+
+ <b> Local delivery</b><input type="radio" id="delivery" name="shipping" value="delivery" class="tablinks" onclick="openCity(event, 'Delivery')">
+
+</div>
+ </div>
+
+
+<div id="ship" class="tabcontent">
+<div class="row1">
+ <label for="fn"><b>Zip code:</b> </label>
+  <input type="text" id="fn" name="fn">
+  <h3>(Based upon profile adddress)</h3>  
+</div>
+
+<div class="row1">
+<button class="estimate">Get Estimate</button>
+</div>
+
+<div class="row1">
+
+<label class="shipprice"><b>$35.00</b></label>
+</div>
+  
+</div>
+
+<div id="Pick" class="tabcontent">
+
+</div>
+
+<div id="Delivery" class="tabcontent">
+  
+</div>
+
+<script>
+function openCity(evt, cityName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
+   
+</body>
+</html> 

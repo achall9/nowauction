@@ -16,6 +16,20 @@
  * @license      https://cedcommerce.com/license-agreement.txt
  */
 -->
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+ 
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+ 
+//echo $storeManager->getStore()->getStoreId() . '<br />'; 
+//echo $storeManager->getStore()->getCode() . '<br />'; 
+//echo $storeManager->getStore()->getName() . '<br />'; 
+//echo $storeManager->getStore()->getStoreUrl() . '<br />';
+//echo $storeManager->getStore()->getWebsiteId() . '<br />';
+
+?>
+
+
 <div class="page-title-wrapper">
     <h1 class="page-title">
         <span data-ui-id="page-title-wrapper" class="base">Product List</span>
@@ -26,15 +40,25 @@
         <?php
         $timezone = $block->getTimeZone()->getConfigTimezone();
         $auctionDetails = $block->getAuctionProduct();
+		
+		$vendors = $block->getLoadedVendorCollection();
+	
+	
         $block->updateClosedAuction();
         $enableAuction = $block->getAuctionEnable();
         if ($enableAuction && $auctionDetails) {
+			//var_dump($auctionDetails->getdata()); 
         foreach ($auctionDetails as $detail) {
             $block->changeStatus();
             $productId = $detail->getProductId();
             $startTime = $detail->getStartDatetime();
             $endTime = $detail->getEndDatetime();
             $url = $block->getAuctionProductUrl($productId);
+			
+		$VendorId = $detail->getVendorId();
+
+			
+	
 			
 				 $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); 
     $storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface'); 
@@ -51,7 +75,7 @@ $productPriceById = $productCollection->getPrice();
 			$productPrice = $productPriceById;
 			 $prdouctTime = $productStartingAmount - $reservedAmount;
 			 $finalTime =  $prdouctTime * 100;
-			$finalDate =  date("Y-m-d H:i:s", strtotime($startTime) + $finalTime);
+			$finalDate =  date("m-d-Y H:i:s", strtotime($startTime) + $finalTime);
 				
 
             if ($url) {
@@ -96,7 +120,7 @@ $productPriceById = $productCollection->getPrice();
                                            
                                         </div>
 								 <div class="related-starting-bid" bis_skin_checked="1">
-												<label>Starting Price</label>
+												<label>Sale Price</label>
 												<span>
 												   <?php 
 												   $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); // Instance of Object Manager
@@ -107,12 +131,23 @@ $productPriceById = $productCollection->getPrice();
 											</div>
 									
                                
-
+<button  style="margin:10px 0 0px 0px;" type="submit"
+											   title="BUY NOW"
+											   class="action tocart primary">
+											   <span>Buy <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span></span>
+										</button>
                              
 								    <button class="action tocart primary"
                                         onclick="window.location.href='<?= $url ?>'">
 										Bid <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span>
                                 </button>
+								
+								 <button class="action tobidcart primary"
+                                        onclick="window.location.href='<?= $url ?>'">
+										Submit Bid
+                                </button>
+								
+								
 							<?php
 							
 								$listBlock = $objectManager->get('\Magento\Catalog\Block\Product\ListProduct');
@@ -120,38 +155,29 @@ $productPriceById = $productCollection->getPrice();
 								?>
 								<form data-role="tocart-form" action="<?php echo $addToCartUrl; ?>" method="post">
 									<?php echo $block->getBlockHtml('formkey')?>
-									   <button  style="margin:10px 0 0px 0px;" type="submit"
-											   title="BUY NOW"
-											   class="action tocart primary">
-											   <span>Buy <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span></span>
-										</button>
+									   
 								 </form>
           </div>
 		  <div class="start-price-box">
-		   <div class="price-box price-final_price">                                            
+		   <div class="price-box price-final_price">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
                                     
                                     <span class="price-wrapper ">
                                                             <span class="price"><?= __('Starts at:') ?></span>
-                                                </span>
+                                                 </span>
+
+
 
                                     <div id="countdown_timer" class="auction_timer">
-                                        <div class="auction_timer_days"
-                                             id="auction_days_<?php if ($productId) {
-                                                 echo $productId;
-                                             } ?>"></div>
-                                        <div class="auction_timer_hours"
-                                             id="auction_hours_<?php if ($productId) echo $productId; ?>">
-                                        </div>
-                                        <div class="auction_timer_minutes"
-                                             id="auction_minutes_<?php if ($productId) {
-                                                 echo $productId;
-                                             } ?>">
-                                        </div>
-                                        <div class="auction_timer_seconds"
-                                             id="auction_seconds_<?php if ($productId) {
-                                                 echo $productId;
-                                             } ?>">
-                                        </div>
+                                        
+											 
+											 <?php
+											 echo "$startTime";  
+											 echo "<br>";
+										
+											 ?>
+											 
+				
+                                       
                                     </div>
                                 </div>
 								</div>
@@ -170,6 +196,7 @@ $mediaUrl = $objectManager->get('Magento\Store\Model\StoreManagerInterface')
                 } ?>
                     <?php
                 if ($detail->getStatus() == 'processing') {
+							
 				
 				$addCls ='';
 					$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
@@ -188,7 +215,8 @@ $mediaUrl = $objectManager->get('Magento\Store\Model\StoreManagerInterface')
 					  {
 						 if ($data['product_id'] == $productId) 
 						 { 
-						 $addCls = "trending_auction featured_auction";						
+						 $addCls = "trending_auction featured_auction";		
+				 
 						 }			
 						}
 					 }
@@ -235,7 +263,7 @@ $mediaUrl = $objectManager->get('Magento\Store\Model\StoreManagerInterface')
                                            
                                         </div>
  <div class="related-starting-bid" bis_skin_checked="1">
-                <label>Starting Price</label>
+                <label>Sale Price</label>
                 <span>
                    <?php 
 				   $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); // Instance of Object Manager
@@ -261,10 +289,10 @@ $mediaUrl = $objectManager->get('Magento\Store\Model\StoreManagerInterface')
 											   <span>Buy <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span></span>
 										</button>
 								 </form><div class="auc_price">
-								  <span id="aPrice_<?php if ($productId) {
+								 <span id="aPrice_<?php if ($productId) {
                                                  echo $productId;
                                              } ?>" style="    color: #F26C4F;
-    font-size: 20px;
+    font-size: 17px;
     font-weight: bold;
     padding: 0px 0;
     line-height: 28px;"></span>
@@ -304,9 +332,17 @@ $mediaUrl = $objectManager->get('Magento\Store\Model\StoreManagerInterface')
                                         onclick="window.location.href='<?= $url ?>'">
 										Bid <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span>
                                 </button>
+								
+								 <button class="action tobidcart primary"
+                                        onclick="window.location.href='<?= $url ?>'">
+										Submit Bid
+                                </button>
 							
                             </div>
 							<div class="start-price-box">
+							<span>Auction is Live <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span></span>
+							
+							
 							</div>
                         </div>
 						<div class="delivery-sec">
@@ -550,7 +586,7 @@ a.action.towishlist {
     display: none;
 }
 a.product.photo.product-item-photo {
-    border: 1px solid #ddd;
+    border: 0px solid #ddd;
 }
 
 .product-item .tocart:before
@@ -615,4 +651,6 @@ display:block;
     width: 100%;
 }
 </style>
+
+
 

@@ -5500,7 +5500,7 @@ button.action.tocart.primary {
 .secondary-addto-links.actions-secondary {
     position: absolute!Important;
     top: 0!important;
-    right: -3px;
+    right: 24px!important;
 }
 a.product-item-link {
     font-size: 12px;
@@ -5578,7 +5578,8 @@ display:block;
     height: 50px;
 }
 .delivery-sec img {
-    width: 100%;
+       width: 80%!important;
+    margin: 0 0 0 10px!important;
 }
 
 
@@ -5639,4 +5640,127 @@ a.action.towishlist.actions-secondary {
     width: 18%;
     margin: 5px 10px;
 }
+
+
+
+.row1{
+float:left;
+width:33%;
+padding:inherit;
+}
+.shipprice{
+	margin-top: 14px;
+float:right;
+}
+button.estimate {
+    float: right;
+	    color: #ccc;
+	    box-shadow: 2px 3px #88888888;
+}
+.row2 b {
+      margin: 0px 0px 0px 10px;
+}
+button.estimate:hover {
+border:1px solid #ccc;
+     color: #ccc;
+    background: white;
+}
+
+body {font-family: Arial;}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  
+
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+.row2 img {
+	margin-top: -5px;
+    float: left;
+   
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+width:97%;
+height: 94px;
+  display: none;
+  padding: 15px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+.row2 {
+    border: 1px solid #ccc;
+    width: 30%;
+    float: left;
+        padding: 12px 0px 1px 3px;
+    margin: 0px 16px 0 0;
+}
+input#me {
+    float: right;
+}
+input#pick {
+    float: right;
+}
+input#delivery {
+    float: right;
+}
+input#fn {
+	    box-shadow: 2px 3px #88888888;
+    height: 30px;
+    width: 71px;
+}
+
+.row1 h3 {
+    padding: unset;
+    font-size: smaller;
+    color: #ccc;
+    width: max-content;
+  margin: 8px 0px 0px 34px;
+}
+button.action.tobidcart.primary {
+    background: white;
+    /* clear: both; */
+    float: right;
+    color: black;
+    border: 1px solid black;
+    width: 48%;
+    font-size: 12px;
+	height: 30px;
+	padding: 3px 0 0 0;
+    margin: 9px 0 0 0;
+}
+button.action.tocart.primary {
+    margin: 9px 10px 8px 0px;
+}
+strong.product.name.product-item-name {
+    text-align: center;
+}
+.related-starting-bid {
+    text-align: center;
+    padding: 0px 0 10px 0px;
+}
+
 
