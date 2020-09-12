@@ -128,8 +128,9 @@ class ListBlock extends \Ced\CsMarketplace\Block\Vshops\ListBlock
             }
             if ($count > 0 && $rating_sum > 0) {
                 $width = ceil($rating_sum / $count);
+                $averageReview = $width / 20;
                 return '<div class="rating-summary">     
-							 <div title="' . $width . '%" class="rating-result">
+							 <div title="' . $averageReview . '%" class="rating-result">
 								 <span style="width:' . $width . '%;"><span>' . $width . '%</span></span>
 							 </div>
 							</div>';
@@ -140,6 +141,37 @@ class ListBlock extends \Ced\CsMarketplace\Block\Vshops\ListBlock
                                  <span style="width:' . $width . '%;"><span>' . $width . '%</span></span>
                              </div>
                             </div>';
+            }
+        } else {
+            return '';
+        }
+    } 
+	public function getReviewsCount($vendor)
+    {
+        if ($this->_scopeConfig->getValue('ced_csmarketplace/vendorreview/activation')) {
+            $review_data = $this->reviewCollection->create()
+                ->addFieldToFilter('vendor_id', $vendor->getId())
+                ->addFieldToFilter('status', 1);
+
+            $rating = $this->ratingCollection->create()
+                ->addFieldToSelect('rating_code');
+            $count = 0;
+            $rating_sum = 0;
+
+            foreach ($review_data as $key => $value) {
+                foreach ($rating as $k => $val) {
+                    if ($value[$val['rating_code']] > 0) {
+                        $rating_sum += $value[$val['rating_code']];
+                        $count++;
+                    }
+                }
+            }
+            if ($count > 0 && $rating_sum > 0) {
+                $width = ceil($rating_sum / $count);
+                $averageReview = $width / 20;
+                return $averageReview;
+            } else {
+               return '';
             }
         } else {
             return '';

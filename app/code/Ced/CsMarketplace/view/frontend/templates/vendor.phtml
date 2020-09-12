@@ -17,10 +17,25 @@
  */
 ?>
 <?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'); 
+?>
+
+<?php
 $vendorData = $block->getVendorData();
 if ($vendorData->getId()) {?>
-    <div class="vendor-info"><?php echo __('Vendor').' : ';?><a href=<?php echo $vendorData->getVendorShopUrl();?>><?php echo $vendorData->getPublicName(); ?></a></div>
+    <div class="vendor-info"><?php echo __('Vendor').' : ';?><a href=<?php echo $vendorData->getVendorShopUrl();?>><?php echo $vendorData->getPublicName(); ?></a>
+	<?php
+if($vendorReviews->getReviewsCount($vendorData) != '')
+								{
+								  echo "<span class='review-vendor'>" .$vendorReviews->getReviewsCount($vendorData)."</span>";
+								  
+								}
+								?>
+	</div>
+
 <?php } ?>
+
 <style>
     .vendor-info {
         margin-bottom: 8px;

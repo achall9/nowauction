@@ -5483,6 +5483,7 @@ div#countdown_timer {
     clear: both;
     padding-top: 0px;
 	margin:0;
+	
 }
 button.action.tocart.primary {
     background: #fff;
@@ -5500,7 +5501,7 @@ button.action.tocart.primary {
 .secondary-addto-links.actions-secondary {
     position: absolute!Important;
     top: 0!important;
-    right: 24px!important;
+    right: 0px!important;
 }
 a.product-item-link {
     font-size: 12px;
@@ -5749,7 +5750,7 @@ button.action.tobidcart.primary {
     width: 48%;
     font-size: 12px;
 	height: 30px;
-	padding: 3px 0 0 0;
+	padding: 1px 0 0 0;
     margin: 9px 0 0 0;
 }
 button.action.tocart.primary {
@@ -5757,10 +5758,64 @@ button.action.tocart.primary {
 }
 strong.product.name.product-item-name {
     text-align: center;
+	padding-right:0!important;
 }
 .related-starting-bid {
     text-align: center;
     padding: 0px 0 10px 0px;
 }
+.product-date {
+    font-size: 12px;
+}
+span.review-vendor:after {
+	margin-left: 2px;
+    font-family: 'porto-icons';
+    content: "\f845";
+    color: #F26C4F;
+}
+span.review-vendor {
+	font-size: 11px;
+    margin-left: 6px;
+}
+.catalog-product-view span.review-vendor:after {
+    margin-left: 2px;
+    font-family: 'porto-icons';
+    content: "\f844";
+    color: yellow;
+}
+.minicart-items .item.product.product-item {
+   
+    max-width: 100%!important;
+}
+.actions-toolbar button.action.tocart.primary {
+   
+    width: 92%;
+}
+.sidebar .product-items .product-item-details {
+    margin-left: calc(0% + 0px);
+}
 
+.sidebar .product-items .product-item-info .product-item-photo {
+  
+    max-width: 100%;
+  
+}
+.catalog-category-view .price-box {
+    text-align: center;
 
+}
+.catalog-category-view .item.product.product-item {
+   
+    height: 500px;
+}
+.catalog-category-view .auction_product {
+    height: 43px;
+}
+
+a.action.towishlist.actions-secondary {
+    z-index: 99999;
+}
+.catalog-product-view .item.product.product-item {
+  
+    max-width: 100%!important;
+}

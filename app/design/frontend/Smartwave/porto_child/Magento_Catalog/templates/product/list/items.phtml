@@ -305,12 +305,16 @@ $image_height = ($_category_config['ratio_height'])?$_category_config['ratio_hei
                                     <?php if ($showCart): ?>
                                         <div class="actions-primary">
                                         
-                                                   <a class="action tocart primary" href=
-													"<?php /* @escapeNotVerified */ echo $_item->getProductUrl();?>" type="button" 
-													title="<?php /* @escapeNotVerified */ echo __('Buy Now') ?>">
-                                                        <span><?php /* @escapeNotVerified */ echo __('Buy Now') ?></span>
-                                                    </a>
-                                                
+                    	<a  style="margin:0px 0 0px 0px;"href=
+							"<?php /* @escapeNotVerified */ echo $_item->getProductUrl();?>" type="submit"
+								title="BUY NOW"class="action tocart primary">
+							 <span>Buy <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span></span>
+											</a>	
+<div class="prod_price">
+											<span style=" color: #F26C4F;font-size: 12px;font-weight: bold;padding:0px 0;line-height: 28px;">
+												<?php 	echo $priceHelper->currency($price, true, false);?>
+											</span>
+										 </div>
                                         </div>
                                     <?php endif; ?>
 
@@ -338,12 +342,17 @@ $image_height = ($_category_config['ratio_height'])?$_category_config['ratio_hei
                             <?php endif; ?>
                         </div>
                     </div>
+					<div class="delivery-sec">
+							<?php
+								$mediaUrl = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+							?>
+							<img src="<?php echo $mediaUrl;?>delivery_img.png">
+						</div>
                     <?php if ($type == 'related'): ?>
                      <?php echo($iterator == count($items)) ? '</div>' : '' ?>
                     <?php else: ?>
                     <?php echo($iterator == count($items)) ? '</div>' : '' ?>
                     <?php endif; ?>
-					
                 <?php endforeach ?>
             </div>
         </div>
@@ -351,6 +360,37 @@ $image_height = ($_category_config['ratio_height'])?$_category_config['ratio_hei
 </div>
 <?php if ($type == 'related'): ?>
 <style>
+.products-related .secondary-addto-links.actions-secondary {
+  
+    z-index: 99999999;
+    right: 19px!important;
+}
+.products-related .related-starting-bid label {
+    font-size: 11px;
+}
+.products-related .prod_price {
+    margin-left: 6px;
+    float: left;
+    width: 29%;
+}
+
+.products-related a.action.tocart.primary {
+    background: #fff;
+    font-weight: 500;
+    color: #000;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    box-shadow: 2px 2px 4px grey;
+    float: left;
+    width: 55%;
+    clear: both;
+    line-height: 25px;
+    height: 28px;
+}
+ .products-related .product-item-info:hover .product-item-details .product-item-actions .tocart
+ {
+	 background-color: transparent;
+ }
 .secondary-addto-links.actions-secondary {
     position: absolute!Important;
     top: 0!important;

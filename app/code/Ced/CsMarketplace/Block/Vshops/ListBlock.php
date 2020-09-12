@@ -124,6 +124,7 @@ class ListBlock extends \Magento\Framework\View\Element\Template
         $name_filter = $this->_coreRegistry->registry('name_filter');
         $zip_code = $this->_coreRegistry->registry('zip_code');
         $country = $this->_coreRegistry->registry('country');
+        $city = $this->_coreRegistry->registry('city');
 
         if (is_null($this->_vendorCollection)) {
             $vendorIds = [0];
@@ -160,6 +161,10 @@ class ListBlock extends \Magento\Framework\View\Element\Template
                     if ($zip_code != '') {
                         $this->_vendorCollection->addAttributeToFilter(
                             array( array('attribute'=>'zip_code','like'=>'%'.$zip_code.'%') ) );
+                    }
+					if ($city != '') {
+                        $this->_vendorCollection->addAttributeToFilter(
+                            array( array('attribute'=>'city','like'=>'%'.$city.'%') ) );
                     }
 
                     if ($name_filter != '') {
