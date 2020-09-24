@@ -346,8 +346,9 @@ $bidPrices[] =  $val['bid_price'];
 								var finalProductPrice = productPrice - diff2;												
 								var finalProductPrice =finalProductPrice.toFixed(2);
 								var finalProductPrice =parseFloat(finalProductPrice);
+								var finalProductPrice1 =formatNumber(finalProductPrice);
 								var currency = '<?php echo $currencySymbol;?>';
-								var auc_price = currency+""+finalProductPrice;
+								var auc_price = currency+""+finalProductPrice1;
 								console.log('<?php echo $countDownTime;?>');
 								console.log("Starting price "+productPrice);
 								//console.log(auc_price);
@@ -399,6 +400,9 @@ $bidPrices[] =  $val['bid_price'];
                             }
                         }, 1000);
                     });
+					function formatNumber(num) {
+  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+}
                 });
             </script>
             <?php

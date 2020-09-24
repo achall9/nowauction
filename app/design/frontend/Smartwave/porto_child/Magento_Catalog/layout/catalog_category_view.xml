@@ -16,5 +16,8 @@
         <referenceContainer name="sidebar.main">
             <block class="Smartwave\Porto\Block\Template" name="category_view_custom_block" after="-" template="Magento_Catalog::category/custom_block.phtml"/>
         </referenceContainer>
+	<referenceContainer name="footer">
+			<block class="Magento\Framework\View\Element\Template" template="MGS_Ajaxscroll::category/ajaxscroll.phtml" ifconfig="ajaxscroll/general/is_enabled"/>
+		</referenceContainer>
     </body>
 </page>

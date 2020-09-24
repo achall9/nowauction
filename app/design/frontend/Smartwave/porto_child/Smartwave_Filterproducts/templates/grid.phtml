@@ -182,7 +182,7 @@ if($column_count == null) {
                         <?php endif;?>
 						<?php if($_category_config['product_price']): ?>
 						<div class="related-starting-bid" bis_skin_checked="1">
-												<label>Starting Price</label>
+												<label>Sale Price</label>
 												<span>
 												   <?php 
 												   $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); // Instance of Object Manager
@@ -199,16 +199,22 @@ if($column_count == null) {
                             <div class="product actions product-item-actions">
                                 <div class="actions-primary">
 								
-								    <button class="action tocart primary"
-                                        onclick="window.location.href='<?= $_product->getProductUrl(); ?>'">
-										Bid <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span>
-                                </button>
-                                    <?php if ($_product->isSaleable()): ?>
+								   <?php if ($_product->getIsSalable()): ?>
                                         <?php $postParams = $block->getAddToCartPostParams($_product); ?>
                                         <form data-role="tocart-form" action="<?php echo $postParams['action']; ?>" method="post">
                                             <input type="hidden" name="product" value="<?php echo $postParams['data']['product']; ?>">
                                             <input type="hidden" name="<?php echo Action::PARAM_NAME_URL_ENCODED; ?>" value="<?php echo $postParams['data'][Action::PARAM_NAME_URL_ENCODED]; ?>">
-                                            <?php if(isset($_category_config['qty_field']) && $_category_config['qty_field']):?>
+                                           <button type="submit"
+                                                    title="<?php echo $block->escapeHtml(__('BUY NOW')); ?>"
+                                                    class="action tocart primary" style="margin:0;" >
+                                               BUY <span style="color: #F26C4F;font-style: italic;font-size: 15px;">NOW</span></span>
+                                            </button>
+												<div class="prod_price">
+											<span style=" color: #F26C4F;font-size: 17px;font-weight: bold;padding:0px 0;line-height: 28px;">
+												<?php echo $priceHelper->currency($price, true, false);?>
+											</span>
+										 </div>
+										  <?php if(isset($_category_config['qty_field']) && $_category_config['qty_field']):?>
                                                 <div class="qty-box">
                                                     <a href="javascript:void(0)" class="qtyminus"><i class="porto-icon-minus"></i></a>
                                                     <input type="text" name="qty" id="qty" maxlength="12" value="<?php /* @escapeNotVerified */ echo $block->getProductDefaultQty() * 1 ?>" title="<?php /* @escapeNotVerified */ echo __('Qty') ?>" class="input-text qty" data-validate="<?php echo $block->escapeHtml(json_encode($block->getQuantityValidators())) ?>"/>
@@ -216,20 +222,21 @@ if($column_count == null) {
                                                 </div>
                                             <?php endif;?>
                                             <?php echo $block->getBlockHtml('formkey')?>
-                                            <button type="submit"
-                                                    title="<?php echo $block->escapeHtml(__('BUY NOW')); ?>"
-                                                    class="action tocart primary">
-                                               BUY <span style="color: #F26C4F;font-style: italic;font-size: 15px;">NOW</span></span>
-                                            </button>
+                                           
                                         </form>
 										
                                     <?php else: ?>
-                                        <?php if ($_product->getIsSalable()): ?>
-                                            <div class="stock available"><span><?php echo __('In stock') ?></span></div>
-                                        <?php else: ?>
+                                       
                                             <div class="stock unavailable"><span><?php echo __('Out of stock') ?></span></div>
-                                        <?php endif; ?>
+                                      
                                     <?php endif; ?>
+								
+								    <button class="action tocart primary"
+                                        onclick="window.location.href='<?= $_product->getProductUrl(); ?>'">
+										Bid <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span>
+                                </button>
+								
+                                 
                                 </div>
                               
                                 <?php if($_category_config['addtocompare']): ?>

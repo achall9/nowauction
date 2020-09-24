@@ -5539,12 +5539,22 @@ a.action.tocart.primary {
     height: 28px;
 }
 .related-starting-bid label {
-    font-size: 12px;
+    font-size: 15px;
+    padding: 0 5px;
+    font-weight: 700;
+    text-align: center;
+    display: block;
+    width: 50%;
+    float: left;
 }
 .related-starting-bid span {
-    font-size: 12px;
-	font-weight:bold;
+    font-size: 17px;
+    font-weight: bold;
+    width: 50%;
+    text-align: left;
+    float: left;
 }
+
 .products-grid .product-item-actions .tocart
 {
 display:block;
@@ -5761,8 +5771,8 @@ strong.product.name.product-item-name {
 	padding-right:0!important;
 }
 .related-starting-bid {
-    text-align: center;
-    padding: 0px 0 10px 0px;
+    padding: 0px 0 5px 0px;
+    display: flex;
 }
 .product-date {
     font-size: 12px;

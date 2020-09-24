@@ -429,6 +429,27 @@ $mediaUrl = $objectManager->get('Magento\Store\Model\StoreManagerInterface')
     <div class="infinite-loader"><div class="loading"><?php echo __("Loading ..."); ?></div><a href="javascript:void(0)" class="btn-load-more"><?php echo __("Load More ..."); ?></a></div>
     <?php endif;?>
     <?php echo $block->getToolbarHtml() ?>
+	<?php $helper = $this->helper('MGS\Ajaxscroll\Helper\Data') ?>
+
+<script type="text/javascript">
+	require([
+		"jquery",
+		"jquery/ui",
+		"ajaxscroll"
+	], function($){
+		$(document).ready(function(){
+			var ajaxscroll = $.scroll({
+				wrapperSelector : '.products.wrapper',
+				itemSelector: '.product-item',
+				paginationSelector: '.pages-items .item',
+				nextSelector: '.pages-items .next'
+			});
+			
+			ajaxscroll.extension(new scrollLoading({html: '<div class="ajax-scroll-loading"><img src="<?php echo $helper->getLoadingImageUrl($this->getViewFileUrl('MGS_Ajaxscroll::images/loader.gif')) ?>" /></div>'}));
+		});
+	});
+</script>
+	
     <?php if (!$block->isRedirectToCartEnabled()) : ?>
         <script type="text/x-magento-init">
         {
