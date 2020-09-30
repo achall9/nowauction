@@ -1,0 +1,207 @@
+<?php $url = $this->getUrl('customizeauction/index/index'); ?>
+
+<?php $currentUrl  = $this->getUrl('*/*/*', ['_current' => true, '_use_rewrite' => true]); ?>
+<?php $loginUrl = $block->getUrl('customer/account/login', array('referer' => base64_encode($currentUrl))); ?>
+
+
+<script>
+    require(
+        [
+            'jquery',
+            'Magento_Ui/js/modal/modal',
+            'Magento_Customer/js/model/customer',
+            "Magento_Catalog/js/price-utils"
+        ],
+        function(
+            $,
+            modal,
+            customer,
+            priceUtils
+        ) {
+            var options = {
+                type: 'popup',
+                responsive: true,
+                innerScroll: true,
+                title: 'Confirm Your Bid',
+                buttons: []
+               /* buttons: [{
+                    text: $.mage.__('Continue'),
+                    class: '',
+                    click: function () {
+                        this.closeModal();
+                    }
+                }] */
+            };
+
+            var popup = modal(options, $('#modal-content'));
+            $(".auction-modal-button").on('click',function(){
+
+                var isBuyNow = $(this).data('isbuynow');
+                
+                var isLoggedIn = jQuery('.authorization-link > a').attr('href').indexOf('/login')<0;
+
+                if (isLoggedIn) {
+                    var id =  this.id;
+                    var currentPrice = $(this).parent('.product-item-details').find('.price-final_price').find('.auc_price span').text();
+                    var currentPriceWithoutSym = currentPrice.replace(/[^\d\.]/g, '');
+
+                    $.ajax({
+                        url : '<?php echo $url; ?>',
+                        type : 'POST',
+                        data: {
+                            'id': id, 'currentPrice': currentPriceWithoutSym, 'isBuyNow': isBuyNow
+                        },
+                        dataType:'json',
+                        showLoader: true,
+                        success : function(data) {
+                            $('#modal-content').html(data.html);
+                            $("#modal-content").modal("openModal");             
+                            setTimeout(function(){
+                                if(data.isBuyNow == 1)
+                                {
+                                    var val1 = data.currentPrice;
+                                    $("#popup-auction-bid").val(val1);
+
+                                    var val = val1.replace(',', '');
+                                    var buyerPremium5 = parseFloat((val * 5) / 100);
+                                    var buyerPremium5Format = priceUtils.formatPrice(buyerPremium5);
+                                    $(".buyer-prem5>.buy5price").text(buyerPremium5Format);
+
+                                    var ccdPrem3 = parseFloat(parseFloat(buyerPremium5) + parseFloat(val));
+                                    var ccdPrem3 = parseFloat((ccdPrem3 * 3) / 100);
+                                    var ccdPrem3Format = priceUtils.formatPrice(ccdPrem3);
+                                    $(".ccd-prem3>.buyprem3").text(ccdPrem3Format);
+
+                                    var taxes65 = parseFloat(parseFloat(buyerPremium5) + parseFloat(ccdPrem3) + parseFloat(val));
+                                    var taxes65 = parseFloat((taxes65 * data.tax) / 100);
+                                    var taxes65Format = priceUtils.formatPrice(taxes65);
+                                    $(".taxes65>.tax65price").text(taxes65Format);
+
+                                    var totalCost = parseFloat(parseFloat(val) + parseFloat(buyerPremium5) + parseFloat(ccdPrem3) + parseFloat(taxes65));
+                                    var totalCostFormat = priceUtils.formatPrice(totalCost);
+                                    $(".total-cost>.totalcostprice").text(totalCostFormat);
+
+                                    $("#total-auction-bid").val(totalCost);
+                                }
+                            }, 1000);
+                        },
+                        error : function(request,error)
+                        {
+                            alert("Error");
+                        }
+                    });      
+                } else {
+                    window.location.href = "<?php echo $loginUrl ?>";
+                }       
+            });
+
+
+
+        }
+    );
+</script>
+<div class="content" id="modal-content">
+    <?php // echo $block->getContent(); ?>
+</div>
+
+
+
+<?php /* <button id="auction-modal-button" data-mage-init='{"auction-modal": {"target": "#modal-content"}}'>
+    Open modal
+</button> */ ?>
+<style type="text/css">
+    
+.modal-popup .bid-popup-wrap .bid-price-cur{font-size: 18px;}
+.modal-popup .bid-popup-wrap .popup-shipping-section{margin: 10px 0;}
+.modal-popup .bid-popup-wrap .getrate-error{color: #e02b27; font-size: 1.2rem; margin-top: 7px;}
+.modal-popup .bid-popup-wrap .starting-bid, .modal-popup .bid-popup-wrap .bid-input-wrapper{display: none;}
+
+@media(min-width: 768px){
+.modal-popup .bid-popup-wrap .bid-price-cur{display: flex; align-items: center; justify-content: center;}
+.modal-popup .bid-popup-wrap .popup-payment-section .fieldset > .field{float: left; width: 49%;}
+.modal-popup .bid-popup-wrap .popup-payment-section .fieldset > .field:nth-child(2n+1) {
+    margin-right: 10px;}
+.modal-popup .bid-popup-wrap .popup-payment-section .stripe-options input.input-card-numbers,
+.modal-popup .bid-popup-wrap .popup-payment-section .stripe-options input.input-exp-date,
+.modal-popup .bid-popup-wrap .popup-payment-section .stripe-options input.input-cvc{max-width: 170px; width: auto;}
+}
+
+/*-----10-08-2020-----*/
+.modal-popup .modal-inner-wrap{max-width: 650px; width: 100%;border: 2px solid #cbcdcc;
+border-radius: 10px; margin: 3.5rem auto;}
+.modal-popup .modal-inner-wrap .modal-header{padding: 1.5rem;}
+.modal-popup .modal-inner-wrap .modal-header button::before{color: #bcbcbc; margin: 0; font-size: 22px; line-height: 22px;}
+.modal-popup .modal-inner-wrap .modal-header h1{color: #000; text-transform: uppercase;
+font-weight: 500; font-size: 32px; line-height: 32px; padding: 0; border-bottom: none;}
+.modal-popup .modal-inner-wrap .modal-content{background: #eceaea; margin: 0 20px; padding: 20px; text-align: center;}
+.modal-popup.modal-slide .modal-footer{border-top: none; text-align: center; padding: 20px;background: #eceaea; margin: 0 20px 20px;}
+.modal-popup .bid-popup-wrap .bid-popup-image-section{display: flex; justify-content: space-between; align-items: center;}
+.modal-popup .bid-popup-wrap .bid-popup-image-section img{width: 25%;}
+.modal-popup .bid-popup-wrap .bid-popup-image-section span{width: 70%; text-align: left; font-size: 18px;
+line-height: 20px; font-weight: 600;}
+.modal-popup .bid-popup-wrap .bid-price-cur{margin-bottom: 10px;}
+.modal-popup .bid-popup-wrap .popup-current-price{font-size: 20px; line-height: 22px; margin: 45px 0 30px;
+font-weight: normal; display: flex; justify-content: center; align-items: center; flex-wrap: nowrap;color: #8a8a8a;}
+.modal-popup .bid-popup-wrap .popup-current-price span#aPrice{color: #515151 !important; font-size: 20px !important; font-weight: inherit !important; padding: 0 !important; line-height: inherit !important; margin-left: 15px;}
+.modal-popup .bid-popup-wrap .bid-price-cur input{border: 1px solid #0093ec; border-radius: 8px;
+width: auto; padding: 5px 15px; line-height: 22px; margin-left: 10px;}
+.modal-popup .bid-popup-wrap .popup-prem-section > div{ font-size: 14px; line-height: 24px; }
+.modal-popup .bid-popup-wrap .popup-prem-section > div span{color: #000;}
+.modal-popup .bid-popup-wrap .popup-shipping-section > ul li span{color: #000;}
+.modal-popup .bid-popup-wrap .popup-shipping-section{display: flex;flex-wrap: nowrap; justify-content: center; font-size: 20px; line-height: 20px;}
+.modal-popup .bid-popup-wrap .popup-shipping-section ul{list-style: none; margin: 0 0 0 5px; padding: 0;width: 35%;}
+.modal-popup .bid-popup-wrap .popup-shipping-section ul li{text-align: left; font-size: 14px; line-height: 14px;}
+.modal-popup .bid-popup-wrap .popup-confirm-bid button{color: #F26C4F;
+border-color: #F26C4F;
+border-radius: 4px;
+margin: 10px 0;}
+.modal-popup .bid-popup-wrap .total-cost, .modal-popup .bid-popup-wrap .total-cost span{font-size: 14px;}
+.modal-popup .bid-popup-wrap .total-cost span{color: #000;}
+.modal-popup .bid-popup-wrap .bid-saved-payment{margin: 15px 0;}
+.modal-popup .bid-popup-wrap .bid-saved-payment label{background: #fbf9f9;
+color: #000;
+padding: 10px 15px;
+border-radius: 7px;
+font-size: 14px;
+border: 1px solid #c3c1c1;
+box-shadow: inset 0 -2px 3px rgba(0,0,0,0.5); display: inline-block;}
+.modal-popup .bid-popup-wrap .bid-saved-payment select{width: auto; border: 1px solid #0093ec;
+border-radius: 8px;}
+.modal-popup .bid-popup-wrap .popup-confirm-bid button:hover{color: #fff;}
+.modal-popup .bid-popup-wrap .popup-confirm-bid button span{font-style: italic; font-weight: 600; font-size: 18px;}
+.modal-popup .bid-popup-wrap .prd-current-price{display: block !important;}
+.modal-popup .bid-popup-wrap #countdown_timer{display: none}
+.modal-popup .bid-popup-wrap .current-bid{display: none}
+.modal-popup .bid-popup-wrap .popup-payment-section{font-size: 16px; line-height: 18px; padding: 25px 0 15px;}
+.modal-popup .bid-popup-wrap .popup-payment-section ul{padding-left: 0; list-style: none; font-size: 14px;
+max-width: 200px; width: 100%; margin: 20px auto; text-align: left;}
+.modal-popup .bid-popup-wrap .popup-payment-section .fieldset > .field .label{display: block;
+text-align: left;}
+.modal-popup .bid-popup-wrap .popup-payment-section .fieldset > .field input,
+.modal-popup .bid-popup-wrap .popup-payment-section .stripe-options input.input-card-numbers,
+.modal-popup .bid-popup-wrap .popup-payment-section .stripe-options input.input-exp-date,
+.modal-popup .bid-popup-wrap .popup-payment-section .stripe-options input.input-cvc,
+.modal-popup .bid-popup-wrap .popup-payment-section .stripe-options select{height: 38px; padding:5px;}
+.modal-popup .bid-popup-wrap .popup-payment-section .stripe-options input.input-card-numbers,
+.modal-popup .bid-popup-wrap .popup-payment-section .stripe-options input.input-exp-date,
+.modal-popup .bid-popup-wrap .popup-payment-section .stripe-options input.input-cvc{box-shadow: 0 6px 9px rgba(50, 50, 93, 0.06), 0 2px 5px rgba(0, 0, 0, 0.08), inset 0 1px 0 #fefefe; border-radius: 4px; border: none; margin: 15px 0; font-size: 15px; padding: 8px;}
+
+@media(max-width: 767px){
+.modal-popup .bid-popup-wrap .popup-shipping-section ul{margin: 0 auto; width: 45%;}
+.cms-index-index .row .col-lg-9{margin-top: 115px !important;}
+.cms-index-index .page.messages{top: 72px;}
+.modal-popup .bid-popup-wrap .popup-payment-section .stripe-options input.input-card-numbers,
+.modal-popup .bid-popup-wrap .popup-payment-section .stripe-options input.input-exp-date,
+.modal-popup .bid-popup-wrap .popup-payment-section .stripe-options input.input-cvc{width: 100%;}
+}
+    
+.cms-index-index .columns .column.main{min-height: inherit;}
+.page-main, .page.messages,  .page.messages .messages{display: block !important;}
+.cms-index-index .page.messages{position: absolute; top: 120px; left: 0; right: 0;}
+.cms-index-index .row .col-lg-9, .cms-index-index .row .col-lg-3{margin-top: 45px !important;}
+
+@media(min-width: 768px) and (max-width: 1024px){
+.cms-index-index .page.messages{top: 115px;}
+}
+
+</style>

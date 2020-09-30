@@ -227,11 +227,11 @@ $bidPrices[] =  $val['bid_price'];
 
             <script>
                 require([
-                    'jquery'
+                    'jquery',
+                    'mage/validation'
                 ], function ($) {
                     $('#bidding').click(function () {
-					
-					
+										
                         var params = {
                             bidprice: $(this).prev().val(),
                             productId: '<?= $productId?>',
@@ -247,6 +247,79 @@ $bidPrices[] =  $val['bid_price'];
                         window.location.href = '<?php echo $this->getUrl('auction/startBid/start')?>' + newParams;
 
                     });
+
+                    var dataForm = $('#popupbid-validate-detail');
+                    var ignore = null;
+
+                    dataForm.mage('validation', {
+                        ignore: ignore ? ':hidden:not(' + ignore + ')' : ':hidden'
+                    }).find('input:text').attr('autocomplete', 'off');
+
+                    $('.bidding-popup').click(function () {    
+                            
+                        if($("#getrate").attr('disabled') != 'disabled'){
+                            $("div.getrate-error").show();
+                            return;
+                        }
+                        if(dataForm.validation('isValid'))
+                        {
+                            var shippingOption = $("input[name='shipping-opt']:checked").val();  
+                            var paymentOption = $('#payment-opt').val();
+                            var shippingAmount = $('#shipping-amount').val();
+                            var customerId = $('#customer-id').val();
+                            var isBuyNow = $('#is-buy-now').val();
+
+                            var cardNumber = $('#cardnumber').val();
+                            var expDate = $('#exp-date').val();
+                            if(expDate != ''){
+                                var result = expDate.split('/');
+                                expMonth = result[0];
+                                expYear = result[1];
+                            } else {
+                                expMonth = '';
+                                expYear = '';
+                            }
+                            var cvc = $('#cvc').val();
+                            var holderName = $('#stripe_payments_ach_account_holder_name').val();
+                            var holderType = $('#stripe_payments_ach_account_holder_type').val();
+                            var accountNumber = $('#stripe_payments_ach_account_number').val();
+                            var routingNumber = $('#stripe_payments_ach_routing_number').val();
+                            var paymentToken = $('#saved-card-id').val();
+                            var stripeCustomerId = $('#stripe-customer-id').val();
+
+                            var params = {
+                                bidprice: $(this).prev().val(),
+                                productId: '<?= $productId?>',
+                                nextAmount: '<?= $renextAmount?>',
+                                startAmount: '<?= $reStartingAmount ?>',
+                                purchasable: '<?= $purchasable?>',
+                                maxprice: '<?= $reMaxprice ?>',
+                                bidPrices: '<?= json_encode($bidPrices) ?>',
+                                totalBidPrice: $('#total-auction-bid').val(),
+                                shippingOption: shippingOption,
+                                paymentOption: paymentOption,
+                                shippingAmount: shippingAmount,
+                                isPreauction: 0,
+                                customerId: customerId,
+                                isBuyNow: isBuyNow,
+                                cardNumber: cardNumber,
+                                expMonths: expMonth,
+                                expYear: expYear,
+                                cvc: cvc,
+                                holderName: holderName,
+                                holderType: holderType,
+                                accountNumber: accountNumber,
+                                routingNumber: routingNumber,
+                                paymentToken: paymentToken,
+                                stripeCustomerId: stripeCustomerId
+                            };
+
+                            var str = $.param(params);
+                            var newParams = str.replace(/[&=]/g, '/');
+                            window.location.href = '<?php echo $this->getUrl('customizeauction/startBid/startpopupbid')?>' + newParams;
+                        }
+
+                    });                    
                 });
             </script>
             <?php
@@ -255,8 +328,10 @@ $bidPrices[] =  $val['bid_price'];
         if ($status == 'not started') {
             $countDownTime = $startTime;
             $timeremain = strtotime($startTime) - strtotime($currTime);
+            $prdPrice = $this->helper('Magento\Framework\Pricing\Helper\Data')
+                                        ->currency($block->getProductData()->getPrice(), true, false);
             ?>
-
+            <div class="prd-current-price" style="display: none;"><?php echo $prdPrice ?></div>
             <div class="title"><?= $block->getTitle();?></div>
             <div class="starting-bid">
                 <label><?= __('Starts at:') ?></label>
@@ -279,6 +354,99 @@ $bidPrices[] =  $val['bid_price'];
                     echo $startAmount; ?>
                 </span>
             </div>
+
+            <?php
+            $startingAmount = $block->getAuctionDetails()->getStartingPrice();          
+            $reStartingAmount = $startingAmount;
+            $maxprice = $block->getAuctionDetails()->getMaxPrice();
+            $reMaxprice = $maxprice;
+            $purchasable = $block->getAuctionDetails()->getSellproduct();
+            $bidPrices = array();
+            foreach($block->getBidDetails()->getData() as $key=>$val)
+            {
+                $bidPrices[] =  $val['bid_price'];
+            }
+            ?>
+
+            <script>
+                require([
+                    'jquery',
+                    'mage/validation'
+                ], function ($) {
+                    var dataForm = $('#popupbid-validate-detail');
+                    var ignore = null;
+
+                    dataForm.mage('validation', {
+                        ignore: ignore ? ':hidden:not(' + ignore + ')' : ':hidden'
+                    }).find('input:text').attr('autocomplete', 'off');
+
+                    $('.bidding-popup').click(function () {   
+                        if($("#getrate").attr('disabled') != 'disabled'){
+                            $("div.getrate-error").show();
+                            return;
+                        }
+
+                        if(dataForm.validation('isValid'))
+                        {
+                            var shippingOption = $("input[name='shipping-opt']:checked").val();  
+                            var paymentOption = $('#payment-opt').val();
+                            var shippingAmount = $('#shipping-amount').val();
+                            var customerId = $('#customer-id').val();
+                            var isBuyNow = $('#is-buy-now').val();
+
+                            var cardNumber = $('#cardnumber').val();
+                            var expDate = $('#exp-date').val();
+                            if(expDate != ''){
+                                var result = expDate.split('/');
+                                expMonth = result[0];
+                                expYear = result[1];
+                            } else {
+                                expMonth = '';
+                                expYear = '';
+                            }
+                            var cvc = $('#cvc').val();
+                            var holderName = $('#stripe_payments_ach_account_holder_name').val();
+                            var holderType = $('#stripe_payments_ach_account_holder_type').val();
+                            var accountNumber = $('#stripe_payments_ach_account_number').val();
+                            var routingNumber = $('#stripe_payments_ach_routing_number').val();
+                            var paymentToken = $('#saved-card-id').val();
+                            var stripeCustomerId = $('#stripe-customer-id').val();
+
+                            var params = {
+                                bidprice: $(this).prev().val(),
+                                productId: '<?= $productId?>',
+                                startAmount: '<?= $reStartingAmount ?>',
+                                purchasable: '<?= $purchasable?>',
+                                maxprice: '<?= $reMaxprice ?>',
+                                bidPrices: '<?= json_encode($bidPrices) ?>',
+                                totalBidPrice: $('#total-auction-bid').val(),
+                                shippingOption: shippingOption,
+                                paymentOption: paymentOption,
+                                shippingAmount: shippingAmount,
+                                isPreauction: 1,
+                                customerId: customerId,
+                                isBuyNow: isBuyNow,
+                                cardNumber: cardNumber,
+                                expMonths: expMonth,
+                                expYear: expYear,
+                                cvc: cvc,
+                                holderName: holderName,
+                                holderType: holderType,
+                                accountNumber: accountNumber,
+                                routingNumber: routingNumber,
+                                paymentToken: paymentToken,
+                                stripeCustomerId: stripeCustomerId
+                            };
+
+                            var str = $.param(params);
+                            var newParams = str.replace(/[&=]/g, '/');
+                            window.location.href = '<?php echo $this->getUrl('customizeauction/startBid/startpopupbid')?>' + newParams;
+                        }
+
+                    });
+                });
+            </script>            
+
         <?php } ?>
 
         <?php if (!empty($countDownTime)) { ?>

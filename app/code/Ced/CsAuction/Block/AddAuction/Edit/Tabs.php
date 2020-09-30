@@ -44,9 +44,29 @@ class Tabs extends \Magento\Backend\Block\Widget\Tabs
                 'label' => __('Auction Details'),
                 'title' => __('Auction Details'),
                 'content' => //$this->getLayout()->createBlock('Ced\CsPurchaseOrder\Block\Vendor\Edit\Tab\Qlist')->toHtml()
-                    $this->getLayout()->createBlock('Ced\CsAuction\Block\AddAuction\Edit\Tab\AuctionList')
+                $this->getLayout()->createBlock('Ced\CsAuction\Block\AddAuction\Edit\Tab\AuctionList')
                         ->toHtml(),
 
+            ]
+        );
+
+        $this->addTab(
+            'pre_auction_details',
+            [
+                'label' => __('Pre Auction Details'),
+                'title' => __('Pre Auction Details'),
+                'url'       => $this->getUrl('*/PreAucionList/Grid', array('_current' => true)),    // Url of action which loads the grid
+                'class'     => 'ajax',
+            ]
+        );
+
+        $this->addTab(
+            'bid_details',
+            [
+                'label' => __('Bid Details'),
+                'title' => __('Bid Details'),
+                'url'       => $this->getUrl('*/Biddetails/Grid', array('_current' => true)),    // Url of action which loads the grid
+                'class'     => 'ajax',
             ]
         );
         return parent::_beforeToHtml();

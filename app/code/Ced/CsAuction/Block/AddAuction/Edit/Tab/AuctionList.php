@@ -162,6 +162,19 @@ class AuctionList extends \Magento\Backend\Block\Widget\Form\Generic
                     'class' => '',
                 ]
             );
+
+            $fieldset->addField(
+                'status',
+                'select',
+                [
+                    'name' => 'status',
+                    'label' => __('Status'),
+                    'title' => __('Status'),
+                    'values'=> ['processing'=>'Processing','not started'=>'Not Started','closed'=>'Closed','cancelled'=>'Cancelled'],
+                    'required' => true,
+                    'class' => '',
+                ]
+            );
             $this->setForm($form);
             return $this;
         }
@@ -271,6 +284,19 @@ class AuctionList extends \Magento\Backend\Block\Widget\Form\Generic
                     'label' => __('Sell Product'),
                     'title' => __('Sell Product'),
                     'values'=> ['no'=>'No','yes'=>'Yes'],
+                    'required' => true,
+                    'class' => '',
+                ]
+            );
+
+            $fieldset->addField(
+                'status',
+                'select',
+                [
+                    'name' => 'status',
+                    'label' => __('Status'),
+                    'title' => __('Status'),
+                    'values'=> ['processing'=>'Processing','not started'=>'Not Started','closed'=>'Closed','cancelled'=>'Cancelled'],
                     'required' => true,
                     'class' => '',
                 ]

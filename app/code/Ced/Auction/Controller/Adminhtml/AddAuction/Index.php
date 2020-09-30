@@ -76,6 +76,12 @@ class Index extends \Magento\Backend\App\Action
         $resultPage->addBreadcrumb(__('Add'), __('New Auction'));
         $resultPage->getConfig()->getTitle()->prepend(__('Add New Auction'));
         $this->helper->closeAuction();
+
+        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/winner2.log');
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
+        $logger->info('controllerAddAuction');
+
         return $resultPage;
     }
 }

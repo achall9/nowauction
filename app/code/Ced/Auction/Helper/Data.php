@@ -32,7 +32,8 @@ class Data extends AbstractHelper
                                 ConfigData $configHelper,
                                 SendEmail $emailHelper,
                                 Session $customerSession,
-                                VproductsFactory $vproductsFactory
+                                VproductsFactory $vproductsFactory,
+                                \Ced\CustomizeAuction\Helper\Data $customizeHelper
     )
     {
         $this->customerSession = $customerSession;
@@ -45,11 +46,12 @@ class Data extends AbstractHelper
         $this->configHelper = $configHelper;
         $this->emailHelper = $emailHelper;
         $this->vproductsFactory = $vproductsFactory;
+        $this->customizeHelper = $customizeHelper;
         parent::__construct($context);
     }
 
     public function closeAuction()
-    {
+    { 
         $auctionRunning = $this->auctionCollection->create()->addFieldToFilter('status', 'processing');
         if (count($auctionRunning->getData()) != false) {
             foreach ($auctionRunning as $auction) {
@@ -61,7 +63,8 @@ class Data extends AbstractHelper
                     ->date(new \DateTime($date))
                     ->format('Y-m-d H:i:s');
 
-                if ($endTime <= $currenttime) {
+                $isCloseAuction = $this->customerSession->getIsCloseAuction();
+                if ($endTime <= $currenttime || $isCloseAuction == 1) {
 
                     if (count($auction->getData()) != false) {
                         $auction->setData('status', 'closed');
@@ -71,7 +74,6 @@ class Data extends AbstractHelper
 
                     $bidExist = $this->bidDetails->create()->addFieldToFilter('product_id', $auction->getProductId())
                         ->addFieldToFilter('status', 'bidding');
-
 
                     if (count($bidExist->getData()) != false) {
 
@@ -99,8 +101,12 @@ class Data extends AbstractHelper
                         $winnerData['auction_price'] = $auction->getMaxPrice();
                         $winnerData['bid_date'] = $endTime;
                         $winnerData['status'] = 'not purchased';
-                        $winnerData['winning_price'] = $bid['bid_price'];
+                        $winnerData['winning_price'] = $bid['total_bid_price'];
                         $winnerData['add_to_cart'] = false;
+                        $winnerData['shipping_detail'] = $bid['shipping_detail'];
+                        $winnerData['payment_detail'] = $bid['payment_detail'];
+                        $winnerData['shipping_amount'] = $bid['shipping_amount'];
+                        $winnerData['payment_token'] = $bid['payment_token'];
 
                         if ($this->vproductsFactory->create()->getVendorIdByProduct($auction->getProductId())) {
                             $winnerData['vendor_id'] = $this->vproductsFactory->create()->getVendorIdByProduct($auction->getProductId());
@@ -109,6 +115,12 @@ class Data extends AbstractHelper
                         $this->winner->setData($winnerData);
                         $this->winner->save();
 
+                        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/closeAuction.log');
+                        $logger = new \Zend\Log\Logger();
+                        $logger->addWriter($writer);
+                        $logger->info($winnerData);
+
+                        $this->customizeHelper->createMageOrder($winnerData);
 
                         $enableMail = json_decode($this->configHelper->getConfigData('auction_entry_1/standard/email_winner'), true);
                         if ($enableMail) {
@@ -118,6 +130,7 @@ class Data extends AbstractHelper
                         }
                     }
                 }
+                $this->customerSession->unsIsCloseAuction();
             }
         }
         return false;

@@ -47,6 +47,13 @@ class Index extends \Magento\Backend\App\Action
         $resultPage->addBreadcrumb(__('All'), __('Winners'));
         $resultPage->getConfig()->getTitle()->prepend(__('Winners'));
         $this->helper->closeAuction();
+
+        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/winner3.log');
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
+        $logger->info('controllerWinner');
+
+
         return $resultPage;
     }
 
