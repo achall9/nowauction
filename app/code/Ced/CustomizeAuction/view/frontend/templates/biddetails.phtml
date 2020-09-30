@@ -1,0 +1,103 @@
+<!--
+/**
+ * CedCommerce
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the End User License Agreement (EULA)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://cedcommerce.com/license-agreement.txt
+ *
+ * @category    Ced
+ * @package     Ced_Auction
+ * @author 		CedCommerce Core Team <connect@cedcommerce.com>
+ * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
+ * @license      https://cedcommerce.com/license-agreement.txt
+ */
+-->
+
+<?php //echo "<pre>"; print_r($block->getBidDetails()->getData()); die(); ?>
+
+<?php $bidDetails = $block->getBidDetails();
+$url = $block->getUrlInterface();?>
+<div class="table-wrapper orders-history">
+    <table class="data table table-order-items history" id="my-orders-table">
+        <caption class="table-caption">Auctions</caption>
+        <thead>
+        <tr>
+            <th scope="col" class="col id"><?php echo __('Product Name') ?></th>
+            <th scope="col" class="col total"><?php echo __('Bid Price') ?></th>
+            <th scope="col" class="col date"><?php echo __('Bidding Datetime') ?></th>
+            <th scope="col" class="col sta"><?php echo __('Status') ?></th>
+            <th scope="col" class="col actions"><?php echo __('Action') ?></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php if($bidDetails && $url){
+
+            foreach ($bidDetails as $key => $data) { ?>
+            <tr>
+                <td data-th="Product" class="col id"><?= $block->getProductName($data['product_id']); ?></td>
+                <!--<td data-th="Bid Price" class="col total"><span class="price">$<?/*= $data['auction_price']; */?></span>
+                </td>-->
+                <td data-th="Bid Price" class="col total"><span class="price"><?php echo $this->helper('Magento\Framework\Pricing\Helper\Data')->currency($data['bid_price'], true, false); ?></span>
+                </td>
+                <td data-th="Bid datetime" class="col date"><span class="datetime"><?= $data['bid_date']; ?></span>
+                </td>
+                <td data-th="Bid status" class="col sta"><span class="status"><?= $data['status']; ?></span>
+                </td>
+                <td data-th="Action" class="col actions">
+                    <?php if($data['status'] == 'bidding') { ?>
+                        <?php if($block->checkProductAvailability($data['product_id'])){ ?>
+                        <span><?= __('Unavailable') ?></span><?php } else { ?>
+                            <a href="#" id="<?= $data['id']; ?>"
+                               class="action biddelete">
+                                <span><?php echo __('Delete') ?></span>
+                            </a>
+                        <?php } ?>
+                    <?php } ?>
+                </td>
+            </tr>
+        <?php }  }?>
+        </tbody>
+    </table>
+</div>
+
+<?php if ($block->getPagerHtml()){?>
+        <div class="order-products-toolbar toolbar bottom"><?php echo $block->getPagerHtml(); ?></div>
+    <?php } else { ?>
+    <div class="message info empty"><span><?php echo __('grid records not available.'); ?></span></div>
+<?php }?>
+<script>
+    require([
+        'Magento_Customer/js/customer-data'
+    ], function (customerData) {
+        var sections = ['cart'];
+        customerData.invalidate(sections);
+        customerData.reload(sections, true);
+    });
+</script>
+
+<script>
+require(['jquery', 'jquery/ui'], function ($) { 
+    $( ".biddelete" ).click(function() {
+
+        if( confirm('Are you sure that you want to delete this record') ) 
+        {
+            //event.preventDefault();
+            var id = $(this).attr('id'); 
+            $.ajax({
+                type: 'POST',
+                url: "<?php echo $this->getUrl('customizeauction/index/delete');?>",
+                data: {id,id},
+                dataType: "json",
+                success: function (res) {
+                    window.location.reload();
+                }
+            });
+        }
+
+    });
+});
+</script>

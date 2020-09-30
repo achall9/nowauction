@@ -11,7 +11,7 @@
  *
  * @category    Ced
  * @package     Ced_CsAuction
- * @author 		CedCommerce Core Team <connect@cedcommerce.com>
+ * @author      CedCommerce Core Team <connect@cedcommerce.com>
  * @copyright   Copyright CedCommerce (https://cedcommerce.com/)
  * @license      https://cedcommerce.com/license-agreement.txt
  */
@@ -93,16 +93,17 @@ class AuctionList extends Template
             return $this->collection;
 
         $this->collection = $this->auctionCollection->create();
-
-        if ($day) {
+       
+        //if ($day) {
             $days = '-' . $day . ' day';
             $fromdate = strtotime($this->datetime->gmtDate());
             $enddate = date("Y-m-d H:i:s", strtotime($days, $fromdate));
-            $this->collection->getSelect()->where("status in('processing','not started') or (status in('closed') and end_datetime >= '".$enddate."')");
-        }else{
+            $this->collection->getSelect()->where("status in('processing','not started','closed') or (status in('closed') and end_datetime >= '".$enddate."')");
+        /* }else{
             $this->collection->addFieldToFilter('status',['neq'=> 'closed']);
-        }
-       return $this->collection->setOrder('id', 'DESC');
+        } */
+         //echo "<pre>"; print_r($this->collection->getData()); die();
+        return $this->collection->setOrder('id', 'DESC');
     }
 
     public function changeStatus()

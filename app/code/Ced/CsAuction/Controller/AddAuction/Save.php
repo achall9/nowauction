@@ -118,15 +118,12 @@ class Save extends \Ced\CsMarketplace\Controller\Vendor
         //auction save
 		
 			
-		
-
-
         if($postdata && $this->getRequest()->getParam('product_id'))
         {
 		
 		$reservedAmount = $postdata['Starting_Price'];
 			$productPrice = $postdata['Max_Price'];
-			$startTime = $postdata['start_datetime'];
+			$startTime = $postdata['Start_Datetime'];
 			 $prdouctTime = $productPrice - $reservedAmount;
 			 $finalTime =  $prdouctTime * 100;
 			$finalDate =  date("Y-m-d H:i:s", strtotime($startTime) + $finalTime);
@@ -147,26 +144,26 @@ class Save extends \Ced\CsMarketplace\Controller\Vendor
 
            // $endtime = $this->timezoneInterface->date(new \DateTime($postdata['end_datetime']))->format('Y-m-d H:i:s');
             $endtime = $postdata['end_datetime'];
-            if(strtotime($postdata['start_datetime'] )< strtotime($extended)){
+            if(strtotime($postdata['Start_Datetime'] )< strtotime($extended)){
                 $this->messageManager
                     ->addErrorMessage('Bidding start time must be greater than current time');
                 return $resultRedirect->setPath('csauction/addauction/auctionform',
                     ['product_id' => $this->getRequest()->getParam('product_id')]);
             }
 
-            if(strtotime($endtime) < strtotime($postdata['start_datetime'])){
+            if(strtotime($endtime) < strtotime($postdata['Start_Datetime'])){
                 $this->messageManager
                     ->addErrorMessage('Bidding end time must be greater than bidding start time');
                 return $resultRedirect->setPath('csauction/addauction/auctionform',
                     ['product_id' => $this->getRequest()->getParam('product_id')]);
             }
 
-            if(strtotime($postdata['start_datetime']) > strtotime($currenttime)){
+           /* if(strtotime($postdata['start_datetime']) > strtotime($currenttime)){
                 $postdata['status'] = 'not started';
             }
             if(strtotime($postdata['start_datetime']) <= strtotime($currenttime)) {
                 $postdata['status'] = 'processing';
-            }
+            } */
 
             if($postdata['Sell_Product'] == 'yes'){
                 if($postdata['Starting_Price'] > $postdata['Price']){
@@ -186,13 +183,13 @@ class Save extends \Ced\CsMarketplace\Controller\Vendor
             $this->auction->setProductName($postdata['Product_Name']);
             $this->auction->setStartingPrice($postdata['Starting_Price']);
             $this->auction->setMaxPrice($postdata['Max_Price']);
-            $this->auction->setStartDatetime($postdata['start_datetime']);
+            $this->auction->setStartDatetime($postdata['Start_Datetime']);
             $this->auction->setEndDatetime($postdata['end_datetime']);
             $this->auction->setProductId($this->getRequest()->getParam('product_id'));
             $this->auction->setVendorId($this->customerSession->getVendorId());
             $this->auction->setStatus($postdata['status']);
             $this->auction->setSellproduct($postdata['Sell_Product']);
-            $this->auction->setTempStartdate($postdata['start_datetime']);
+            $this->auction->setTempStartdate($postdata['Start_Datetime']);
             $this->auction->setTempEnddate($postdata['end_datetime']);
             $this->auction->save();
 
@@ -251,14 +248,13 @@ class Save extends \Ced\CsMarketplace\Controller\Vendor
                 $this->messageManager->addErrorMessage('Bidding end time must be greater than bidding start time');
                 return $resultRedirect->setPath('csauction/addauction/auctionform', ['id' => $this->getRequest()->getParam('id')]);
             }
-            if(strtotime($postdata['Start_Datetime']) > strtotime($currenttime)){
+            /* if(strtotime($postdata['Start_Datetime']) > strtotime($currenttime)){
                 $data['status'] = 'not started';
             }
 
             if(strtotime($postdata['Start_Datetime']) <= strtotime($currenttime)){
                 $postdata['status'] = 'processing';
-            }
-
+            } */
 
             $this->auction->load($this->getRequest()->getParam('id'));
             $this->auction->setMaxPrice($postdata['Max_Price']);
@@ -267,6 +263,7 @@ class Save extends \Ced\CsMarketplace\Controller\Vendor
             $this->auction->setSellproduct($postdata['Sell_Product']);
             $this->auction->setTempStartdate($postdata['Start_Datetime']);
             $this->auction->setTempEnddate($postdata['End_Datetime']);
+            $this->auction->setStatus($postdata['status']);
             $this->auction->save();
 
             $this->messageManager->addSuccessMessage(__('Auction has been save successfully'));

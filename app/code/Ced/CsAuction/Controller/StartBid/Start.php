@@ -76,9 +76,7 @@ class Start extends \Ced\Auction\Controller\StartBid\Start
         if ($data['remove']) {
             if (!empty($data['auction']) && !empty($data['status'])) {
                 $auction = $this->auctionFactory->create()->load($data['auction']);
-				
-				
-				 
+						 
                 if($data['status'] == 'not started'){
                     $status = 'processing';
                     $auction->setStatus($status);

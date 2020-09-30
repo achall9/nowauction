@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <type name="Magento\SalesRule\Model\RulesApplier">
+        <plugin name="ced_remove_discount_on_order" type="Ced\CustomizeAuction\Plugin\SalesRule\Model\RulesApplier" sortOrder="1" disabled="false"/>
+    </type>
+</config>

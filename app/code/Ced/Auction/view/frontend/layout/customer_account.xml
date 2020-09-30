@@ -31,6 +31,13 @@
                     </arguments>
 
               </block>-->
+              <block class="Magento\Framework\View\Element\Html\Link\Current" name="bid_details" after="customer-account-navigation-address-link" >
+                    <arguments>
+                        <argument name="label" xsi:type="string" translate="true">My Bid</argument>
+                        <argument name="path" xsi:type="string">customizeauction/index/biddetails</argument>
+                    </arguments>
+
+              </block>
             <block class="Magento\Framework\View\Element\Template" name="ced.auction.customer.auctionlist"
                    after="customer-account-navigation-address-link" template="Ced_Auction::customer_auctionlist.phtml" cacheable="false"/>
           </referenceBlock>

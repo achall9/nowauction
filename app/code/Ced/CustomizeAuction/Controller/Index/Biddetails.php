@@ -1,31 +1,14 @@
 <?php
-/**
- * CedCommerce
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the End User License Agreement (EULA)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * https://cedcommerce.com/license-agreement.txt
- *
- * @category  Ced
- * @package   Ced_Auction
- * @author    CedCommerce Core Team <connect@cedcommerce.com >
- * @copyright Copyright CEDCOMMERCE (https://cedcommerce.com/)
- * @license      https://cedcommerce.com/license-agreement.txt
- */
-
-namespace Ced\Auction\Controller\Index;
+namespace Ced\CustomizeAuction\Controller\Index;
 
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 
 /**
  * Class Index
- * @package Ced\Auction\Controller\Index
+ * @package Ced\CustomizeAuction\Controller\Index
  */
-class Index extends \Magento\Framework\App\Action\Action
+class Biddetails extends \Magento\Framework\App\Action\Action
 {
     /**
      * @var \Magento\Framework\View\Result\PageFactory
@@ -71,12 +54,12 @@ class Index extends \Magento\Framework\App\Action\Action
             $this->session->authenticate();
         }
 
-        $this->helper->closeAuction();
+       /* $this->helper->closeAuction();
 
         $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/winner1.log');
         $logger = new \Zend\Log\Logger();
         $logger->addWriter($writer);
-        $logger->info('controllerindex');
+        $logger->info('controllerindex'); */
 
         $resultPage->getConfig()->getTitle()->prepend(__('Auction'));
         $resultPage->getConfig()->getTitle()->prepend(__('My Auctions'));

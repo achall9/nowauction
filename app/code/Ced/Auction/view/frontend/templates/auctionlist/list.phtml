@@ -65,7 +65,10 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 			$productPrice = $productPriceById;
 			$prdouctTime = $productStartingAmount - $reservedAmount;
 			$finalTime =  $prdouctTime * 100;
-			$finalDate =  date("m-d-Y H:i:s", strtotime($startTime) + $finalTime);				
+			$finalDate =  date("m-d-Y H:i:s", strtotime($startTime) + $finalTime);
+			$auctionid = $detail->getId();
+            $finalDate2 = date("Y-m-d h:i:s");			
+
 			if ($url)
 			{
 				if ($detail->getStatus() == 'not started') 
@@ -126,19 +129,19 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 										$addToCartUrl =  $listBlock->getAddToCartUrl($productCollection);
 									?>			
 									<div class="price-box price-final_price">   			
-										<form data-role="tocart-form" action="<?php echo $addToCartUrl; ?>" method="post">
-											<?php echo $block->getBlockHtml('formkey')?>
-											<button  style="margin:0px 0 0px 0px;" type="submit"title="BUY NOW"class="action tocart primary">
+										<?php /* <form data-role="tocart-form" action="<?php echo $addToCartUrl; ?>" method="post">
+											<?php echo $block->getBlockHtml('formkey') */ ?>
+											<button  style="margin:0px 0 0px 0px;" type="submit"title="BUY NOW"class="action tocart primary auction-modal-button" id="<?php echo $productId ?>" data-isbuynow="1">
 												 <span>Buy <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span></span>
 											</button>									   
-										</form>				
+										<?php /* </form> */ ?>		
 										<div class="prod_price">
 											<span style=" color: #F26C4F;font-size: 17px;font-weight: bold;padding:0px 0;line-height: 28px;">
 												<?php echo $salePrice;?>
 											</span>
 										 </div>
 									</div>
-									<button class="action tocart primary" onclick="window.location.href='<?= $url ?>'">
+									<button class="action tocart primary auction-modal-button" id="<?php echo $productId ?>">
 											Bid <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span>
 									</button>							
 									<button class="action tobidcart primary" onclick="window.location.href='<?= $url ?>'">Submit Bid</button>
@@ -198,12 +201,14 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 					$results = $connection->fetchAll($sql);
 					//echo "<pre>";print_r($results);
 					$countStatus = array();
+					$cleanbidprice = '';
 					foreach ($results as $key => $data)
 					 {
 					  if ($data['status'] == 'bidding') 
 					  {
 						 if ($data['product_id'] == $productId) 
 						 { 
+						 $cleanbidprice = $data['bid_price'];
 						 $addCls = "trending_auction featured_auction";		
 				 
 						 }			
@@ -214,7 +219,7 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 			
                     ?>
                    <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 live_auction all-auctions <?php echo $addCls;?>" data-product="<?= $productId; ?>"
-                        data-counter="<?= $countDownTime; ?>" data-price="<?= $productStartingAmount; ?>" data-status="<?= $status; ?>" data-finaltime="<?= $finalTime; ?>">
+                        data-counter="<?= $countDownTime; ?>" data-price="<?= $productStartingAmount; ?>" data-status="<?= $status; ?>" data-finaltime="<?= $finalTime; ?>" data-cleanbidprice="<?= $cleanbidprice; ?>" data-auctionid="<?= $auctionid; ?>" data-$finaldate="<?= $finalDate2; ?>">
                         <div class="product-item-info" data-container="product-grid">
 							<a href="<?php if ($block->getAuctionProductUrl($productId)) {echo $block->getAuctionProductUrl($productId); } ?>"
                                class="product photo product-item-photo" tabindex="-1">
@@ -249,22 +254,22 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 								    </span>
 								</div>
 								<div class="price-box price-final_price">
-									  <?php
+									  <?php /*
 										$listBlock = $objectManager->get('\Magento\Catalog\Block\Product\ListProduct');
 										$addToCartUrl =  $listBlock->getAddToCartUrl($productCollection);
 									  ?>
 									  <form data-role="tocart-form" action="<?php echo $addToCartUrl; ?>" method="post">
-										<?php echo $block->getBlockHtml('formkey')?>
-										   <button  style="margin:0px;" type="submit" title="BUY NOW" class="action tocart primary">
+										<?php echo $block->getBlockHtml('formkey')?> */ ?>
+										   <button  style="margin:0px;" type="submit" title="BUY NOW" class="action tocart primary auction-modal-button" id="<?php echo $productId ?>" data-isbuynow="1">
 											 <span>Buy <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span></span>
 										   </button>
-									 </form>
+									<?php /* </form> */ ?>
 									 <div class="auc_price">
 										<span id="aPrice_<?php if ($productId) { echo $productId;} ?>" style="color: #F26C4F;
 										font-size: 17px; font-weight: bold;  padding: 0px 0;  line-height: 28px;"></span>
 									 </div>
                                 </div>
-								<button class="action tocart primary"onclick="window.location.href='<?= $url ?>'">
+								<button class="action tocart primary auction-modal-button" id="<?php echo $productId ?>">
 										Bid <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span>
                                 </button>
 								<button class="action tobidcart primary" onclick="window.location.href='<?= $url ?>'">Submit Bid</button>
@@ -304,6 +309,52 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
                 } 
                 if ($detail->getStatus() == 'closed')
 			    { ?>
+			    	<?php 
+                    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                    $resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
+                    $connection = $resource->getConnection();
+                        
+                    $winTable = $resource->getTableName('ced_auction_winnerlist');
+
+                    //Select Data from table
+                    $sql = "Select * FROM " . $winTable."  WHERE product_id = " . $productId;
+                    $results = $connection->fetchAll($sql);
+                    $cleanbidprice = '';
+                    foreach ($results as $key => $data)
+                    {
+                        if ($data['status'] == 'order placed') 
+                        {
+                            if ($data['product_id'] == $productId) 
+                            { 
+                                $cleanbidprice = $data['winning_price'];
+                            }          
+                        }
+                    }
+
+                    if($cleanbidprice == '')
+                    {
+                        $tableName = $resource->getTableName('ced_auction_biddetails');
+
+                        //Select Data from table
+                        $sql = "Select * FROM " . $tableName."  WHERE product_id = " . $productId;
+                        $results = $connection->fetchAll($sql);
+                        //echo "<pre>";print_r($results);
+                        $countStatus = array();
+
+                        $cleanbidprice = '';
+                        foreach ($results as $key => $data)
+                        {
+                            if ($data['status'] == 'won') 
+                            {
+                                if ($data['product_id'] == $productId) 
+                                { 
+                                    $cleanbidprice = $data['bid_price'];
+                                }          
+                            }
+                        }
+                    }
+                    ?>
+
                    <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 closed_auction all-auctions" data-product="<?= $productId; ?>">
                         <div class="product-item-info" data-container="product-grid">
                             <a href="<?= $block->getAuctionProductUrl($productId) ?>"
@@ -324,6 +375,25 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
                                             echo $detail->getProductName();
                                         } ?></a>
                                 </strong>
+                                <div class="price-box price-final_price">
+                                    <span>
+                                        <span class="price-container price-final_price tax weee">
+                                            <span class="price-wrapper ">
+                                                <span class="price" style="font-size:14px;">
+                                                    <?= __('Winning Price:') ?></span>
+                                                    <?php $cleanbidprice1 = $this->helper('Magento\Framework\Pricing\Helper\Data')->currency($cleanbidprice, true, false);
+                                                    if ($cleanbidprice1) {
+                                                        echo $cleanbidprice1;
+                                                    } ?>
+                                            </span>
+                                        </span>
+                                    </span> 
+                                    <div class="product-sold">
+                                      <span class="product-sold-label"><?= __('Sold:') ?></span>
+                                      <span class="product-sold-datetime"><?= $detail->getProductSold() ?></span>
+                                    </div>                                  
+                                    
+                                </div>
                                 <button class="action tocart primary"><?= __('Bidding closed') ?>
                                 </button>
                             </div>
@@ -383,13 +453,16 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
                             let price = $(this).data('price');
                             let status = $(this).data('status');
                             let finalTime = $(this).data('finaltime');
+                            let cleanbidprice = $(this).data('cleanbidprice');
+                            let auctionid = $(this).data('auctionid');
+                            let finaldate = $(this).data('finaldate');
 						
 							 if (product !== undefined && product !== null && counter !== undefined && counter !== null)
 								 
-                                runTimer(counter, product, price, status, finalTime);
+                                runTimer(counter, product, price, status, finalTime, cleanbidprice, auctionid, finaldate);
                         });
 
-                        function runTimer($countDownTime, productid, price, status, finalTime) {
+                        function runTimer($countDownTime, productid, price, status, finalTime, cleanbidprice, auctionid, finaldate) {
 							
                             var countDownDate = new Date($countDownTime).getTime();
 
@@ -447,6 +520,22 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 
 								document.getElementById("aPrice_" + productid).innerHTML = auc_price ;
 								
+								if(finalProductPrice == cleanbidprice)
+                                {
+                                  var params = {
+                                      remove: true,
+                                      product: productid,
+                                      auction: auctionid,
+                                      status: 'processing',
+                                      finalDate: finaldate
+                                  };                                        
+
+                                  $("#bidding-popup").trigger("click");
+
+                                  var str = $.param(params);
+                                  var newParams = str.replace(/[&=]/g, '/');
+                                  window.location.href = '<?php echo $this->getUrl('customizeauction/startBid/startpopupbid')?>' + newParams;            
+	                            } 
 								
 							}
 
