@@ -82,7 +82,7 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 								<?php if ($image) { echo $image->toHtml();} ?>
 							</a>
 							 <div class="start_soon">
-								<span id="start_soon_<?php echo $productId?>" class="auc_st_soon">Auction Starting Soon!</span>
+								
 								<div id="countdown_timer_<?php echo $productId?>" class="auction_timer" >
 								  <a class="ced_product-item-link" href="<?php if ($block->getAuctionProductUrl($productId)) {
 										  echo $block->getAuctionProductUrl($productId); } ?>">
@@ -100,7 +100,7 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 										 $startTime2 = date("g:i a", $timestamp);
 										 echo $startTime1." @ ". $startTime2;  echo "<br>";
 									  ?>
-							 </div>
+							     </div>
 							 </div>
 							 <div class="product details product-item-details">
 								   <input type="hidden" value="1">
@@ -243,6 +243,7 @@ foreach ($this->helper('Magento\Wishlist\Helper\Data')->getWishlistItemCollectio
                                 <?php if ($image) {echo $image->toHtml();  } ?>
                             </a>	
 							<div class="start_soon">
+							<span>Auction is Live <span id="home_now">NOW</span></span>
 							 </div>				
                             <div class="product details product-item-details">
                                 <input type="hidden" value="1">
@@ -300,9 +301,7 @@ foreach ($this->helper('Magento\Wishlist\Helper\Data')->getWishlistItemCollectio
                                 </button>
 								<button class="action tobidcart primary" onclick="window.location.href='<?= $url ?>'">Submit Bid</button>
 							</div>
-							<div class="">
-								<span>Auction is Live <span id="home_now">NOW</span></span>
-							</div>
+							
 							<div class="vendorDetails">
 						    <?php
 							 foreach ($vendorDetails->getLoadedVendorCollection() as $vendor)
@@ -399,21 +398,15 @@ foreach ($this->helper('Magento\Wishlist\Helper\Data')->getWishlistItemCollectio
         }
 		?>
         <script>
-                require(['jquery', 'jquery/ui'], function ($) {
-                   
+                require(['jquery', 'jquery/ui'], function ($) {                  
                         let timezone = '<?= $timezone ?>';
-                      //  console.log('time');
-                      //  console.log(timezone);
-
                         $('.all-auctions').each(function (index, value) {
-                            //console.log(index);
-                           // console.log(value);
+
                             let counter = $(this).data('counter');
                             let product = $(this).data('product');
                             let price = $(this).data('price');
                             let status = $(this).data('status');
                             let finalTime = $(this).data('finaltime');
-						//console.log(product);
 							 if (product !== undefined && product !== null && counter !== undefined && counter !== null)
 								 
                                 runTimer(counter, product, price, status, finalTime);
@@ -426,9 +419,7 @@ foreach ($this->helper('Magento\Wishlist\Helper\Data')->getWishlistItemCollectio
                             var x = setInterval(function () {
                                 let currLocalTime = new Date().toLocaleString("en-US", {timeZone: timezone});
                                 let currentLocalTime = new Date(currLocalTime);
-                               // console.log('Current ' + timezone + ' time: ' + currentLocalTime.toLocaleString());
 
-					console.log(productid);
 					
                                 let now = currentLocalTime.getTime();
 									
@@ -449,18 +440,12 @@ foreach ($this->helper('Magento\Wishlist\Helper\Data')->getWishlistItemCollectio
                                 document.getElementById("auction_seconds_" + productid).innerHTML = seconds + "s ";
 								
 								if(days <=0)
-								{
-								
-								    $('#countdown_timer_'+ productid).show();
-								    $('#product-date_'+ productid).show();
-								    $('#start_soon_'+ productid).hide();
-									
+								{							
+								    $('#countdown_timer_'+ productid).show();							
 								}
 								else
 								{
 								   $('#countdown_timer_'+ productid).hide();
-								    $('#product-date_'+ productid).hide();
-								    $('#start_soon_'+ productid).show();	
 								}
 							}
 								
