@@ -363,7 +363,7 @@ require([
                     $(this).after($(this).parent().children("img.fotorama__img--full"));
                 });
                 $('.product.media .fotorama__stage .fotorama__active').zoom({
-                    touch:false
+                    touch:false.........................................................................
                 });
                 $('.product.media .fotorama').off('fotorama:showend').on('fotorama:showend', function (e, fotorama, extra) {
                     $('.product.media .fotorama__stage .fotorama__loaded--img').trigger('zoom.destroy');
@@ -389,3 +389,4 @@ require([
     }
 </style>
 <?php endif; ?>
+

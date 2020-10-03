@@ -70,7 +70,17 @@ if($column_count == null) {
 					  <?php if ($block->getMode() == 'grid'): ?>
                                 <?php if($_category_config['addtowishlist']): ?>
                                 <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
-                                    <a href="#"
+								<?php
+										$_in_wishlist = false;
+foreach ($this->helper('Magento\Wishlist\Helper\Data')->getWishlistItemCollection() as $_wishlist_item){
+    if($_product->getId() == $_wishlist_item->getProduct()->getId()){
+        $_in_wishlist = true;
+    }
+}
+ if($_in_wishlist) { ?>
+        <a href="#" data-post="#" class="action towishlist actions-secondary already-added" data-action="already-in-wishlist"><span class="wish-list"></span></a>
+    <?php } else { ?>
+   <a href="#"
                                        class="action towishlist actions-secondary"
                                        title="<?php echo $block->escapeHtml(__('Add to Wish List')); ?>"
                                        aria-label="<?php echo $block->escapeHtml(__('Add to Wish List')); ?>"
@@ -79,6 +89,9 @@ if($column_count == null) {
                                        role="button">
                                         <span><?php echo __('Add to Wish List') ?></span>
                                     </a>
+										   <?php } ?>
+	
+                                    
                                 <?php endif; ?>
                                 <?php endif; ?>
                                 <?php endif; ?>
@@ -311,38 +324,3 @@ $mediaUrl = $objectManager->get('Magento\Store\Model\StoreManagerInterface')
         </script>
     <?php endif; ?>
 <?php endif; ?>
-<style>
-.product-item-inner {
-    POSITION: RELATIVE!important;
-    bottom: 0!important;
-}
-.products-grid .product-item-details .product-item-actions .actions-primary {
-    display: block;
-	}
-a.action.towishlist.actions-secondary {
-    position: absolute;
-    top: 0;
-    right: -9px;
-}
-.products-grid .product-item-info:hover .product-item-details .product-item-actions .tocart {
-    background: transparent;
-    color: #000;
-}
-.products-grid .product-item .product-item-info:hover .product-item-photo>a:not(.weltpixel-quickview):after {
-    visibility: visible;
-    opacity: 0;
-}
-.item.product.product-item {
-    margin-bottom: 10px;
-}
-.filterproducts .product-item-info {
-    display: grid;
-}
-.filterproducts button.action.tocart.primary {
-    margin-bottom: 10px;
-}
-.delivery-sec {
-    margin: 0 0 -10px 0;
-    border-top: 1px solid #ddd;
-}
-</style>
