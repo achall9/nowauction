@@ -28,6 +28,8 @@ class GetRate extends \Magento\Framework\App\Action\Action
 
     protected $api;
 
+    protected $resourceConnection;
+
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
@@ -38,7 +40,9 @@ class GetRate extends \Magento\Framework\App\Action\Action
         \Magento\Directory\Model\Currency $currency,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Customer\Model\Session $customerSession,
-        \Ced\CustomizeAuction\Helper\Api $api
+        \Ced\CustomizeAuction\Helper\Api $api,
+        \Ced\CsMarketplace\Model\Vproducts $vproducts,
+        \Magento\Framework\App\ResourceConnection $resourceConnection
     ) {
         parent::__construct($context);
         $this->resultJsonFactory = $resultJsonFactory;
@@ -50,12 +54,26 @@ class GetRate extends \Magento\Framework\App\Action\Action
         $this->scopeConfig = $scopeConfig;
         $this->customerSession = $customerSession;
         $this->api = $api;
+        $this->vproduct = $vproducts;
+        $this->resourceConnection = $resourceConnection;
     }
 
     public function execute()
     {
         $productSku = $this->getRequest()->getParam('productSku');
         $addressId = $this->getRequest()->getParam('addressId');
+        $productId = $this->getRequest()->getParam('productId');
+
+        if($this->vproduct->getVendorIdByProduct($productId)){
+            $vendorId = $this->vproduct->getVendorIdByProduct($productId);
+        }
+       // $vendorId = 6;
+        $resource = $this->resourceConnection;
+            $connection = $resource->getConnection();
+        $winTable = $resource->getTableName('vendor_shippingmethods');
+
+        $getData = "SELECT * FROM " . $winTable." WHERE vendor_id = ".$vendorId;
+        $results = $connection->fetchAll($getData);
 
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $cartObject = $objectManager->create('Magento\Checkout\Model\Cart')->truncate();
@@ -76,8 +94,31 @@ class GetRate extends \Magento\Framework\App\Action\Action
         $shippingOpt .= 'Choose: <ul>';
         if($allShippingMethods)
         {
+            //echo "<pre>"; print_r($allShippingMethods); die();
+            $allowedMethods = array();
             foreach ($allShippingMethods as $method){
-                if(isset($method['method_title']) && $method['carrier_code'] != 'vendor_rates')
+
+                
+                foreach ($results as $key => $data){
+                    if(isset($data['shipping_method'])){
+                        $shippingMethod = json_decode($data['shipping_method'], true);
+                        if($method['carrier_code'] != 'vendor_rates') {
+                            $activeSelectedVal = $shippingMethod[$method['carrier_code'].'_active'];
+                            if($activeSelectedVal == 1){
+                                if(isset($shippingMethod[$method['carrier_code'].'_allowed_method']))
+                                {
+                                    foreach($shippingMethod[$method['carrier_code'].'_allowed_method'] as $val){
+                                        $allowedMethods[] = $val; 
+                                    }
+                                } else {
+                                    $allowedMethods[] = $method['carrier_code'];
+                                }
+                            }
+                        }
+                    }                    
+                }             
+
+                if(isset($method['method_title']) && $method['carrier_code'] != 'vendor_rates' && in_array($method["method_code"], $allowedMethods))
                 {
                     $shippingMethodCode = array("method_code"=>$method["method_code"], "carrier_code"=>$method["carrier_code"]);
                     $shippingOpt .= '<li><input class="popup-radio" data-validate="{required:true}" type="radio" value='.json_encode($shippingMethodCode).' name="shipping-opt"/>'.$method['method_title'];
@@ -96,17 +137,20 @@ class GetRate extends \Magento\Framework\App\Action\Action
                 $(".popup-radio").change(function(){
                     var carOptPrice = $(this).parent().find(".carrier-opt-price").text();
                     if(carOptPrice) {
-                        var carrierTotal = parseFloat(parseFloat(carOptPrice) + parseFloat($("#total-auction-bid").val()));
-                        var carrierTotalFormat = priceUtils.formatPrice(carrierTotal);
+                        var carrierTotal = parseFloat(parseFloat(carOptPrice) + parseFloat($("#total-auction-bid").val())).toFixed(2);
+                        var carrierTotalFormat = formatNumber(carrierTotal);
                         $(".total-cost>.totalcostprice").text(carrierTotalFormat);
                         $("#shipping-amount").val(parseFloat(carOptPrice));
                         
                     } else {
-                        var carrierTotalFormat = priceUtils.formatPrice($("#total-auction-bid").val());
+                        var carrierTotalFormat = formatNumber($("#total-auction-bid").val());
                         $(".total-cost>.totalcostprice").text(carrierTotalFormat);
                         $("#shipping-amount").val(0);
                     }
                 });
+                function formatNumber(num) {
+                  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+                }
             });
         </script>';
 

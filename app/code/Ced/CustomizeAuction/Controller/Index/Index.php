@@ -274,30 +274,38 @@ class Index extends \Magento\Framework\App\Action\Action
 
                 $(".bid-current-price").on("input", function(){
                     var val = $(this).val();
+                    updatePrice(val);          
+                });
+
+                function updatePrice(val){
 
                     $("#popup-auction-bid").val(val);
 
-                    var buyerPremium5 = parseFloat((val * 5) / 100);
-                    var buyerPremium5Format = priceUtils.formatPrice(buyerPremium5);
+                    var buyerPremium5 = parseFloat((val * 5) / 100).toFixed(2);
+                    var buyerPremium5Format = formatNumber(buyerPremium5);
                     $(".buyer-prem5>.buy5price").text(buyerPremium5Format);
 
                     var ccdPrem3 = parseFloat(parseFloat(buyerPremium5) + parseFloat(val));
-                    var ccdPrem3 = parseFloat((ccdPrem3 * 3) / 100);
-                    var ccdPrem3Format = priceUtils.formatPrice(ccdPrem3);
+                    var ccdPrem3 = parseFloat((ccdPrem3 * 3) / 100).toFixed(2);
+                    var ccdPrem3Format = formatNumber(ccdPrem3);
                     $(".ccd-prem3>.buyprem3").text(ccdPrem3Format);
 
                     var taxes65 = parseFloat(parseFloat(buyerPremium5) + parseFloat(ccdPrem3) + parseFloat(val));
-                    var taxes65 = parseFloat((taxes65 * '.$taxRate.') / 100);
-                    var taxes65Format = priceUtils.formatPrice(taxes65);
+                    var taxes65 = parseFloat((taxes65 * '.$taxRate.') / 100).toFixed(2);
+                    var taxes65Format = formatNumber(taxes65);
                     $(".taxes65>.tax65price").text(taxes65Format);
 
-                    var totalCost = parseFloat(parseFloat(val) + parseFloat(buyerPremium5) + parseFloat(ccdPrem3) + parseFloat(taxes65));
-                    var totalCostFormat = priceUtils.formatPrice(totalCost);
+                    var shippingAmount = $("#shipping-amount").val();                 
+                    var totalCost = parseFloat(parseFloat(val) + parseFloat(buyerPremium5) + parseFloat(ccdPrem3) + parseFloat(taxes65) + parseFloat(shippingAmount)).toFixed(2);
+                    var totalCostFormat = formatNumber(totalCost);
                     $(".total-cost>.totalcostprice").text(totalCostFormat);
 
                     $("#total-auction-bid").val(totalCost);
+                }
 
-                });
+                function formatNumber(num) {
+                  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+                }
 
                 $("#getrate").on("click", function (e) {
                     e.preventDefault();
@@ -305,7 +313,7 @@ class Index extends \Magento\Framework\App\Action\Action
                         url : "'.$url.'",
                         type : "POST",
                         data: {
-                            "productSku": "'.$product->getSku().'", "addressId": "'.$shippingAddress->getId().'"
+                            "productSku": "'.$product->getSku().'", "addressId": "'.$shippingAddress->getId().'", "productId": "'.$product->getId().'" 
                         },
                         dataType:"json",
                         showLoader: true,
@@ -323,6 +331,27 @@ class Index extends \Magento\Framework\App\Action\Action
 
                 $(".popup-payment-radio").change(function(){
                     var pclass = $(this).attr("id");
+                    if(pclass == "stripe_payments_ach"){
+                        if($(this).data("clicked")) {
+
+                        } else {
+                            var totalcost = $("#total-auction-bid").val();
+                            var buyprem3 = $(".buyprem3").text();
+                            var achTotal = parseFloat(parseFloat(totalcost) - parseFloat(buyprem3)).toFixed(2);
+                            var achTotalFormat = formatNumber(achTotal);
+                            $(".total-cost>.totalcostprice").text(achTotalFormat);
+                            $("#total-auction-bid").val(achTotal);
+                            $(".ccd-prem3").hide();
+                            $(this).data("clicked", true);
+                        }
+                    } else {
+                        var val1 = $("#popup-auction-bid").val();
+                        var val = val1.replace(",", "");                       
+                        $(".ccd-prem3").show();
+                        updatePrice(val);
+                        $("#stripe_payments_ach").data("clicked", false);
+                    }
+
                     $(".stripe-options").hide();
                     $("."+ pclass).show();
                     $("#payment-opt").val(pclass);
