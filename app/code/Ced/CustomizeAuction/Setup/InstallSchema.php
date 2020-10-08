@@ -78,7 +78,7 @@ class InstallSchema implements InstallSchemaInterface
         );
 
         $conn = $installer->getConnection();
-        $tableName = $installer->getTable('ced_store_details');
+        $tableName = $installer->getTable('vendor_shippingmethods');
         if($conn->isTableExists($tableName) != true){
             $table = $conn->newTable($tableName)
                             ->addColumn(
@@ -88,21 +88,15 @@ class InstallSchema implements InstallSchemaInterface
                      ['identity'=>true,'unsigned'=>true,'nullable'=>false,'primary'=>true]
                                 )
                             ->addColumn(
-                                'customer_id',
+                                'vendor_id',
                                 Table::TYPE_TEXT,
                                 255,
                                 ['nullable'=>false,'default'=>'']
                                 )
                             ->addColumn(
-                                'last4',
+                                'shipping_method',
                                 Table::TYPE_TEXT,
-                                '255',
-                                ['nullbale'=>false,'default'=>'']
-                                )
-                            ->addColumn(
-                                'stripe_token',
-                                Table::TYPE_TEXT,
-                                '255',
+                                '2555',
                                 ['nullbale'=>false,'default'=>'']
                                 )
                             ->setOption('charset','utf8');

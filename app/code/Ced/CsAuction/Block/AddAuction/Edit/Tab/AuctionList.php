@@ -124,7 +124,7 @@ class AuctionList extends \Magento\Backend\Block\Widget\Form\Generic
                 'start_datetime',
                 'date',
                 [
-                    'name' => 'start_datetime',
+                    'name' => 'Start_Datetime',
                     'label' => __('Start Datetime'),
                     'title' => __('Start Datetime'),
                     'date_format' => 'yyyy-MM-dd',

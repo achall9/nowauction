@@ -29,11 +29,21 @@
 					 <argument name="level" xsi:type="string">2</argument>
 				</arguments>
 		   </block>
-		   <block class="Ced\CsMarketplace\Block\Link\Current" name="vendor_shipping_methods" after="vendor_shipping_settings" ifconfig="ced_csmultishipping/general/activation">
+		   <!-- <block class="Ced\CsMarketplace\Block\Link\Current" name="vendor_shipping_methods" after="vendor_shipping_settings" ifconfig="ced_csmultishipping/general/activation">
 				<arguments>
 					 <argument name="name" xsi:type="string">vendor_shipping_methods</argument>
 					 <argument name="label" xsi:type="string">Shipping Methods</argument>
 					 <argument name="path" xsi:type="string">csmultishipping/methods/view</argument>
+					 <argument name="font_awesome" xsi:type="string">fa fa-money</argument>
+					 <argument name="sort_order" xsi:type="string">30</argument>
+					 <argument name="level" xsi:type="string">2</argument>
+				</arguments>
+		   </block> -->
+		   <block class="Ced\CsMarketplace\Block\Link\Current" name="vendor_shipping_method" after="vendor_shipping_settings" ifconfig="ced_csmultishipping/general/activation">
+				<arguments>
+					 <argument name="name" xsi:type="string">vendor_shipping_method</argument>
+					 <argument name="label" xsi:type="string">Shipping Methods</argument>
+					 <argument name="path" xsi:type="string">customizeauction/methods/view</argument>
 					 <argument name="font_awesome" xsi:type="string">fa fa-money</argument>
 					 <argument name="sort_order" xsi:type="string">30</argument>
 					 <argument name="level" xsi:type="string">2</argument>
