@@ -6156,7 +6156,68 @@ color: #F26C4F;font-size: 21px;font-weight: bold;padding: 20px 0;line-height: 50
 #home_now{color: #F26C4F;font-style: italic;font-size: 15px;}
 .prod_price span{ color: #F26C4F;font-size: 17px;font-weight: bold;padding:0px 0;line-height: 28px;}
 .aprice_pid{color: #F26C4F;font-size: 17px; font-weight: bold;  padding: 0px 0;  line-height: 28px;}
+.catalog-product-view .auction_timer {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    width: auto;
+}
+.closed_auction button.action.tocart.primary {
+    width: 100%;
+    margin: 40px 0;
+}
+.hideItem
+{
+display:none!important;  
+  visibility: hidden!important;
+    position: absolute!important;
+	}
+#lowPriceSearch {
+    width: 100%;
+}
+#highPriceSearch {
+    width: 100%;
+}
+a#rmv::before {
+    content: '\f00d';
+    font-family: FontAwesome;
+}
+a#rmv {
+    font-size: 20px;
+    margin-left: 5px;
+}
+li.noProd {
+    color: #fff;
+    background: #F26C4F;
+    padding: 10px;
+    width: 100%;
+}
+.cms-index-index main#maincontent {
+    display: none!important;
+}
 @media (max-width: 767px) {
+.row2 {
+    width: 60%;
+    margin: 10px 10px 0 0;
+}
+.col-lg-5.tutorial-video {
+    margin: 0 5px;
+}
+.about-info .action-container {
+    display: block!important;
+}
+.col-lg-3.action-block {
+    margin-bottom: 10px;
+}
+.csmarketplace-vshops-view .sidebar.sidebar-additional {
+    width: 100%;
+}
+.csmarketplace-vshops-view .products-grid.columns4 .product-item {
+    padding: 0 5px;
+    border: 1px solid #ddd!important;
+    width: 46%;
+    margin: 5px 5px;
+}
 button#locationSearchAction {
     display: block;
     width: 50%;
@@ -6227,5 +6288,99 @@ img.product-image-photo {
     float: left;
     border-top: 1px solid #eee;
 }
-	
+	.field.search.price-search-field label {
+    display: none;
+}
+button#priceSearchAction {
+    display: block;
+}
+button#priceSearchAction {
+    padding: 34px 5px;
+    display: block;
+    line-height: 0px;
+    width: 100%;
+}
+.page-products .columns {
+     padding-top: 0px!important;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column-reverse;
+}
+.columns .column.main {
+    /* -webkit-flex-grow: 1; */
+    flex-grow: 1;
+    -webkit-flex-basis: 100%;
+    flex-basis: 100%;
+    padding-bottom: 36px;
+    -ms-flex-order: 1;
+    -webkit-order: 1;
+    order: 1;
+    max-width: 100%;
+}
+.sidebar.sidebar-additional {
+    -webkit-box-ordinal-group: 1;
+    -moz-box-ordinal-group: 1;
+    -ms-flex-order: 1;
+    -webkit-order: 1;
+    order: 1;
+}
+.products.wrapper.grid.columns4.products-grid {
+    width: 100%;
+}
+}
+@media(max-width: 380px) {
+.related-starting-bid span {
+    font-size: 12px;
+	}
+	.related-starting-bid label {
+    font-size: 11px;
+	}
+.product-item-name {font-size:12px;}
+.pro_date {
+    font-size: 10px;
+}
+.auction_timer_days, .auction_timer_seconds, .auction_timer_minutes, .auction_timer_hours {
+    width: 25px!important;
+    font-size: 12px!important;
+	}
+#home_buynow {
+    font-size: 11px;
+}
+#home_now {
+    font-size: 11px;
+}
+.prod_price span {
+    color: #F26C4F;
+    font-size: 12px;
+	}
+	.aprice_pid {
+    font-size: 12px;
+	}
+	button.action.tocart.primary {
+    font-size: 11px;
+}
+button.action.tobidcart.primary {
+    font-size: 11px!important;
+    padding: 0;
+}
+	.field.search.price-search-field label {
+    display: none;
+}
+button#priceSearchAction {
+    display: block;
+}
+button#priceSearchAction {
+    padding: 34px 5px;
+    display: block;
+    line-height: 0px;
+    width: 100%;
+}
+
 }

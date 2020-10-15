@@ -20,6 +20,7 @@
 
 <?php
 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$priceHelper = $objectManager->create('Magento\Framework\Pricing\Helper\Data');
 $storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
 $vendorDetails = $objectManager->get('Ced\CsMarketplace\Block\Vshops\ListBlock'); 
 $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'); 
@@ -30,6 +31,25 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
         <span data-ui-id="page-title-wrapper" class="base">Product List</span>
     </h1>
 </div>
+  <?php 
+  $baseUrl = $storeManager->getStore()->getBaseUrl() ;
+  if(isset($_REQUEST['low']) && isset($_REQUEST['high']))
+			{
+			echo "<p> Price: low = ".$_REQUEST['low']." high = ".$_REQUEST['high']."   <a id='rmv' href='".$baseUrl."' title='Remove'></a></p>";
+			?>
+			
+	<script type="text/javascript">
+	  require(['jquery', 'jquery/ui'], function ($) {
+    $(document).ready(function(){
+	//console.log('working');
+        $('#lowPriceSearch').val('<?php echo $_REQUEST['low'];?>');
+        $('#highPriceSearch').val('<?php echo $_REQUEST['high'];?>');
+    });
+	});
+</script>		
+	<?php
+	}
+  ?>
 <div class="products wrapper grid products-grid">
     <ol class="products list items product-items auction-list row">
         <?php
@@ -42,7 +62,16 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
         $block->updateClosedAuction();
         $enableAuction = $block->getAuctionEnable();
         if ($enableAuction && $auctionDetails) {
-			//var_dump($auctionDetails->getdata()); 
+		
+		
+		?>
+		<li style="display:none;" class="noProd">No product Found</li>
+	<?php
+			//var_dump($auctionDetails->getdata());
+if(isset($_REQUEST['low']) && isset($_REQUEST['high']))
+			{			
+			 $chk = 0;
+			}
         foreach ($auctionDetails as $detail) 
 		{
 			$vendor_id =  $detail->getVendorId();
@@ -68,14 +97,42 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 			$finalDate =  date("m-d-Y H:i:s", strtotime($startTime) + $finalTime);
 			$auctionid = $detail->getId();
             $finalDate2 = date("Y-m-d h:i:s");			
-
+			$newCls = '';
+			$noPd = '';
+			if(isset($_REQUEST['low']) && isset($_REQUEST['high']))
+			{	
+				if($detail->getStatus() == 'closed')
+				{
+				$newCls = 'hideItem';
+				}
+				else
+				{
+					 $low = $_REQUEST['low'];
+					 $high = $_REQUEST['high'];
+					
+					if($productPrice > $low && $productPrice < $high)
+					{		
+					$chk++;				
+					$newCls = 'showItem';
+					}
+					else
+					{				
+					$newCls = 'hideItem';
+					}
+				}
+			}
+			
 			if ($url)
 			{
+			?>
+			
+			<?php
+			
 				if ($detail->getStatus() == 'not started') 
 				{
 					$countDownTime = $startTime;
 		?>
-					<li class="item product product-item  col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 upcoming_auction all-auctions" 
+				<li class="item product product-item  col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 upcoming_auction all-auctions <?php echo $newCls;?>" 
 						data-product="<?= $productId; ?>" data-counter="<?= $countDownTime; ?>" data-price="<?= $productStartingAmount; ?>"
 						data-status="<?= $status; ?>" data-finaltime="<?= $finalTime; ?>">
 						<div class="product-item-info" data-container="product-grid">
@@ -84,8 +141,8 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 								<?php $image = $block->getImage($block->getProduct($productId), 'category_page_list'); ?>
 								<?php if ($image) { echo $image->toHtml();} ?>
 							</a>
-							 <div class="start_soon" style="height:20px;">
-								<span id="start_soon_<?php echo $productId?>" style="color:#F26C4F;">Auction Starting Soon!</span>
+							  <div class="start_soon">
+								
 								<div id="countdown_timer_<?php echo $productId?>" class="auction_timer" >
 								  <a class="ced_product-item-link" href="<?php if ($block->getAuctionProductUrl($productId)) {
 										  echo $block->getAuctionProductUrl($productId); } ?>">
@@ -95,6 +152,15 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 									<div class="auction_timer_seconds" id="auction_seconds_<?php if ($productId) {echo $productId; } ?>"></div>
 								  </a>
 								</div>
+								 <div id="product-date_<?php echo $productId?>"class="pro_date">                    
+									Starts: 
+									  <?php
+										 $timestamp = strtotime($startTime);
+										 $startTime1 = date("M j, Y", $timestamp);
+										 $startTime2 = date("g:i a", $timestamp);
+										 echo $startTime1." @ ". $startTime2;  echo "<br>";
+									  ?>
+							     </div>
 							 </div>
 							 <div class="product details product-item-details">
 								   <input type="hidden" value="1">
@@ -104,11 +170,24 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 											 <?php if ($detail->getProductName()) { echo $detail->getProductName();} ?>
 									   </a>
 								   </strong>
-								   <div class="secondary-addto-links actions-secondary" data-role="add-to-links">
+								     <div class="secondary-addto-links actions-secondary" data-role="add-to-links">
 										<?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
-										   <a href="#" data-post='<?php  echo $this->helper('Magento\Wishlist\Helper\Data')->getAddParams($productCollection) ?>'  class="action towishlist" data-action="add-to-wishlist" title="<?php /* @escapeNotVerified */ echo __('Add to Wish List') ?>">
+										<?php
+										$_in_wishlist = false;
+foreach ($this->helper('Magento\Wishlist\Helper\Data')->getWishlistItemCollection() as $_wishlist_item){
+    if($productId == $_wishlist_item->getProduct()->getId()){
+        $_in_wishlist = true;
+    }
+}
+ if($_in_wishlist) { ?>
+        <a href="#" data-post="#" class="action towishlist already-added" data-action="already-in-wishlist"><span class="wish-list"></span></a>
+    <?php } else { ?>
+    <a href="#" data-post='<?php  echo $this->helper('Magento\Wishlist\Helper\Data')->getAddParams($productCollection) ?>'  class="action towishlist" data-action="add-to-wishlist" title="<?php /* @escapeNotVerified */ echo __('Add to Wish List') ?>">
 											  <span><?php /* @escapeNotVerified */ echo __('Add to Wish List') ?></span>
 										   </a>
+										   <?php } ?>
+	
+										  
 										<?php endif; ?>
 										
 									</div>
@@ -116,8 +195,8 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 										<label>Sale Price: </label>
 										<span>
 											<?php 
-											$objectManager = \Magento\Framework\App\ObjectManager::getInstance(); // Instance of Object Manager
-												$priceHelper = $objectManager->create('Magento\Framework\Pricing\Helper\Data'); // Instance of Pricing Helper
+											
+												 // Instance of Pricing Helper
 											$price =  $productCollection->getPrice();
 											$salePrice = $priceHelper->currency($price, true, false);
 											echo $salePrice;
@@ -132,31 +211,23 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 										<?php /* <form data-role="tocart-form" action="<?php echo $addToCartUrl; ?>" method="post">
 											<?php echo $block->getBlockHtml('formkey') */ ?>
 											<button  style="margin:0px 0 0px 0px;" type="submit"title="BUY NOW"class="action tocart primary auction-modal-button" id="<?php echo $productId ?>" data-isbuynow="1">
-												 <span>Buy <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span></span>
+												 <span>Buy <span id="home_now">Now</span></span>
 											</button>									   
 										<?php /* </form> */ ?>		
 										<div class="prod_price">
-											<span style=" color: #F26C4F;font-size: 17px;font-weight: bold;padding:0px 0;line-height: 28px;">
+											<span>
 												<?php echo $salePrice;?>
 											</span>
 										 </div>
 									</div>
 									<button class="action tocart primary auction-modal-button" id="<?php echo $productId ?>">
-											Bid <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span>
-									</button>							
+											Bid <span id="home_now">Now</span>									</button>							
 									<button class="action tobidcart primary" onclick="window.location.href='<?= $url ?>'">Submit Bid</button>
 							 </div>
-							 <div class="product-date">                    
-									Starts: 
-									  <?php
-										 $timestamp = strtotime($startTime);
-										 $startTime1 = date("M j, Y", $timestamp);
-										 $startTime2 = date("g:i a", $timestamp);
-										 echo $startTime1." @ ". $startTime2;  echo "<br>";
-									  ?>
-							 </div>
-							 <div class="vendorDetails">
+							
+						 <div class="vendorDetails">
 						    <?php
+							
 							 foreach ($vendorDetails->getLoadedVendorCollection() as $vendor)
 							 {
 								 if($vendor->getIncrementId() == $vendor_id)
@@ -166,19 +237,31 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 								{
 								  echo "<span class='review-vendor'>" .$vendorReviews->getReviewsCount($vendor)."</span>";
 								}
+								 $_regionFactory = $objectManager->get('Magento\Directory\Model\RegionFactory');
+												$regionModel = $_regionFactory->create();
+															$regionId = $vendor->getData('region_id');
+												if (is_numeric($regionId)) {
+													$shipperRegion = $_regionFactory->create()->load($regionId);
+													if($shipperRegion->getId()){
+														$shipperRegionCode = $shipperRegion->getCode();
+													
+												}
+												else
+												{
+												$shipperRegionCode = 'check';
+												}
+												}
+												else
+												{
+												$shipperRegionCode = '';
+												}
 								 echo "<br>";
-								 echo $vendor->getAddress() ;
-								 echo $vendor->getCity() ;
-								echo $vendorReviews->getReviewsCount($vendor);
+								 		  echo "<span class='address-vendor'>" .$vendor->getAddress()."</span>";
+								 		  echo "<p class='address-vendor'>" .$vendor->getCity().", ". $shipperRegionCode ." ". $vendor->getData('zip_code') ."</p>";
+								//echo $vendorReviews->getReviewsCount($vendor);
 								 }
 							 }
-							 ?>
-			
-		
-		
-					
-					
-						</div>
+							 ?></div>
 						</div>
 						
 						<div class="delivery-sec">
@@ -218,7 +301,7 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 					$countDownTime = $finalDate;
 			
                     ?>
-                   <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 live_auction all-auctions <?php echo $addCls;?>" data-product="<?= $productId; ?>"
+                   <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 live_auction all-auctions <?php echo $addCls;?> <?php echo $newCls;?>" data-product="<?= $productId; ?>"
                         data-counter="<?= $countDownTime; ?>" data-price="<?= $productStartingAmount; ?>" data-status="<?= $status; ?>" data-finaltime="<?= $finalTime; ?>" data-cleanbidprice="<?= $cleanbidprice; ?>" data-auctionid="<?= $auctionid; ?>" data-$finaldate="<?= $finalDate2; ?>">
                         <div class="product-item-info" data-container="product-grid">
 							<a href="<?php if ($block->getAuctionProductUrl($productId)) {echo $block->getAuctionProductUrl($productId); } ?>"
@@ -226,8 +309,9 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
                                 <?php $image = $block->getImage($block->getProduct($productId), 'category_page_list'); ?>
                                 <?php if ($image) {echo $image->toHtml();  } ?>
                             </a>	
-							<div class="start_soon" style="height:20px;">
-							 </div>				
+								<div class="start_soon">
+							<span>Auction is Live <span id="home_now">NOW</span></span>
+							 </div>		
                             <div class="product details product-item-details">
                                 <input type="hidden" value="1">
                                 <strong class="product name product-item-name">
@@ -238,16 +322,27 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
                                 </strong>
 								<div class="secondary-addto-links actions-secondary" data-role="add-to-links">
                                      <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
-                                          <a href="#" data-post='<?php /* @escapeNotVerified */ echo $block->getAddToWishlistParams($productCollection); ?>'  class="action towishlist" data-action="add-to-wishlist" title="<?php /* @escapeNotVerified */ echo __('Add to Wish List') ?>">
-                                             <span><?php /* @escapeNotVerified */ echo __('Add to Wish List') ?></span>
-                                          </a>
+                                        				<?php
+										$_in_wishlist = false;
+foreach ($this->helper('Magento\Wishlist\Helper\Data')->getWishlistItemCollection() as $_wishlist_item){
+    if($productId == $_wishlist_item->getProduct()->getId()){
+        $_in_wishlist = true;
+    }
+}
+ if($_in_wishlist) { ?>
+        <a href="#" data-post="#" class="action towishlist already-added" data-action="already-in-wishlist"><span class="wish-list"></span></a>
+    <?php } else { ?>
+    <a href="#" data-post='<?php  echo $this->helper('Magento\Wishlist\Helper\Data')->getAddParams($productCollection) ?>'  class="action towishlist" data-action="add-to-wishlist" title="<?php /* @escapeNotVerified */ echo __('Add to Wish List') ?>">
+											  <span><?php /* @escapeNotVerified */ echo __('Add to Wish List') ?></span>
+										   </a>
+										   <?php } ?>
                                      <?php endif; ?>
                                 </div>
 								<div class="related-starting-bid" bis_skin_checked="1">
 								     <label>Sale Price</label>
 									 <span>
 										 <?php 
-										    $priceHelper = $objectManager->create('Magento\Framework\Pricing\Helper\Data'); // Instance of Pricing Helper
+										  
 											$price =  $productCollection->getPrice();
 											echo $priceHelper->currency($price, true, false);
 										 ?>         
@@ -261,22 +356,21 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 									  <form data-role="tocart-form" action="<?php echo $addToCartUrl; ?>" method="post">
 										<?php echo $block->getBlockHtml('formkey')?> */ ?>
 										   <button  style="margin:0px;" type="submit" title="BUY NOW" class="action tocart primary auction-modal-button" id="<?php echo $productId ?>" data-isbuynow="1">
-											 <span>Buy <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span></span>
+											 <span>Buy <span id="home_now">Now</span></span>
 										   </button>
+										   
 									<?php /* </form> */ ?>
-									 <div class="auc_price">
-										<span id="aPrice_<?php if ($productId) { echo $productId;} ?>" style="color: #F26C4F;
-										font-size: 17px; font-weight: bold;  padding: 0px 0;  line-height: 28px;"></span>
+									  <div class="auc_price">
+										<span id="aPrice_<?php if ($productId) { echo $productId;} ?>" class="aprice_pid"></span>
 									 </div>
+									 
                                 </div>
 								<button class="action tocart primary auction-modal-button" id="<?php echo $productId ?>">
-										Bid <span style="color: #F26C4F;font-style: italic;font-size: 15px;">Now</span>
+										Bid <span id="home_now">Now</span>
                                 </button>
 								<button class="action tobidcart primary" onclick="window.location.href='<?= $url ?>'">Submit Bid</button>
 							</div>
-							<div class="">
-								<span>Auction is Live <span style="color: #F26C4F;font-style: italic;font-size: 15px;">NOW</span></span>
-							</div>
+							
 							<div class="vendorDetails">
 						    <?php
 							 foreach ($vendorDetails->getLoadedVendorCollection() as $vendor)
@@ -289,8 +383,26 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 								 echo "<span class='review-vendor'>" .$vendorReviews->getReviewsCount($vendor)."</span>";
 								}
 								  echo "<br>";
-								 echo $vendor->getAddress() ;
-								 echo $vendor->getCity() ;
+								    $_regionFactory = $objectManager->get('Magento\Directory\Model\RegionFactory');
+												$regionModel = $_regionFactory->create();
+															$regionId = $vendor->getData('region_id');
+												if (is_numeric($regionId)) {
+													$shipperRegion = $_regionFactory->create()->load($regionId);
+													if($shipperRegion->getId()){
+														$shipperRegionCode = $shipperRegion->getCode();
+													
+												}
+												else
+												{
+												$shipperRegionCode = '';
+												}
+																}
+																else
+																{
+																$shipperRegionCode = '';
+																}
+								     echo "<span class='address-vendor'>" .$vendor->getAddress()."</span>";
+								 		  echo "<p class='address-vendor'>" .$vendor->getCity().", ". $shipperRegionCode ." ". $vendor->getZipCode() ."</p>";
 								 }
 							 }
 							 ?>
@@ -310,7 +422,7 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
                 if ($detail->getStatus() == 'closed')
 			    { ?>
 			    	<?php 
-                    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                  
                     $resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
                     $connection = $resource->getConnection();
                         
@@ -355,7 +467,7 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
                     }
                     ?>
 
-                   <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 closed_auction" data-product="<?= $productId; ?>">
+                   <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 closed_auction <?php echo $newCls;?>" data-product="<?= $productId; ?>">
                         <div class="product-item-info" data-container="product-grid">
                             <a href="<?= $block->getAuctionProductUrl($productId) ?>"
                                class="product photo product-item-photo" tabindex="-1">
@@ -437,7 +549,15 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
                 }
             }
         }
+		if(isset($_REQUEST['low']) && isset($_REQUEST['high']))
+			{
+		if($chk == 0)
+				{
+				echo "<style>.noProd{display:block!important;} </style>";
+				}
+		}
 		?>
+		
         <script>
                 require(['jquery', 'jquery/ui'], function ($) {
                     $(document).ready(function () {
@@ -506,6 +626,7 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
 								
 							if(stattus == "processing")
 							{
+							//console.log(productid);
 								
 								var mainDif = finalTime;
 								var remainDif = distance / 1000;
@@ -578,129 +699,6 @@ $vendorReviews = $objectManager->get('Ced\CsVendorReview\Block\Vshops\ListBlock'
     <?php
 } ?>
 
-<style>
-.vendorDetails {
-    height: 50px;
-}
-.auction_timer {
-    margin: 0px 0;
-    padding: 0;
-	background:none;
-	font-size:12px;
-}
-.item.product.product-item {
-    padding: 20px 4px!important;
-}
-.price-box {
-    height: 28px;
-    clear: both;
-    padding-top: 0px;
-	margin:0;
-}
-button.action.tocart.primary {
-    background: #fff;
-    font-weight: 500;
-    color: #000;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-    box-shadow: 2px 2px 4px grey;
-	  float: left;
-    width: 45%;
-	clear:both;
-	line-height:25px;
-	height:28px;
-}
-.secondary-addto-links.actions-secondary {
-    position: absolute!Important;
-    top: 0!important;
-    right: -3px;
-}
-a.product-item-link {
-    font-size: 12px;
-    text-align: center;
-    DISPLAY: block;
-}
-a.action.towishlist {
-    border: none!important;
-}
-.item.product.product-item {
-    border: 1px solid #ddd;
-    border-radius: 7px;
-    margin-right: 10px;
-    max-width: 23%!important;
-}
-.item.product.product-item {
-    padding: 10px 5PX!important;
-}
-.checkbox.related {
-    display: none;
-}
-a.product.photo.product-item-photo {
-    border: 0px solid #ddd;
-}
-
-.product-item .tocart:before
-{
-display:none;
-}
-img.product-image-photo {
-    width: 185px;
-    height: 185px;
-    left: 0px;
-}
-.related-starting-bid {
-    padding: 0px 0 10px 0px;
-}
-.product.actions.product-item-actions {
-    margin: 0;
-}
-a.action.tocart.primary {
-    height: 28px;
-}
-
-
-.products-grid .product-item-actions .tocart
-{
-display:block;
-}
-.action.towishlist span {
-    display: none;
-}
-.product-item .action.towishlist:before {
-    color: #ed4949;
-}
-
-.auc_price {
-    font-size: large;
-    margin-left: 10px;
-    float: left;
-}
-.delivery-sec {
-    margin: 0 0 -10px 0;
-    border-top: 1px solid #ddd;
-}
-.products-grid .product-item .product-item-info {
-    position: relative;
-    display: inline-block;
-    padding-bottom: 10px;
-}
-.products-grid .product-item .product-item-details {
-    text-align: left;
-    display: inline-block;
-    width: 100%;
-}
-.start-price-box {
-    height: 50px;
-}
-.delivery-sec img {
-    width: 100%;
-}
-.prod_price {
-    font-size: large;
-    margin-left: 10px;
-    float: left;
-}
-</style>
 	<?php $helper = $this->helper('MGS\Ajaxscroll\Helper\Data') ?>
 
 <script type="text/javascript">
