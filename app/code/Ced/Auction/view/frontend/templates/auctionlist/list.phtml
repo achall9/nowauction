@@ -131,7 +131,39 @@ if(isset($_REQUEST['low']) && isset($_REQUEST['high']))
 				if ($detail->getStatus() == 'not started') 
 				{
 					$countDownTime = $startTime;
-		?>
+		
+					$resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
+					$connection = $resource->getConnection();
+					$tableName = $resource->getTableName('ced_auction_biddetails');
+					//Select Data from table
+					$sql = "Select * FROM " . $tableName."  WHERE product_id = " . $productId;
+					$results = $connection->fetchAll($sql);
+
+					$count = 0;
+					foreach ($results as $key => $data)
+					 {
+					  if ($data['status'] == 'bidding') 
+					  {
+						 if ($data['product_id'] == $productId) 
+						 { 
+				 			$count++;
+						 }			
+						}
+					 }					 
+					// $countDownTime = $endTime;
+					$countDownTime = $finalDate;
+
+					$ceilCount = ceil($count/5) * 5;
+					$bidText = '';
+					if($count < 5)
+					{
+						$bidText = 'Less than 5 Bids Placed';
+					} else {
+						$bidText = 'More than '.$ceilCount.' Bids Placed';
+					}
+			
+                ?>
+
 				<li class="item product product-item  col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 upcoming_auction all-auctions <?php echo $newCls;?>" 
 						data-product="<?= $productId; ?>" data-counter="<?= $countDownTime; ?>" data-price="<?= $productStartingAmount; ?>"
 						data-status="<?= $status; ?>" data-finaltime="<?= $finalTime; ?>">
@@ -170,6 +202,7 @@ if(isset($_REQUEST['low']) && isset($_REQUEST['high']))
 											 <?php if ($detail->getProductName()) { echo $detail->getProductName();} ?>
 									   </a>
 								   </strong>
+								   
 								     <div class="secondary-addto-links actions-secondary" data-role="add-to-links">
 										<?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
 										<?php
@@ -224,7 +257,9 @@ foreach ($this->helper('Magento\Wishlist\Helper\Data')->getWishlistItemCollectio
 											Bid <span id="home_now">Now</span>									</button>							
 									<button class="action tobidcart primary" onclick="window.location.href='<?= $url ?>'">Submit Bid</button>
 							 </div>
-							
+
+							<span class="bid-text"><?php echo $bidText ?></span>
+
 						 <div class="vendorDetails">
 						    <?php
 							
@@ -285,6 +320,7 @@ foreach ($this->helper('Magento\Wishlist\Helper\Data')->getWishlistItemCollectio
 					//echo "<pre>";print_r($results);
 					$countStatus = array();
 					$cleanbidprice = '';
+					$count = 0;
 					foreach ($results as $key => $data)
 					 {
 					  if ($data['status'] == 'bidding') 
@@ -293,13 +329,21 @@ foreach ($this->helper('Magento\Wishlist\Helper\Data')->getWishlistItemCollectio
 						 { 
 						 $cleanbidprice = $data['bid_price'];
 						 $addCls = "trending_auction featured_auction";		
-				 
+				 		 $count++;
 						 }			
 						}
 					 }
 					// $countDownTime = $endTime;
 					$countDownTime = $finalDate;
-			
+					$ceilCount = ceil($count/5) * 5;
+					$bidText = '';
+					if($count < 5)
+					{
+						$bidText = 'Less than 5 Bids Placed';
+					} else {
+						$bidText = 'More than '.$ceilCount.' Bids Placed';
+					}
+
                     ?>
                    <li class="item product product-item col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 live_auction all-auctions <?php echo $addCls;?> <?php echo $newCls;?>" data-product="<?= $productId; ?>"
                         data-counter="<?= $countDownTime; ?>" data-price="<?= $productStartingAmount; ?>" data-status="<?= $status; ?>" data-finaltime="<?= $finalTime; ?>" data-cleanbidprice="<?= $cleanbidprice; ?>" data-auctionid="<?= $auctionid; ?>" data-$finaldate="<?= $finalDate2; ?>">
@@ -320,6 +364,7 @@ foreach ($this->helper('Magento\Wishlist\Helper\Data')->getWishlistItemCollectio
                                         <?php if ($detail->getProductName()) {echo $detail->getProductName(); } ?>
 									</a>
                                 </strong>
+                                
 								<div class="secondary-addto-links actions-secondary" data-role="add-to-links">
                                      <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
                                         				<?php
@@ -370,7 +415,7 @@ foreach ($this->helper('Magento\Wishlist\Helper\Data')->getWishlistItemCollectio
                                 </button>
 								<button class="action tobidcart primary" onclick="window.location.href='<?= $url ?>'">Submit Bid</button>
 							</div>
-							
+							<span class="bid-text"><?php echo $bidText ?></span>
 							<div class="vendorDetails">
 						    <?php
 							 foreach ($vendorDetails->getLoadedVendorCollection() as $vendor)
@@ -584,7 +629,29 @@ foreach ($this->helper('Magento\Wishlist\Helper\Data')->getWishlistItemCollectio
 
                         function runTimer($countDownTime, productid, price, status, finalTime, cleanbidprice, auctionid, finaldate) {
 							
-                            var countDownDate = new Date($countDownTime).getTime();
+                            var countDownDate = new Date($countDownTime.replace(/-/g, '/')).getTime();
+
+                            /* var t = $countDownTime.split(/[- : T]/);
+
+							// Apply each element to the Date function
+							var d = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
+							var actiondate = new Date(d);
+							alert(actiondate + ' ---- ' + $countDownTime); */
+
+						//	alert(countDownDate + ' --- ' + actiondate.getTime());
+
+                            /* var t = $countDownTime.split(/[- : T]/);
+
+							// Apply each element to the Date function
+							var d = new Date(parseInt(t[0]), parseInt(t[1]-1), parseInt(t[2]), parseInt(t[3]), parseInt(t[4]), parseInt(t[5]));
+
+							var actiondate = new Date(d);
+
+							var countDownDate1 = actiondate.getTime().toString().replace('-',''); */
+
+							//myString = countDownDate2.replace('-','');
+							//var newStr = countDownDate2.replace(/-/g, "");
+							//alert(countDownDate1 + ' --- ' + countDownDate);
 
                             var x = setInterval(function () {
                                 let currLocalTime = new Date().toLocaleString("en-US", {timeZone: timezone});
